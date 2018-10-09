@@ -17,12 +17,12 @@ final class EventReplayer implements EventReplayerInterface
 
     public function replay(string $id, ?int $from = null, ?int $to = null): void
     {
-        if (null === $from && null === $to) {
-            $events = $this->eventStore->load($id);
+        if (null !== $from && null !== $to) {
+            $events = $this->eventStore->loadFromPlayheadToPlayhead($id, $from, $to);
         } elseif (null !== $from && null === $to) {
             $events = $this->eventStore->loadFromPlayhead($id, $from);
         } else {
-            $events = $this->eventStore->loadFromPlayheadToPlayhead($id, $from, $to);
+            $events = $this->eventStore->load($id);
         }
 
         $this->replayEvents($events);
