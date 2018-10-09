@@ -9,6 +9,9 @@ before_script:
   - composer global require friendsofphp/php-cs-fixer
   - export PATH="$PATH:$HOME/.composer/vendor/bin"
 
+install:
+  - composer update --prefer-dist --no-progress --no-suggest --ansi
+
 scripts:
   - vendor/bin/phpunit
   - vendor/bin/phpstan --level=max analyse src tests

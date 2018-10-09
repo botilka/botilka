@@ -1,8 +1,8 @@
 # BOTILKA
 
-An modern & easy-to-user Event Sourcing & CQRS library built on top of Symfony components.
+An modern & easy-to-use Event Sourcing & CQRS library built on top of Symfony components.
 
-It can leverage API Platform to expose the `Commands`, `Queries` via REST.
+It can leverage [API Platform](https://api-platform.com) to expose the `Commands` and `Queries` via REST.
 
 ## Main features
 
