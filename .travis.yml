@@ -1,0 +1,19 @@
+sudo: false
+language: php
+
+php:
+  - '7.1'
+  - '7.2'
+
+before_script:
+  - composer global require friendsofphp/php-cs-fixer
+  - export PATH="$PATH:$HOME/.composer/vendor/bin"
+
+scripts:
+  - vendor/bin/phpunit
+  - vendor/bin/phpstan --level=max analyse src tests
+  - php-cs-fixer fix --allow-risky=yes --dry-run
+
+cache:
+  directories:
+    - $HOME/.composer/cache
