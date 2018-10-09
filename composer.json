@@ -1,0 +1,47 @@
+{
+    "name": "botilka/botilka",
+    "description": "CQRS & Event Sourcing framework",
+    "type": "library",
+    "keywords": ["cqrs", "es", "eventsourcing", "symfony", "bundle", "api-platform"],
+    "require": {
+        "php": ">=7.1",
+        "doctrine/common": "^2.9",
+        "ramsey/uuid": "^3.8",
+        "symfony/console": "^4.1",
+        "symfony/messenger": "^4.1",
+        "symfony/monolog-bundle": "^3.3",
+        "symfony/serializer": "^4.1"
+    },
+    "require-dev": {
+        "api-platform/core": "^2.3",
+        "doctrine/orm": "^2.6",
+        "phpstan/phpstan": "^0.10.3",
+        "phpstan/phpstan-phpunit": "^0.10.0",
+        "phpunit/phpunit": "^7.4",
+        "symfony/yaml": "^4.1"
+    },
+    "suggest": {
+        "doctrine/orm": "To use Doctrine as an EventStore",
+        "api-platform/core": "To expose your commands & queries via REST"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "autoload": {
+        "psr-4": {
+            "Botilka\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Botilka\\Tests\\": "tests/"
+        }
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "azzra",
+            "email": "azzra@users.noreply.github.com"
+        }
+    ]
+}

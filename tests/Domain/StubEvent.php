@@ -1,0 +1,20 @@
+<?php
+
+namespace Botilka\Tests\Domain;
+
+use Botilka\Event\Event;
+
+final class StubEvent implements Event
+{
+    private $foo;
+
+    public function __construct(int $foo)
+    {
+        $this->foo = $foo;
+    }
+
+    public function getFoo(): int
+    {
+        return $this->foo;
+    }
+}
