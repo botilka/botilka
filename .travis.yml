@@ -5,12 +5,20 @@ php:
   - '7.1'
   - '7.2'
 
+env:
+  - deps=low
+  - deps=high
+
 before_script:
   - composer global require friendsofphp/php-cs-fixer
   - export PATH="$PATH:$HOME/.composer/vendor/bin"
 
 install:
-  - composer update --prefer-dist --no-progress --no-suggest --ansi
+  - if [[ $deps = 'low' ]]; then
+      composer update --prefer-dist --no-progress --no-suggest --prefer-stable --prefer-lowest --ansi;
+    else
+      composer update --prefer-dist --no-progress --no-suggest --ansi;
+    fi
 
 scripts:
   - vendor/bin/phpunit
