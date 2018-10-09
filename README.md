@@ -4,6 +4,10 @@ An modern & easy-to-use Event Sourcing & CQRS library built on top of Symfony co
 
 It can leverage [API Platform](https://api-platform.com) to expose the `Commands` and `Queries` via REST.
 
+[![Build Status](https://travis-ci.org/botilka/botilka.svg?branch=master)](https://travis-ci.org/botilka/botilka)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/botilka/botilka/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/botilka/botilka/?branch=master)
+[![Code Coverage](https://scrutinizer-ci.com/g/botilka/botilka/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/botilka/botilka/?branch=master)
+
 ## Main features
 
 - Fully immutable, not a single setter.
