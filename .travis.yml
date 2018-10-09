@@ -20,7 +20,7 @@ install:
       composer update --prefer-dist --no-progress --no-suggest --ansi;
     fi
 
-scripts:
+script:
   - vendor/bin/phpunit
   - vendor/bin/phpstan --level=max analyse src tests
   - php-cs-fixer fix --allow-risky=yes --dry-run
