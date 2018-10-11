@@ -1,0 +1,71 @@
+# This file is the full Botilka config, adapt to your needs
+
+framework:
+    messenger:
+        default_bus: messenger.bus.commands
+        buses:
+            messenger.bus.commands:
+                middleware:
+                    - doctrine_transaction_middleware
+                    - Botilka\Infrastructure\EventDispatcherBusMiddleware
+            messenger.bus.events: ~
+            messenger.bus.queries: ~
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+        bind:
+            $commandBus: '@messenger.bus.commands'
+            $queryBus: '@messenger.bus.queries'
+            $eventBus: '@messenger.bus.events'
+
+    # EventStore
+    Botilka\Infrastructure\Doctrine\EventStoreDoctrine: ~
+    Botilka\EventStore\EventStore: '@Botilka\Infrastructure\Doctrine\EventStoreDoctrine'
+
+    # Messenger middleware
+    Botilka\Infrastructure\EventDispatcherBusMiddleware: ~
+
+    # Event dispatcher
+    Botilka\Event\EventDispatcher: ~
+    Botilka\Event\EventDispatcherInterface: '@Botilka\Event\EventDispatcher'
+
+    # API Platform bridge
+    Botilka\Bridge\ApiPlatform\Description\DescriptionContainer: ~
+    Botilka\Bridge\ApiPlatform\DataProvider\CommandDataProvider: ~
+    Botilka\Bridge\ApiPlatform\DataProvider\QueryDataProvider: ~
+    Botilka\Bridge\ApiPlatform\Action\:
+        resource: '%kernel.project_dir%/vendor/botilka/botilka/src/Bridge/ApiPlatform/Action/*'
+        public: true
+
+    # https://symfony.com/doc/4.1/messenger.html#using-middleware-factories
+    doctrine.orm.messenger.middleware_factory.transaction:
+        class: Symfony\Bridge\Doctrine\Messenger\DoctrineTransactionMiddlewareFactory
+        arguments: ['@doctrine']
+
+    messenger.middleware.doctrine_transaction_middleware:
+        class: Symfony\Bridge\Doctrine\Messenger\DoctrineTransactionMiddleware
+        factory: 'doctrine.orm.messenger.middleware_factory.transaction:createMiddleware'
+        abstract: true
+        arguments: ['default']
+
+api_platform:
+    mapping:
+        paths:
+            # expose commands & queries
+            - '%kernel.project_dir%/vendor/botilka/botilka/src/Bridge/ApiPlatform/Resource'
+            # expose EventStore
+            - '%kernel.project_dir%/vendor/botilka/botilka/src/Infrastructure/Doctrine'
+
+doctrine:
+    orm:
+        mappings:
+            # include Event item from EventStore to be managed by Doctrine, enable schema update & migration
+            Botilka:
+                is_bundle: false
+                type: annotation
+                dir: '%kernel.project_dir%/vendor/botilka/botilka/src/Infrastructure/Doctrine'
+                prefix: 'Botilka\Infrastructure\Doctrine'
+                alias: Botilka

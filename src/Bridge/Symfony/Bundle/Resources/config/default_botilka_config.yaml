@@ -1,0 +1,16 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+        bind:
+            $eventBus: '@messenger.bus.events'
+
+    Botilka\Infrastructure\EventDispatcherBusMiddleware: ~
+
+    # Botilka EventStore
+    Botilka\Infrastructure\Doctrine\EventStoreDoctrine: ~
+    Botilka\EventStore\EventStore: '@Botilka\Infrastructure\Doctrine\EventStoreDoctrine'
+
+    Botilka\Event\EventDispatcher: ~
+    Botilka\Event\EventDispatcherInterface: '@Botilka\Event\EventDispatcher'

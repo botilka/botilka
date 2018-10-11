@@ -10,7 +10,7 @@ use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
-final class DescriptionContainerPass implements CompilerPassInterface
+final class ApiPlatformDescriptionContainerPass implements CompilerPassInterface
 {
     const RESOURCE_TO_TAG = [
         Command::class => 'cqrs.command',
@@ -19,6 +19,9 @@ final class DescriptionContainerPass implements CompilerPassInterface
 
     public function process(ContainerBuilder $container)
     {
+        if (!$container->hasDefinition(DescriptionContainer::class)) {
+            return;
+        }
         $container->getDefinition(DescriptionContainer::class)->setAbstract(true);
 
         foreach (self::RESOURCE_TO_TAG as $className => $tagName) {

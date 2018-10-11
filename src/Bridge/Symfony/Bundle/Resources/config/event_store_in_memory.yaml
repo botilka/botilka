@@ -1,0 +1,8 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+
+    Botilka\Infrastructure\InMemory\EventStoreInMemory: ~
+    Botilka\EventStore\EventStore: '@Botilka\Infrastructure\InMemory\EventStoreInMemory'
