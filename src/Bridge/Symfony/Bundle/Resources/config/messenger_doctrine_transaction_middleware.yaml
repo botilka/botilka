@@ -1,9 +1,9 @@
 services:
     _defaults:
         autowire: true
-        autoconfigure: true
         public: false
 
+    # active Doctrine as EventStore
     Botilka\Infrastructure\Doctrine\EventStoreDoctrine: ~
     Botilka\EventStore\EventStore: '@Botilka\Infrastructure\Doctrine\EventStoreDoctrine'
 
