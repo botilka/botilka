@@ -8,9 +8,5 @@ services:
 
     Botilka\Infrastructure\EventDispatcherBusMiddleware: ~
 
-    # Botilka EventStore
-    Botilka\Infrastructure\Doctrine\EventStoreDoctrine: ~
-    Botilka\EventStore\EventStore: '@Botilka\Infrastructure\Doctrine\EventStoreDoctrine'
-
     Botilka\Event\EventDispatcher: ~
     Botilka\Event\EventDispatcherInterface: '@Botilka\Event\EventDispatcher'

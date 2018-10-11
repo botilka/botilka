@@ -7,7 +7,6 @@ use Botilka\Bridge\Symfony\Bundle\DependencyInjection\Compiler\CommandActionPass
 use Botilka\Bridge\Symfony\Bundle\DependencyInjection\Compiler\DataProviderPass;
 use Botilka\Bridge\Symfony\Bundle\DependencyInjection\Compiler\DescriptionContainerPass;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 final class BotilkaBundleTest extends TestCase
@@ -16,18 +15,6 @@ final class BotilkaBundleTest extends TestCase
     public function testBuild(bool $hasExtension)
     {
         $container = $this->createMock(ContainerBuilder::class);
-
-        $i = 0;
-        foreach (BotilkaBundle::AUTOCONFIGURAION_CLASSES_TAG as $className => $tagName) {
-            $definition = $this->createMock(ChildDefinition::class);
-            $definition->expects($this->once())->method('addTag')
-                ->with($tagName);
-
-            $container->expects($this->at($i))->method('registerForAutoconfiguration')
-                ->with($className)->willReturn($definition);
-
-            ++$i;
-        }
 
         $bundle = new BotilkaBundle();
         $container->expects($this->once())

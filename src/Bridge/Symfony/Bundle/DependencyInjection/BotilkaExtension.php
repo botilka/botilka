@@ -84,11 +84,13 @@ final class BotilkaExtension extends Extension implements PrependExtensionInterf
             ]);
         }
 
-        $container->prependExtensionConfig('api_platform', [
-            'mapping' => [
-                'paths' => $paths,
-            ],
-        ]);
+        if (\count($paths) > 0) {
+            $container->prependExtensionConfig('api_platform', [
+                'mapping' => [
+                    'paths' => $paths,
+                ],
+            ]);
+        }
     }
 
     private function prependDefaultMessengerConfig(ContainerBuilder $container, bool $addDoctrineTransactionMiddleware): void
