@@ -23,11 +23,10 @@ final class BotilkaBundleTest extends TestCase
         $container->expects($hasExtension ? $this->exactly(3) : $this->never())
             ->method('addCompilerPass')
             ->withConsecutive(
-                ...[
-                    $this->isInstanceOf(ApiPlatformDescriptionContainerPass::class),
-                    $this->isInstanceOf(ApiPlatformDataProviderPass::class),
-                    $this->isInstanceOf(ApiPlatformCommandActionPass::class),
-                ]);
+                [$this->isInstanceOf(ApiPlatformDescriptionContainerPass::class)],
+                [$this->isInstanceOf(ApiPlatformDataProviderPass::class)],
+                [$this->isInstanceOf(ApiPlatformCommandActionPass::class)]
+            );
 
         $bundle->build($container);
     }

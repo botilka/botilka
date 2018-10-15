@@ -3,4 +3,4 @@ includes:
     - vendor/phpstan/phpstan-phpunit/rules.neon
 parameters:
     excludes_analyse:
-        - %rootDir%/../../../src/Bridge/Symfony/Bundle/DependencyInjection/Configuration.php
+        - src/Bridge/Symfony/Bundle/DependencyInjection/Configuration.php

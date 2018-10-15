@@ -8,17 +8,14 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Messenger\MessageBusInterface;
 
 final class BotilkaReplayCommand extends Command
 {
-    private $eventBus;
     private $replayer;
 
-    public function __construct(MessageBusInterface $eventBus, EventReplayerInterface $replayer)
+    public function __construct(EventReplayerInterface $replayer)
     {
         parent::__construct('botilka:replay');
-        $this->eventBus = $eventBus;
         $this->replayer = $replayer;
     }
 

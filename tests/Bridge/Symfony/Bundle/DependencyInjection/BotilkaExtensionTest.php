@@ -2,7 +2,6 @@
 
 namespace Botilka\Tests\Bridge\Symfony\Bundle\DependencyInjection;
 
-use ApiPlatform\Core\Bridge\Symfony\Bundle\DependencyInjection\ApiPlatformExtension;
 use Botilka\Bridge\ApiPlatform\Action\CommandAction;
 use Botilka\Bridge\ApiPlatform\DataProvider\CommandDataProvider;
 use Botilka\Bridge\ApiPlatform\DataProvider\QueryDataProvider;
@@ -14,28 +13,105 @@ use Botilka\Infrastructure\Doctrine\EventStoreDoctrine;
 use Botilka\Infrastructure\EventDispatcherBusMiddleware;
 use Botilka\Infrastructure\InMemory\EventStoreInMemory;
 use PHPUnit\Framework\TestCase;
+use Prophecy\Argument;
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 class BotilkaExtensionTest extends TestCase
 {
-    public function testPrependWithApiPlatform()
-    {
-        $container = new ContainerBuilder();
-        $container->registerExtension(new ApiPlatformExtension());
-        $extension = new BotilkaExtension();
-        $extension->prepend($container);
+    /** @var BotilkaExtension */
+    private $extension;
 
-        $this->assertSame([], $container->getExtensionConfig('api_platform'));
+    public function setUp()
+    {
+        $this->extension = new BotilkaExtension();
     }
 
-    public function testPrependWithoutApiPlatform()
+    /** @dataProvider prependWithDefaultMessengerProvider */
+    public function testPrependWithDefaultMessenger(bool $withDoctrineTranslationMiddleware)
     {
-        $container = new ContainerBuilder();
-        $extension = new BotilkaExtension();
-        $extension->prepend($container);
+        $containerBuilderProphecy = $this->prophesize(ContainerBuilder::class);
+        $containerBuilderProphecy->getExtensionConfig('botilka')->willReturn([
+            [
+                'default_messenger_config' => true,
+                'doctrine_transaction_middleware' => $withDoctrineTranslationMiddleware,
+                'api_platform' => [
+                    'expose_cq' => false,
+                    'expose_event_store' => false,
+                ],
+            ],
+        ])->shouldBeCalled();
+        $containerBuilderProphecy->setParameter('botilka.bridge.api_platform', false)->shouldBeCalled();
 
-        $this->assertSame([], $container->getExtensionConfig('api_platform'));
+        $middleware = [EventDispatcherBusMiddleware::class];
+        if (true === $withDoctrineTranslationMiddleware) {
+            \array_unshift($middleware, 'doctrine_transaction_middleware');
+        }
+
+        $containerBuilderProphecy->prependExtensionConfig(
+            'framework', [
+                'messenger' => [
+                    'default_bus' => 'messenger.bus.commands',
+                    'buses' => [
+                        'messenger.bus.commands' => [
+                            'middleware' => $middleware,
+                        ],
+                        'messenger.bus.queries' => [],
+                        'messenger.bus.events' => [],
+                    ],
+                ],
+            ]
+        )->shouldBeCalled();
+
+        $this->extension->prepend($containerBuilderProphecy->reveal());
+    }
+
+    public function prependWithDefaultMessengerProvider(): array
+    {
+        return [
+            [true],
+            [false],
+        ];
+    }
+
+    public function testPrependWithoutDefaultMessenger()
+    {
+        $containerBuilderProphecy = $this->prophesize(ContainerBuilder::class);
+        $containerBuilderProphecy->getExtensionConfig('botilka')->willReturn([
+            [
+                'default_messenger_config' => false,
+                'doctrine_transaction_middleware' => false,
+                'api_platform' => [
+                    'expose_cq' => false,
+                    'expose_event_store' => false,
+                ],
+            ],
+        ])->shouldBeCalled();
+        $containerBuilderProphecy->prependExtensionConfig('framework', Argument::type('array'))->shouldNotBeCalled();
+        $containerBuilderProphecy->setParameter('botilka.bridge.api_platform', false)->shouldBeCalled();
+
+        $this->extension->prepend($containerBuilderProphecy->reveal());
+    }
+
+    public function testPrependApiPlatform()
+    {
+        $containerBuilderProphecy = $this->prophesize(ContainerBuilder::class);
+        $containerBuilderProphecy->getExtensionConfig('botilka')->willReturn([
+            [
+                'default_messenger_config' => false,
+                'doctrine_transaction_middleware' => false,
+                'api_platform' => [
+                    'expose_cq' => true,
+                    'expose_event_store' => true,
+                ],
+            ],
+        ])->shouldBeCalled();
+        $containerBuilderProphecy->prependExtensionConfig('doctrine', ['orm' => ['mappings' => ['Botilka' => ['is_bundle' => false, 'type' => 'annotation', 'dir' => '%kernel.project_dir%/vendor/botilka/botilka/src/Infrastructure/Doctrine', 'prefix' => 'Botilka\Infrastructure\Doctrine', 'alias' => 'Botilka']]]])->shouldBeCalled();
+        $containerBuilderProphecy->prependExtensionConfig('api_platform', ['mapping' => ['paths' => ['%kernel.project_dir%/vendor/botilka/botilka/src/Bridge/ApiPlatform/Resource', '%kernel.project_dir%/vendor/botilka/botilka/src/Infrastructure/Doctrine']]])->shouldBeCalled();
+        $containerBuilderProphecy->setParameter('botilka.bridge.api_platform', false)->shouldBeCalled();
+        $containerBuilderProphecy->setParameter('botilka.bridge.api_platform', true)->shouldBeCalled();
+
+        $this->extension->prepend($containerBuilderProphecy->reveal());
     }
 
     /** @dataProvider loadProvider */
@@ -51,8 +127,7 @@ class BotilkaExtensionTest extends TestCase
             ],
         ];
 
-        $extension = new BotilkaExtension();
-        $extension->load($configs, $container);
+        $this->extension->load($configs, $container);
 
         $this->assertSame($eventStore, (string) $container->getAlias(EventStore::class));
         $this->assertSame($defaultMessengerConfig, $container->hasDefinition(EventDispatcher::class));
@@ -78,22 +153,22 @@ class BotilkaExtensionTest extends TestCase
     public function testLoadAddTag()
     {
         $container = $this->createMock(ContainerBuilder::class);
+        $count = \count(BotilkaExtension::AUTOCONFIGURAION_CLASSES_TAG);
 
         $definition = $this->createMock(ChildDefinition::class);
-        $definition->expects($this->exactly(5))
+        $definition->expects($this->exactly($count))
             ->method('addTag')
             ->withConsecutive(...\array_values(\array_map(function ($item) {
                 return [$item];
             }, BotilkaExtension::AUTOCONFIGURAION_CLASSES_TAG)));
 
-        $container->expects($this->exactly(5))
+        $container->expects($this->exactly($count))
             ->method('registerForAutoconfiguration')
             ->withConsecutive(...\array_values(\array_map(function ($item) {
                 return [$item];
             }, \array_keys(BotilkaExtension::AUTOCONFIGURAION_CLASSES_TAG))))
             ->willReturn($definition);
 
-        $extension = new BotilkaExtension();
-        $extension->load([], $container);
+        $this->extension->load([], $container);
     }
 }

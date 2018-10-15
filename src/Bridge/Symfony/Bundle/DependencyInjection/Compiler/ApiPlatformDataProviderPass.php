@@ -20,9 +20,11 @@ final class ApiPlatformDataProviderPass implements CompilerPassInterface
     {
         foreach (self::RESOURCE_TO_DATA_PROVIDER as $resourceClassName => $dataProviderClassName) {
             if (!$container->hasDefinition($dataProviderClassName)) {
-                return;
+                continue;
             }
-            $dataProviderDefinition = $container->getDefinition($dataProviderClassName);
+            $dataProviderDefinition = $container->getDefinition($dataProviderClassName)
+                ->addTag('api_platform.collection_data_provider')
+                ->addTag('api_platform.item_data_provider');
 
             $dataProviderDefinition->setArgument('$descriptionContainer', $container->getDefinition($resourceClassName.'.description_container'));
         }
