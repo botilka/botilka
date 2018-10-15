@@ -14,11 +14,13 @@
     },
     "require-dev": {
         "api-platform/core": "^2.3",
+        "doctrine/doctrine-bundle": "^1.9",
         "doctrine/orm": "^2.6",
         "jangregor/phpstan-prophecy": "^0.2.0",
         "phpstan/phpstan": "^0.10.3",
         "phpstan/phpstan-phpunit": "^0.10.0",
         "phpunit/phpunit": "^7.4",
+        "symfony/framework-bundle": "^4.1",
         "symfony/yaml": "^4.1"
     },
     "suggest": {
@@ -36,7 +38,8 @@
     "autoload-dev": {
         "psr-4": {
             "Botilka\\Tests\\": "tests/"
-        }
+        },
+        "classmap": ["tests/app/AppKernel.php"]
     },
     "license": "MIT",
     "authors": [

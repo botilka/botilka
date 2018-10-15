@@ -1,0 +1,25 @@
+framework:
+    secret: footest
+
+#doctrine:
+#    dbal:
+#        url: '%env(resolve:DATABASE_URL)%'
+#    orm:
+#        auto_generate_proxy_classes: '%kernel.debug%'
+#        naming_strategy: doctrine.orm.naming_strategy.underscore
+
+services:
+
+    _defaults:
+        autoconfigure: true
+        autowire: true
+        public: false
+        # if we don't bind arguments, default MessageBusInterface implementation is framework.messenger.default_bus (ie. messenger.bus.commands)
+        bind:
+            $commandBus: '@messenger.bus.commands'
+            $queryBus: '@messenger.bus.queries'
+            $eventBus: '@messenger.bus.events'
+
+    Botilka\:
+        resource: '../../../src/*'
+        exclude: '../../../src/{Infrastructure/Doctrine}'
