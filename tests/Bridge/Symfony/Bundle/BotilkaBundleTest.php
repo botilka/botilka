@@ -3,11 +3,10 @@
 namespace Botilka\Tests\Bridge\Symfony\Bundle;
 
 use Botilka\Bridge\Symfony\Bundle\BotilkaBundle;
-use Botilka\Bridge\Symfony\Bundle\DependencyInjection\Compiler\CommandActionPass;
-use Botilka\Bridge\Symfony\Bundle\DependencyInjection\Compiler\DataProviderPass;
-use Botilka\Bridge\Symfony\Bundle\DependencyInjection\Compiler\DescriptionContainerPass;
+use Botilka\Bridge\Symfony\Bundle\DependencyInjection\Compiler\ApiPlatformCommandActionPass;
+use Botilka\Bridge\Symfony\Bundle\DependencyInjection\Compiler\ApiPlatformDataProviderPass;
+use Botilka\Bridge\Symfony\Bundle\DependencyInjection\Compiler\ApiPlatformDescriptionContainerPass;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 final class BotilkaBundleTest extends TestCase
@@ -17,18 +16,6 @@ final class BotilkaBundleTest extends TestCase
     {
         $container = $this->createMock(ContainerBuilder::class);
 
-        $i = 0;
-        foreach (BotilkaBundle::AUTOCONFIGURAION_CLASSES_TAG as $className => $tagName) {
-            $definition = $this->createMock(ChildDefinition::class);
-            $definition->expects($this->once())->method('addTag')
-                ->with($tagName);
-
-            $container->expects($this->at($i))->method('registerForAutoconfiguration')
-                ->with($className)->willReturn($definition);
-
-            ++$i;
-        }
-
         $bundle = new BotilkaBundle();
         $container->expects($this->once())
             ->method('hasExtension')->willReturn($hasExtension);
@@ -36,11 +23,10 @@ final class BotilkaBundleTest extends TestCase
         $container->expects($hasExtension ? $this->exactly(3) : $this->never())
             ->method('addCompilerPass')
             ->withConsecutive(
-                ...[
-                    $this->isInstanceOf(DescriptionContainerPass::class),
-                    $this->isInstanceOf(DataProviderPass::class),
-                    $this->isInstanceOf(CommandActionPass::class),
-                ]);
+                [$this->isInstanceOf(ApiPlatformDescriptionContainerPass::class)],
+                [$this->isInstanceOf(ApiPlatformDataProviderPass::class)],
+                [$this->isInstanceOf(ApiPlatformCommandActionPass::class)]
+            );
 
         $bundle->build($container);
     }

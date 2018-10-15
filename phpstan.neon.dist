@@ -1,3 +1,7 @@
 includes:
     - vendor/phpstan/phpstan-phpunit/extension.neon
     - vendor/phpstan/phpstan-phpunit/rules.neon
+    - vendor/jangregor/phpstan-prophecy/src/extension.neon
+parameters:
+    excludes_analyse:
+        - src/Bridge/Symfony/Bundle/DependencyInjection/Configuration.php

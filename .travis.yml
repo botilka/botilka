@@ -9,13 +9,17 @@ env:
   - deps=low
   - deps=high
 
+matrix:
+  allow_failures:
+    - env: deps=low
+
 before_script:
   - composer global require friendsofphp/php-cs-fixer
   - export PATH="$PATH:$HOME/.composer/vendor/bin"
 
 script:
   - vendor/bin/phpunit --coverage-clover=coverage.clover
-  - vendor/bin/phpstan --level=max analyse src tests
+  - vendor/bin/phpstan --level=max analyse src/ tests/
   - php-cs-fixer fix --allow-risky=yes --dry-run
 
 after_script:
@@ -24,7 +28,7 @@ after_script:
 
 install:
   - if [[ $deps = 'low' ]]; then
-      composer update --prefer-dist --no-progress --no-suggest --prefer-stable --prefer-lowest --ansi;
+      composer update --prefer-dist --no-progress --no-suggest --ansi --prefer-stable --prefer-lowest;
     else
       composer update --prefer-dist --no-progress --no-suggest --ansi;
     fi

@@ -1,0 +1,11 @@
+services:
+    _defaults:
+        autowire: true
+        public: false
+        bind:
+            $eventBus: '@messenger.bus.events'
+
+    Botilka\Infrastructure\EventDispatcherBusMiddleware: ~
+
+    Botilka\Event\EventDispatcher: ~
+    Botilka\Event\EventDispatcherInterface: '@Botilka\Event\EventDispatcher'
