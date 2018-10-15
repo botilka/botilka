@@ -44,8 +44,8 @@ final class EventReplayerTest extends TestCase
 
         return [
             ['foo', null, null, ['foo'], 'load', $events],
-            ['foo', 10, null, ['foo', 10], 'loadFromPlayhead', $events],
-            ['foo', 10, 20, ['foo', 10, 20],  'loadFromPlayheadToPlayhead', $events],
+            ['bar', 10, null, ['bar', 10], 'loadFromPlayhead', $events],
+            ['baz', 10, 20, ['baz', 10, 20], 'loadFromPlayheadToPlayhead', $events],
         ];
     }
 
