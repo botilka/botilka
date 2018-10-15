@@ -2,14 +2,12 @@
 
 namespace Botilka\Bridge\Symfony\Bundle\DependencyInjection;
 
-use ApiPlatform\Core\Bridge\Symfony\Bundle\ApiPlatformBundle;
 use Botilka\Command\Command;
 use Botilka\Command\CommandHandler;
 use Botilka\Event\EventHandler;
 use Botilka\Infrastructure\Doctrine\EventStoreDoctrine;
 use Botilka\Query\Query;
 use Botilka\Query\QueryHandler;
-use Doctrine\ORM\Version;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
@@ -43,7 +41,7 @@ final class BotilkaExtension extends Extension implements PrependExtensionInterf
     {
         $commandBusMiddleware = ['Botilka\Infrastructure\EventDispatcherBusMiddleware'];
         // depends on Doctrine availability too
-        if (true === $addDoctrineTransactionMiddleware && \class_exists(Version::class)) {
+        if (true === $addDoctrineTransactionMiddleware && $container->hasExtension('doctrine')) {
             $container->setParameter('botilka.messenger.doctrine_transaction_middleware', true);
             \array_unshift($commandBusMiddleware, 'doctrine_transaction_middleware');
         }
@@ -64,7 +62,7 @@ final class BotilkaExtension extends Extension implements PrependExtensionInterf
 
     private function prependApliPlatformConfig(ContainerBuilder $container, array $config): void
     {
-        if (!\class_exists(ApiPlatformBundle::class)) {
+        if (!$container->hasExtension('api_platform')) {
             return;
         }
 

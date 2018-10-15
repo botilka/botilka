@@ -42,6 +42,10 @@ class BotilkaExtensionTest extends TestCase
     {
         $containerBuilderProphecy = $this->prophesize(ContainerBuilder::class);
         $this->addDefaultCalls($containerBuilderProphecy);
+        $containerBuilderProphecy->hasExtension('api_platform')->shouldBeCalled();
+        if ($withDoctrineTranslationMiddleware) {
+            $containerBuilderProphecy->hasExtension('doctrine')->willReturn(true)->shouldBeCalled();
+        }
         $containerBuilderProphecy->getExtensionConfig('botilka')->willReturn([
             [
                 'default_messenger_config' => true,
@@ -89,6 +93,7 @@ class BotilkaExtensionTest extends TestCase
     {
         $containerBuilderProphecy = $this->prophesize(ContainerBuilder::class);
         $this->addDefaultCalls($containerBuilderProphecy);
+        $containerBuilderProphecy->hasExtension('api_platform')->shouldBeCalled();
         $containerBuilderProphecy->getExtensionConfig('botilka')->willReturn([
             [
                 'default_messenger_config' => false,
@@ -108,6 +113,7 @@ class BotilkaExtensionTest extends TestCase
     {
         $containerBuilderProphecy = $this->prophesize(ContainerBuilder::class);
         $this->addDefaultCalls($containerBuilderProphecy);
+        $containerBuilderProphecy->hasExtension('api_platform')->willReturn(true)->shouldBeCalled();
         $containerBuilderProphecy->getExtensionConfig('botilka')->willReturn([
             [
                 'default_messenger_config' => false,
