@@ -14,6 +14,7 @@ use Botilka\Infrastructure\EventDispatcherBusMiddleware;
 use Botilka\Infrastructure\InMemory\EventStoreInMemory;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
+use Prophecy\Prophecy\ObjectProphecy;
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
@@ -27,10 +28,20 @@ class BotilkaExtensionTest extends TestCase
         $this->extension = new BotilkaExtension();
     }
 
+    /**
+     * This method doesn't build the prophecy and return it because PHPStan doesn't get it.
+     */
+    private function addDefaultCalls(ObjectProphecy $containerBuilderProphecy): void
+    {
+        $containerBuilderProphecy->setParameter('botilka.bridge.api_platform', false)->shouldBeCalled();
+        $containerBuilderProphecy->setParameter('botilka.messenger.doctrine_transaction_middleware', false)->shouldBeCalled();
+    }
+
     /** @dataProvider prependWithDefaultMessengerProvider */
     public function testPrependWithDefaultMessenger(bool $withDoctrineTranslationMiddleware)
     {
         $containerBuilderProphecy = $this->prophesize(ContainerBuilder::class);
+        $this->addDefaultCalls($containerBuilderProphecy);
         $containerBuilderProphecy->getExtensionConfig('botilka')->willReturn([
             [
                 'default_messenger_config' => true,
@@ -41,7 +52,7 @@ class BotilkaExtensionTest extends TestCase
                 ],
             ],
         ])->shouldBeCalled();
-        $containerBuilderProphecy->setParameter('botilka.bridge.api_platform', false)->shouldBeCalled();
+        $containerBuilderProphecy->setParameter('botilka.messenger.doctrine_transaction_middleware', true)->shouldBeCalledTimes((int) $withDoctrineTranslationMiddleware);
 
         $middleware = [EventDispatcherBusMiddleware::class];
         if (true === $withDoctrineTranslationMiddleware) {
@@ -77,6 +88,7 @@ class BotilkaExtensionTest extends TestCase
     public function testPrependWithoutDefaultMessenger()
     {
         $containerBuilderProphecy = $this->prophesize(ContainerBuilder::class);
+        $this->addDefaultCalls($containerBuilderProphecy);
         $containerBuilderProphecy->getExtensionConfig('botilka')->willReturn([
             [
                 'default_messenger_config' => false,
@@ -88,7 +100,6 @@ class BotilkaExtensionTest extends TestCase
             ],
         ])->shouldBeCalled();
         $containerBuilderProphecy->prependExtensionConfig('framework', Argument::type('array'))->shouldNotBeCalled();
-        $containerBuilderProphecy->setParameter('botilka.bridge.api_platform', false)->shouldBeCalled();
 
         $this->extension->prepend($containerBuilderProphecy->reveal());
     }
@@ -96,6 +107,7 @@ class BotilkaExtensionTest extends TestCase
     public function testPrependApiPlatform()
     {
         $containerBuilderProphecy = $this->prophesize(ContainerBuilder::class);
+        $this->addDefaultCalls($containerBuilderProphecy);
         $containerBuilderProphecy->getExtensionConfig('botilka')->willReturn([
             [
                 'default_messenger_config' => false,
@@ -108,7 +120,6 @@ class BotilkaExtensionTest extends TestCase
         ])->shouldBeCalled();
         $containerBuilderProphecy->prependExtensionConfig('doctrine', ['orm' => ['mappings' => ['Botilka' => ['is_bundle' => false, 'type' => 'annotation', 'dir' => '%kernel.project_dir%/vendor/botilka/botilka/src/Infrastructure/Doctrine', 'prefix' => 'Botilka\Infrastructure\Doctrine', 'alias' => 'Botilka']]]])->shouldBeCalled();
         $containerBuilderProphecy->prependExtensionConfig('api_platform', ['mapping' => ['paths' => ['%kernel.project_dir%/vendor/botilka/botilka/src/Bridge/ApiPlatform/Resource', '%kernel.project_dir%/vendor/botilka/botilka/src/Infrastructure/Doctrine']]])->shouldBeCalled();
-        $containerBuilderProphecy->setParameter('botilka.bridge.api_platform', false)->shouldBeCalled();
         $containerBuilderProphecy->setParameter('botilka.bridge.api_platform', true)->shouldBeCalled();
 
         $this->extension->prepend($containerBuilderProphecy->reveal());
@@ -119,6 +130,7 @@ class BotilkaExtensionTest extends TestCase
     {
         $container = new ContainerBuilder();
         $container->setParameter('botilka.bridge.api_platform', $hasApiPlatformBridge);
+        $container->setParameter('botilka.messenger.doctrine_transaction_middleware', EventStoreDoctrine::class === $eventStore);
 
         $configs = [
             [

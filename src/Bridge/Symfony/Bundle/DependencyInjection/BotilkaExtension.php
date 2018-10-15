@@ -29,19 +29,22 @@ final class BotilkaExtension extends Extension implements PrependExtensionInterf
     public function prepend(ContainerBuilder $container)
     {
         $botilkaConfig = \array_merge([], ...$container->getExtensionConfig('botilka'));
+        $container->setParameter('botilka.bridge.api_platform', false);
+        $container->setParameter('botilka.messenger.doctrine_transaction_middleware', false);
 
         if ($botilkaConfig['default_messenger_config'] ?? true) {
             $this->prependDefaultMessengerConfig($container, $botilkaConfig['doctrine_transaction_middleware'] ?? true);
         }
 
-        $container->setParameter('botilka.bridge.api_platform', false);
         $this->prependApliPlatformConfig($container, $botilkaConfig['api_platform'] ?? []);
     }
 
     private function prependDefaultMessengerConfig(ContainerBuilder $container, bool $addDoctrineTransactionMiddleware): void
     {
         $commandBusMiddleware = ['Botilka\Infrastructure\EventDispatcherBusMiddleware'];
+        // depends on Doctrine availability too
         if (true === $addDoctrineTransactionMiddleware && \class_exists(Version::class)) {
+            $container->setParameter('botilka.messenger.doctrine_transaction_middleware', true);
             \array_unshift($commandBusMiddleware, 'doctrine_transaction_middleware');
         }
 
@@ -106,11 +109,15 @@ final class BotilkaExtension extends Extension implements PrependExtensionInterf
         $loader->load('botilka.yaml');
 
         if (true === $container->getParameter('botilka.bridge.api_platform')) {
-            $loader->load('bridge_api_platform.yaml');
+            $loader->load('bridge_api_platform_cq.yaml');
+        }
+
+        if (true === $container->getParameter('botilka.messenger.doctrine_transaction_middleware')) {
+            $loader->load('messenger_doctrine_transaction_middleware.yaml');
         }
 
         if (true === $config['default_messenger_config']) {
-            $loader->load('default_messenger_config.yaml');
+            $loader->load('messenger_default_config.yaml');
         }
 
         if (EventStoreDoctrine::class === $config['event_store']) {

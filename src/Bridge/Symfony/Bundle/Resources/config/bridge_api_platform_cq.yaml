@@ -6,7 +6,7 @@ services:
             $commandBus: '@messenger.bus.commands'
             $queryBus: '@messenger.bus.queries'
 
-    # API Platform bridge
+    # API Platform bridge for commands & queries
     Botilka\Bridge\ApiPlatform\Description\DescriptionContainer: ~
     Botilka\Bridge\ApiPlatform\DataProvider\CommandDataProvider: ~
     Botilka\Bridge\ApiPlatform\DataProvider\QueryDataProvider: ~

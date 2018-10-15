@@ -19,7 +19,7 @@ before_script:
 
 script:
   - vendor/bin/phpunit --coverage-clover=coverage.clover
-  - vendor/bin/phpstan --level=max analyse src tests
+  - vendor/bin/phpstan --level=max analyse src/ tests/
   - php-cs-fixer fix --allow-risky=yes --dry-run
 
 after_script:
