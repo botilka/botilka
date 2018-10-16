@@ -7,7 +7,7 @@ use Botilka\Bridge\ApiPlatform\DataProvider\CommandDataProvider;
 use Botilka\Bridge\ApiPlatform\DataProvider\QueryDataProvider;
 use Botilka\Bridge\ApiPlatform\Description\DescriptionContainer;
 use Botilka\Bridge\Symfony\Bundle\DependencyInjection\BotilkaExtension;
-use Botilka\Event\EventDispatcher;
+use Botilka\Event\DefaultEventDispatcher;
 use Botilka\EventStore\EventStore;
 use Botilka\Infrastructure\Doctrine\EventStoreDoctrine;
 use Botilka\Infrastructure\Symfony\Messenger\Middleware\EventDispatcherBusMiddleware;
@@ -147,7 +147,7 @@ class BotilkaExtensionTest extends TestCase
         $this->extension->load($configs, $container);
 
         $this->assertSame($eventStore, (string) $container->getAlias(EventStore::class));
-        $this->assertSame($defaultMessengerConfig, $container->hasDefinition(EventDispatcher::class));
+        $this->assertSame($defaultMessengerConfig, $container->hasDefinition(DefaultEventDispatcher::class));
         $this->assertSame($defaultMessengerConfig || EventStoreDoctrine::class === $eventStore, $container->hasDefinition('messenger.middleware.doctrine_transaction_middleware'));
         $this->assertSame($defaultMessengerConfig, $container->hasDefinition(EventDispatcherBusMiddleware::class));
         $this->assertSame($hasApiPlatformBridge, $container->hasDefinition(DescriptionContainer::class));

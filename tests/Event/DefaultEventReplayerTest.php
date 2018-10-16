@@ -2,28 +2,28 @@
 
 namespace Botilka\Tests\Event;
 
+use Botilka\Event\DefaultEventReplayer;
+use Botilka\Event\EventDispatcher;
 use Botilka\Event\EventReplayer;
-use Botilka\Event\EventDispatcherInterface;
-use Botilka\Event\EventReplayerInterface;
 use Botilka\EventStore\EventStore;
 use Botilka\Tests\Fixtures\Domain\StubEvent;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
-final class EventReplayerTest extends TestCase
+final class DefaultEventReplayerTest extends TestCase
 {
     /** @var EventStore|MockObject */
     private $eventStore;
-    /** @var EventDispatcherInterface|MockObject */
+    /** @var EventDispatcher|MockObject */
     private $eventDispatcher;
-    /** @var EventReplayerInterface */
+    /** @var EventReplayer */
     private $eventReplayer;
 
     public function setUp()
     {
-        $this->eventDispatcher = $this->createMock(EventDispatcherInterface::class);
+        $this->eventDispatcher = $this->createMock(EventDispatcher::class);
         $this->eventStore = $this->createMock(EventStore::class);
-        $this->eventReplayer = new EventReplayer($this->eventStore, $this->eventDispatcher);
+        $this->eventReplayer = new DefaultEventReplayer($this->eventStore, $this->eventDispatcher);
     }
 
     /** @dataProvider replayProvider */

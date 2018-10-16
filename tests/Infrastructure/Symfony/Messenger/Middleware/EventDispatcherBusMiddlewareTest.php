@@ -3,7 +3,7 @@
 namespace Botilka\Tests\Infrastructure\Symfony\Messenger\Middleware;
 
 use Botilka\Application\Command\CommandResponse;
-use Botilka\Event\EventDispatcherInterface;
+use Botilka\Event\EventDispatcher;
 use Botilka\EventStore\EventStore;
 use Botilka\EventStore\EventStoreConcurrencyException;
 use Botilka\Infrastructure\Symfony\Messenger\Middleware\EventDispatcherBusMiddleware;
@@ -16,7 +16,7 @@ class EventDispatcherBusMiddlewareTest extends TestCase
 {
     /** @var EventStore|MockObject */
     private $eventStore;
-    /** @var EventDispatcherInterface|MockObject */
+    /** @var EventDispatcher|MockObject */
     private $eventDispatcher;
     /** @var LoggerInterface|MockObject */
     private $logger;
@@ -24,7 +24,7 @@ class EventDispatcherBusMiddlewareTest extends TestCase
     public function setUp()
     {
         $this->eventStore = $this->createMock(EventStore::class);
-        $this->eventDispatcher = $this->createMock(EventDispatcherInterface::class);
+        $this->eventDispatcher = $this->createMock(EventDispatcher::class);
         $this->logger = $this->createMock(LoggerInterface::class);
     }
 
