@@ -2,19 +2,19 @@
 
 namespace Botilka\Tests\Ui\Console;
 
-use Botilka\Event\EventReplayerInterface;
-use Botilka\Ui\Console\BotilkaReplayCommand;
+use Botilka\Event\EventReplayer;
+use Botilka\Ui\Console\ReplayCommand;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 
-class BotilkaReplayCommandTest extends KernelTestCase
+class ReplayCommandTest extends KernelTestCase
 {
     /** @dataProvider executeProvider */
     public function testExecute(string $id, ?int $from, ?int $to)
     {
-        $replayer = $this->createMock(EventReplayerInterface::class);
-        $command = new BotilkaReplayCommand($replayer);
+        $replayer = $this->createMock(EventReplayer::class);
+        $command = new ReplayCommand($replayer);
 
         $replayer->expects($this->once())
             ->method('replay')

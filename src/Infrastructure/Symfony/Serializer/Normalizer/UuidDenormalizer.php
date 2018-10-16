@@ -1,7 +1,8 @@
 <?php
 
-namespace Botilka\Denormalizer;
+namespace Botilka\Infrastructure\Symfony\Serializer\Normalizer;
 
+use Ramsey\Uuid\Exception\InvalidUuidStringException;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Serializer\Normalizer\CacheableSupportsMethodInterface;
@@ -11,7 +12,11 @@ final class UuidDenormalizer implements DenormalizerInterface, CacheableSupports
 {
     public function denormalize($data, $class, $format = null, array $context = [])
     {
-        return Uuid::fromString($data);
+        try {
+            return Uuid::fromString($data);
+        } catch (InvalidUuidStringException $e) {
+            throw new \InvalidArgumentException(\sprintf('Can not denormalize %s as an Uuid.', \json_encode($data)));
+        }
     }
 
     public function supportsDenormalization($data, $type, $format = null)

@@ -5,14 +5,14 @@ namespace Botilka\Bridge\ApiPlatform\DataProvider;
 use ApiPlatform\Core\DataProvider\CollectionDataProviderInterface;
 use ApiPlatform\Core\DataProvider\ItemDataProviderInterface;
 use ApiPlatform\Core\DataProvider\RestrictedDataProviderInterface;
+use Botilka\Application\Query\QueryBus;
 use Botilka\Bridge\ApiPlatform\Description\DescriptionNotFoundException;
-use Botilka\Query\Query as CQRSQuery;
+use Botilka\Application\Query\Query as CQRSQuery;
 use Botilka\Bridge\ApiPlatform\Description\DescriptionContainerInterface;
 use Botilka\Bridge\ApiPlatform\Resource\Query;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Serializer\Exception\MissingConstructorArgumentsException;
 use Symfony\Component\Serializer\SerializerInterface;
 
@@ -23,7 +23,7 @@ final class QueryDataProvider implements CollectionDataProviderInterface, ItemDa
     private $descriptionContainer;
     private $requestStack;
 
-    public function __construct(MessageBusInterface $queryBus, SerializerInterface $serializer, DescriptionContainerInterface $descriptionContainer, RequestStack $requestStack)
+    public function __construct(QueryBus $queryBus, SerializerInterface $serializer, DescriptionContainerInterface $descriptionContainer, RequestStack $requestStack)
     {
         $this->queryBus = $queryBus;
         $this->serializer = $serializer;

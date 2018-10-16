@@ -3,9 +3,13 @@ services:
         autowire: true
         public: false
         bind:
-            $eventBus: '@messenger.bus.events'
+            $eventBus: '@Botilka\Infrastructure\Symfony\Messenger\SymfonyEventBus'
 
-    Botilka\Infrastructure\EventDispatcherBusMiddleware: ~
+    Botilka\Infrastructure\Symfony\Messenger\Middleware\EventDispatcherBusMiddleware: ~
 
-    Botilka\Event\EventDispatcher: ~
-    Botilka\Event\EventDispatcherInterface: '@Botilka\Event\EventDispatcher'
+    Botilka\Event\DefaultEventDispatcher: ~
+    Botilka\Event\EventDispatcher: '@Botilka\Event\DefaultEventDispatcher'
+
+    Botilka\Infrastructure\Symfony\Messenger\SymfonyEventBus:
+        arguments:
+            $bus: '@messenger.bus.events'

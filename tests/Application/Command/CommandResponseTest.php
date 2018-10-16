@@ -1,8 +1,8 @@
 <?php
 
-namespace Botilka\Tests\Command;
+namespace Botilka\Tests\Application\Command;
 
-use Botilka\Command\CommandResponse;
+use Botilka\Application\Command\CommandResponse;
 use Botilka\Tests\Fixtures\Domain\StubEvent;
 use PHPUnit\Framework\TestCase;
 

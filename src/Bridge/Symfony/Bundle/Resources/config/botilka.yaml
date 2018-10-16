@@ -1,13 +1,13 @@
 services:
     _defaults:
         autowire: true
+        autoconfigure: true
         public: false
 
     Botilka\Infrastructure\InMemory\EventStoreInMemory: ~
     Botilka\EventStore\EventStore: '@Botilka\Infrastructure\InMemory\EventStoreInMemory'
 
-    Botilka\Event\EventReplayer: ~
-    Botilka\Event\EventReplayerInterface: '@Botilka\Event\EventReplayer'
+    Botilka\Event\DefaultEventReplayer: ~
+    Botilka\Event\EventReplayer: '@Botilka\Event\DefaultEventReplayer'
 
-    Botilka\Ui\Console\BotilkaReplayCommand:
-        tags: [ 'console.command' ]
+    Botilka\Ui\Console\ReplayCommand: ~

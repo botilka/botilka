@@ -2,7 +2,7 @@
 
 namespace Botilka\Bridge\ApiPlatform\Command;
 
-use Botilka\Command\CommandResponse;
+use Botilka\Application\Command\CommandResponse;
 
 final class CommandResponseAdapter
 {

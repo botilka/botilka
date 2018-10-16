@@ -2,12 +2,13 @@
 
 namespace Botilka\Bridge\Symfony\Bundle\DependencyInjection;
 
-use Botilka\Command\Command;
-use Botilka\Command\CommandHandler;
+use Botilka\Application\Command\Command;
+use Botilka\Application\Command\CommandHandler;
 use Botilka\Event\EventHandler;
 use Botilka\Infrastructure\Doctrine\EventStoreDoctrine;
-use Botilka\Query\Query;
-use Botilka\Query\QueryHandler;
+use Botilka\Infrastructure\Symfony\Messenger\Middleware\EventDispatcherBusMiddleware;
+use Botilka\Application\Query\Query;
+use Botilka\Application\Query\QueryHandler;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
@@ -16,12 +17,12 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
 final class BotilkaExtension extends Extension implements PrependExtensionInterface
 {
-    const AUTOCONFIGURAION_CLASSES_TAG = [
-        CommandHandler::class => 'messenger.message_handler',
-        QueryHandler::class => 'messenger.message_handler',
-        EventHandler::class => 'messenger.message_handler',
-        Command::class => 'cqrs.command',
-        Query::class => 'cqrs.query',
+    private const AUTOCONFIGURAION_CLASSES_TAG = [
+        CommandHandler::class => ['messenger.message_handler', ['bus' => 'messenger.bus.commands']],
+        QueryHandler::class => ['messenger.message_handler', ['bus' => 'messenger.bus.queries']],
+        EventHandler::class => ['messenger.message_handler', ['bus' => 'messenger.bus.events']],
+        Command::class => ['cqrs.command'],
+        Query::class => ['cqrs.query'],
     ];
 
     public function prepend(ContainerBuilder $container)
@@ -39,7 +40,7 @@ final class BotilkaExtension extends Extension implements PrependExtensionInterf
 
     private function prependDefaultMessengerConfig(ContainerBuilder $container, bool $addDoctrineTransactionMiddleware): void
     {
-        $commandBusMiddleware = ['Botilka\Infrastructure\EventDispatcherBusMiddleware'];
+        $commandBusMiddleware = [EventDispatcherBusMiddleware::class];
         // depends on Doctrine availability too
         if (true === $addDoctrineTransactionMiddleware && $container->hasExtension('doctrine')) {
             $container->setParameter('botilka.messenger.doctrine_transaction_middleware', true);
@@ -116,15 +117,14 @@ final class BotilkaExtension extends Extension implements PrependExtensionInterf
 
         if (true === $config['default_messenger_config']) {
             $loader->load('messenger_default_config.yaml');
+            foreach (self::AUTOCONFIGURAION_CLASSES_TAG as $className => $tag) {
+                $container->registerForAutoconfiguration($className)
+                    ->addTag($tag[0], $tag[1] ?? []);
+            }
         }
 
         if (EventStoreDoctrine::class === $config['event_store']) {
             $loader->load('doctrine_event_store.yaml');
-        }
-
-        foreach (self::AUTOCONFIGURAION_CLASSES_TAG as $className => $tagName) {
-            $container->registerForAutoconfiguration($className)
-                ->addTag($tagName);
         }
     }
 }

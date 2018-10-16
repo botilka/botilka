@@ -2,7 +2,7 @@
 
 namespace Botilka\Tests\Fixtures\Application\Query;
 
-use Botilka\Query\Query;
+use Botilka\Application\Query\Query;
 use Botilka\Tests\Fixtures\Domain\SimpleValueObject;
 
 final class WithValueObjectQuery implements Query

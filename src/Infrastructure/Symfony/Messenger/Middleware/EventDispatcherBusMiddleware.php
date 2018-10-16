@@ -1,9 +1,9 @@
 <?php
 
-namespace Botilka\Infrastructure;
+namespace Botilka\Infrastructure\Symfony\Messenger\Middleware;
 
-use Botilka\Command\CommandResponse;
-use Botilka\Event\EventDispatcherInterface;
+use Botilka\Application\Command\CommandResponse;
+use Botilka\Event\EventDispatcher;
 use Botilka\EventStore\EventStore;
 use Botilka\EventStore\EventStoreConcurrencyException;
 use Psr\Log\LoggerInterface;
@@ -15,7 +15,7 @@ final class EventDispatcherBusMiddleware implements MiddlewareInterface
     private $eventDispatcher;
     private $logger;
 
-    public function __construct(EventStore $eventStore, EventDispatcherInterface $eventDispatcher, LoggerInterface $logger)
+    public function __construct(EventStore $eventStore, EventDispatcher $eventDispatcher, LoggerInterface $logger)
     {
         $this->eventStore = $eventStore;
         $this->eventDispatcher = $eventDispatcher;
