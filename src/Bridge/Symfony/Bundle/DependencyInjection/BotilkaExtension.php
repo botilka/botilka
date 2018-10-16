@@ -17,7 +17,7 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
 final class BotilkaExtension extends Extension implements PrependExtensionInterface
 {
-    const AUTOCONFIGURAION_CLASSES_TAG = [
+    private const AUTOCONFIGURAION_CLASSES_TAG = [
         CommandHandler::class => ['messenger.message_handler', ['bus' => 'messenger.bus.commands']],
         QueryHandler::class => ['messenger.message_handler', ['bus' => 'messenger.bus.queries']],
         EventHandler::class => ['messenger.message_handler', ['bus' => 'messenger.bus.events']],
@@ -119,7 +119,7 @@ final class BotilkaExtension extends Extension implements PrependExtensionInterf
             $loader->load('messenger_default_config.yaml');
             foreach (self::AUTOCONFIGURAION_CLASSES_TAG as $className => $tag) {
                 $container->registerForAutoconfiguration($className)
-                    ->addTag(...$tag);
+                    ->addTag($tag[0], $tag[1] ?? []);
             }
         }
 

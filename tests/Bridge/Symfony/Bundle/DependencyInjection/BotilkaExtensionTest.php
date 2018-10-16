@@ -2,12 +2,17 @@
 
 namespace Botilka\Tests\Bridge\Symfony\Bundle\DependencyInjection;
 
+use Botilka\Application\Command\Command;
+use Botilka\Application\Command\CommandHandler;
+use Botilka\Application\Query\Query;
+use Botilka\Application\Query\QueryHandler;
 use Botilka\Bridge\ApiPlatform\Action\CommandAction;
 use Botilka\Bridge\ApiPlatform\DataProvider\CommandDataProvider;
 use Botilka\Bridge\ApiPlatform\DataProvider\QueryDataProvider;
 use Botilka\Bridge\ApiPlatform\Description\DescriptionContainer;
 use Botilka\Bridge\Symfony\Bundle\DependencyInjection\BotilkaExtension;
 use Botilka\Event\DefaultEventDispatcher;
+use Botilka\Event\EventHandler;
 use Botilka\EventStore\EventStore;
 use Botilka\Infrastructure\Doctrine\EventStoreDoctrine;
 use Botilka\Infrastructure\Symfony\Messenger\Middleware\EventDispatcherBusMiddleware;
@@ -180,7 +185,14 @@ class BotilkaExtensionTest extends TestCase
     public function testAddTagIfDefaultMessengerConfig()
     {
         $container = $this->createMock(ContainerBuilder::class);
-        $count = \count(BotilkaExtension::AUTOCONFIGURAION_CLASSES_TAG);
+        $tags = [
+            CommandHandler::class => ['messenger.message_handler', ['bus' => 'messenger.bus.commands']],
+            QueryHandler::class => ['messenger.message_handler', ['bus' => 'messenger.bus.queries']],
+            EventHandler::class => ['messenger.message_handler', ['bus' => 'messenger.bus.events']],
+            Command::class => ['cqrs.command'],
+            Query::class => ['cqrs.query'],
+        ];
+        $count = \count($tags);
 
         $configs = \array_merge_recursive(self::DEFAULT_CONFIG, [
             [
@@ -191,13 +203,13 @@ class BotilkaExtensionTest extends TestCase
         $definition = $this->createMock(ChildDefinition::class);
         $definition->expects($this->exactly($count))
             ->method('addTag')
-            ->withConsecutive(...\array_values(BotilkaExtension::AUTOCONFIGURAION_CLASSES_TAG));
+            ->withConsecutive(...\array_values($tags));
 
         $container->expects($this->exactly($count))
             ->method('registerForAutoconfiguration')
             ->withConsecutive(...\array_values(\array_map(function ($item) {
                 return [$item];
-            }, \array_keys(BotilkaExtension::AUTOCONFIGURAION_CLASSES_TAG))))
+            }, \array_keys($tags))))
             ->willReturn($definition);
 
         $this->extension->load($configs, $container);
