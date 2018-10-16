@@ -1,8 +1,8 @@
 <?php
 
-namespace Botilka\Tests\Denormalizer;
+namespace Botilka\Tests\Infrastructure\Symfony\Serializer\Normalizer;
 
-use Botilka\Denormalizer\UuidDenormalizer;
+use Botilka\Infrastructure\Symfony\Serializer\Normalizer\UuidDenormalizer;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
@@ -36,9 +36,18 @@ final class UuidDenormalizerTest extends TestCase
         $this->assertTrue($this->denormalizer->hasCacheableSupportsMethod());
     }
 
-    public function testDenormalize()
+    public function testDenormalizeValid()
     {
         $uuid = Uuid::uuid4();
         $this->assertTrue($uuid->equals($this->denormalizer->denormalize($uuid->toString(), UuidInterface::class)));
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage Can not denormalize "foo" as an Uuid.
+     */
+    public function testDenormalizeInvalid()
+    {
+        $this->denormalizer->denormalize('foo', UuidInterface::class);
     }
 }
