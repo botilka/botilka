@@ -119,4 +119,18 @@ class ApiPlatformDescriptionContainerPassTest extends TestCase
             [WithoutConstructorQuery::class, 'cqrs.query'],
         ];
     }
+
+    public function testNoProcess()
+    {
+        $container = $this->createMock(ContainerBuilder::class);
+        $container->expects($this->once())
+            ->method('hasDefinition')
+            ->with(DescriptionContainer::class)
+            ->willReturn(false);
+
+        $container->expects($this->never())
+            ->method('getDefinition');
+
+        $this->compilerPass->process($container);
+    }
 }
