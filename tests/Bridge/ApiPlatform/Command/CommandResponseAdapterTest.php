@@ -3,7 +3,7 @@
 namespace Botilka\Tests\Bridge\ApiPlatform\Command;
 
 use Botilka\Bridge\ApiPlatform\Command\CommandResponseAdapter;
-use Botilka\Command\CommandResponse;
+use Botilka\Application\Command\CommandResponse;
 use Botilka\Tests\Fixtures\Domain\StubEvent;
 use PHPUnit\Framework\TestCase;
 

@@ -6,7 +6,7 @@ use Botilka\Bridge\ApiPlatform\Action\CommandAction;
 use Botilka\Bridge\ApiPlatform\Command\CommandResponseAdapter;
 use Botilka\Bridge\ApiPlatform\Description\DescriptionContainer;
 use Botilka\Bridge\ApiPlatform\Resource\Command;
-use Botilka\Command\CommandResponse;
+use Botilka\Application\Command\CommandResponse;
 use Botilka\Tests\Fixtures\Domain\StubEvent;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Messenger\MessageBusInterface;

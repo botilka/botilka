@@ -2,13 +2,13 @@
 
 namespace Botilka\Bridge\Symfony\Bundle\DependencyInjection;
 
-use Botilka\Command\Command;
-use Botilka\Command\CommandHandler;
+use Botilka\Application\Command\Command;
+use Botilka\Application\Command\CommandHandler;
 use Botilka\Event\EventHandler;
 use Botilka\Infrastructure\Doctrine\EventStoreDoctrine;
 use Botilka\Infrastructure\Symfony\Messenger\Middleware\EventDispatcherBusMiddleware;
-use Botilka\Query\Query;
-use Botilka\Query\QueryHandler;
+use Botilka\Application\Query\Query;
+use Botilka\Application\Query\QueryHandler;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;

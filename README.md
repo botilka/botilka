@@ -54,7 +54,7 @@ Handlers get their dependencies (collaborators) using constructor injection:
 // src/TheDomain/Command/TheCommand.php
 namespace App\TheDomain\Command;
 
-use Botilka\Command\Command;
+use Botilka\Application\Command\Command;
 
 final class TheCommand implements Command {
     
@@ -73,7 +73,7 @@ final class TheCommand implements Command {
 // src/TheDomain/Command/TheCommandHandler.php
 namespace App\TheDomain\Command;
 
-use Botilka\Command\CommandHandler;
+use Botilka\Application\Command\CommandHandler;
 
 final class TheCommandHandler implements CommandHandler {
 

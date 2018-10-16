@@ -1,6 +1,6 @@
 <?php
 
-namespace Botilka\Command;
+namespace Botilka\Application\Command;
 
 use Botilka\Event\Event;
 

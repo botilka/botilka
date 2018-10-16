@@ -2,7 +2,7 @@
 
 namespace Botilka\Tests\Fixtures\Application\Command;
 
-use Botilka\Command\Command;
+use Botilka\Application\Command\Command;
 
 final class SimpleCommand implements Command
 {

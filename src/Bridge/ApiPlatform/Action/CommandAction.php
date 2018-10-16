@@ -5,10 +5,10 @@ namespace Botilka\Bridge\ApiPlatform\Action;
 use Botilka\Bridge\ApiPlatform\Command\CommandResponseAdapter;
 use Botilka\Bridge\ApiPlatform\Description\DescriptionContainerInterface;
 use Botilka\Bridge\ApiPlatform\Resource\Command;
-use Botilka\Command\CommandResponse;
+use Botilka\Application\Command\CommandResponse;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Serializer\SerializerInterface;
-use Botilka\Command\Command as CQRSCommand;
+use Botilka\Application\Command\Command as CQRSCommand;
 
 final class CommandAction
 {

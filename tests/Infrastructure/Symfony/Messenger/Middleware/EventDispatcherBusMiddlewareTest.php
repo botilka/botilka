@@ -2,7 +2,7 @@
 
 namespace Botilka\Tests\Infrastructure\Symfony\Messenger\Middleware;
 
-use Botilka\Command\CommandResponse;
+use Botilka\Application\Command\CommandResponse;
 use Botilka\Event\EventDispatcherInterface;
 use Botilka\EventStore\EventStore;
 use Botilka\EventStore\EventStoreConcurrencyException;

@@ -6,7 +6,7 @@ use ApiPlatform\Core\DataProvider\CollectionDataProviderInterface;
 use ApiPlatform\Core\DataProvider\ItemDataProviderInterface;
 use ApiPlatform\Core\DataProvider\RestrictedDataProviderInterface;
 use Botilka\Bridge\ApiPlatform\Description\DescriptionNotFoundException;
-use Botilka\Query\Query as CQRSQuery;
+use Botilka\Application\Query\Query as CQRSQuery;
 use Botilka\Bridge\ApiPlatform\Description\DescriptionContainerInterface;
 use Botilka\Bridge\ApiPlatform\Resource\Query;
 use Symfony\Component\HttpFoundation\RequestStack;
