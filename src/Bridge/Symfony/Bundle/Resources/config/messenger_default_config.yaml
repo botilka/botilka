@@ -5,7 +5,7 @@ services:
         bind:
             $eventBus: '@messenger.bus.events'
 
-    Botilka\Infrastructure\EventDispatcherBusMiddleware: ~
+    Botilka\Infrastructure\Symfony\Messenger\Middleware\EventDispatcherBusMiddleware: ~
 
     Botilka\Event\EventDispatcher: ~
     Botilka\Event\EventDispatcherInterface: '@Botilka\Event\EventDispatcher'

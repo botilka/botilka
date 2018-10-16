@@ -10,7 +10,7 @@ use Botilka\Bridge\Symfony\Bundle\DependencyInjection\BotilkaExtension;
 use Botilka\Event\EventDispatcher;
 use Botilka\EventStore\EventStore;
 use Botilka\Infrastructure\Doctrine\EventStoreDoctrine;
-use Botilka\Infrastructure\EventDispatcherBusMiddleware;
+use Botilka\Infrastructure\Symfony\Messenger\Middleware\EventDispatcherBusMiddleware;
 use Botilka\Infrastructure\InMemory\EventStoreInMemory;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Prophecy\ObjectProphecy;

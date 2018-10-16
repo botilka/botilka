@@ -7,7 +7,7 @@ framework:
             messenger.bus.commands:
                 middleware:
                     - doctrine_transaction_middleware
-                    - Botilka\Infrastructure\EventDispatcherBusMiddleware
+                    - Botilka\Infrastructure\Symfony\Messenger\Middleware\EventDispatcherBusMiddleware
             messenger.bus.events: ~
             messenger.bus.queries: ~
 
@@ -25,9 +25,6 @@ services:
     Botilka\Infrastructure\Doctrine\EventStoreDoctrine: ~
     Botilka\EventStore\EventStore: '@Botilka\Infrastructure\Doctrine\EventStoreDoctrine'
 
-    # Messenger middleware
-    Botilka\Infrastructure\EventDispatcherBusMiddleware: ~
-
     # Event dispatcher
     Botilka\Event\EventDispatcher: ~
     Botilka\Event\EventDispatcherInterface: '@Botilka\Event\EventDispatcher'
@@ -40,6 +37,10 @@ services:
         resource: '%kernel.project_dir%/vendor/botilka/botilka/src/Bridge/ApiPlatform/Action/*'
         public: true
 
+    # Messenger event dispatcher middleware
+    Botilka\Infrastructure\Symfony\Messenger\Middleware\EventDispatcherBusMiddleware: ~
+
+    # Doctrine transaction middleware
     # https://symfony.com/doc/4.1/messenger.html#using-middleware-factories
     doctrine.orm.messenger.middleware_factory.transaction:
         class: Symfony\Bridge\Doctrine\Messenger\DoctrineTransactionMiddlewareFactory

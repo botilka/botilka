@@ -6,6 +6,7 @@ use Botilka\Command\Command;
 use Botilka\Command\CommandHandler;
 use Botilka\Event\EventHandler;
 use Botilka\Infrastructure\Doctrine\EventStoreDoctrine;
+use Botilka\Infrastructure\Symfony\Messenger\Middleware\EventDispatcherBusMiddleware;
 use Botilka\Query\Query;
 use Botilka\Query\QueryHandler;
 use Symfony\Component\Config\FileLocator;
@@ -39,7 +40,7 @@ final class BotilkaExtension extends Extension implements PrependExtensionInterf
 
     private function prependDefaultMessengerConfig(ContainerBuilder $container, bool $addDoctrineTransactionMiddleware): void
     {
-        $commandBusMiddleware = ['Botilka\Infrastructure\EventDispatcherBusMiddleware'];
+        $commandBusMiddleware = [EventDispatcherBusMiddleware::class];
         // depends on Doctrine availability too
         if (true === $addDoctrineTransactionMiddleware && $container->hasExtension('doctrine')) {
             $container->setParameter('botilka.messenger.doctrine_transaction_middleware', true);

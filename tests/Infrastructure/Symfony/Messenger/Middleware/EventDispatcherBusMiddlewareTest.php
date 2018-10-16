@@ -1,12 +1,12 @@
 <?php
 
-namespace Botilka\Tests\Infrastructure;
+namespace Botilka\Tests\Infrastructure\Symfony\Messenger\Middleware;
 
 use Botilka\Command\CommandResponse;
 use Botilka\Event\EventDispatcherInterface;
 use Botilka\EventStore\EventStore;
 use Botilka\EventStore\EventStoreConcurrencyException;
-use Botilka\Infrastructure\EventDispatcherBusMiddleware;
+use Botilka\Infrastructure\Symfony\Messenger\Middleware\EventDispatcherBusMiddleware;
 use Botilka\Tests\Fixtures\Domain\StubEvent;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
