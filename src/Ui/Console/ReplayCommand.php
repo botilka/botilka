@@ -9,7 +9,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-final class BotilkaReplayCommand extends Command
+final class ReplayCommand extends Command
 {
     private $replayer;
 
