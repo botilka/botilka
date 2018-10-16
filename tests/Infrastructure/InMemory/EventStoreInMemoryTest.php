@@ -3,7 +3,7 @@
 namespace Botilka\Tests\Infrastructure\InMemory;
 
 use Botilka\Infrastructure\InMemory\EventStoreInMemory;
-use Botilka\Tests\Domain\StubEvent;
+use Botilka\Tests\Fixtures\Domain\StubEvent;
 use PHPUnit\Framework\TestCase;
 
 final class EventStoreInMemoryTest extends TestCase

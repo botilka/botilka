@@ -3,7 +3,7 @@
 namespace Botilka\Tests\Infrastructure\Doctrine;
 
 use Botilka\Infrastructure\Doctrine\EventStoreDoctrine;
-use Botilka\Tests\Domain\StubEvent;
+use Botilka\Tests\Fixtures\Domain\StubEvent;
 use Doctrine\DBAL\Driver\Connection;
 use Doctrine\DBAL\Driver\Statement;
 use PHPUnit\Framework\MockObject\MockObject;

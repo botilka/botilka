@@ -3,7 +3,7 @@
 namespace Botilka\Tests\Command;
 
 use Botilka\Command\CommandResponse;
-use Botilka\Tests\Domain\StubEvent;
+use Botilka\Tests\Fixtures\Domain\StubEvent;
 use PHPUnit\Framework\TestCase;
 
 final class CommandResponseTest extends TestCase

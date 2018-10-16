@@ -2,6 +2,8 @@
 
 namespace Botilka\Tests\Domain;
 
+use Botilka\Tests\Fixtures\Domain\StubEvent;
+use Botilka\Tests\Fixtures\Domain\StubEventSourcedAggregateRoot;
 use PHPUnit\Framework\TestCase;
 
 final class EventSourcedAggregateRootApplierTest extends TestCase

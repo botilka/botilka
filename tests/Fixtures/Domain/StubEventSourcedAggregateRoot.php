@@ -1,6 +1,6 @@
 <?php
 
-namespace Botilka\Tests\Domain;
+namespace Botilka\Tests\Fixtures\Domain;
 
 use Botilka\Domain\EventSourcedAggregateRoot;
 use Botilka\Domain\EventSourcedAggregateRootApplier;
