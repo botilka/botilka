@@ -6,7 +6,7 @@ use Botilka\Bridge\ApiPlatform\Command\CommandResponseAdapter;
 use Botilka\Bridge\ApiPlatform\Description\DescriptionContainerInterface;
 use Botilka\Bridge\ApiPlatform\Resource\Command;
 use Botilka\Application\Command\CommandResponse;
-use Symfony\Component\Messenger\MessageBusInterface;
+use Botilka\Bus\Bus;
 use Symfony\Component\Serializer\SerializerInterface;
 use Botilka\Application\Command\Command as CQRSCommand;
 
@@ -16,7 +16,7 @@ final class CommandAction
     private $serializer;
     private $descriptionContainer;
 
-    public function __construct(MessageBusInterface $commandBus, SerializerInterface $serializer, DescriptionContainerInterface $descriptionContainer)
+    public function __construct(Bus $commandBus, SerializerInterface $serializer, DescriptionContainerInterface $descriptionContainer)
     {
         $this->commandBus = $commandBus;
         $this->serializer = $serializer;

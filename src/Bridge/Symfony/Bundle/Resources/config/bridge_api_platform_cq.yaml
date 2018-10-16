@@ -3,8 +3,8 @@ services:
         autowire: true
         public: false
         bind:
-            $commandBus: '@messenger.bus.commands'
-            $queryBus: '@messenger.bus.queries'
+            $commandBus: '@Botilka\Bus\Bus.commands'
+            $queryBus: '@Botilka\Bus\Bus.queries'
 
     # API Platform bridge for commands & queries
     Botilka\Bridge\ApiPlatform\Description\DescriptionContainer: ~
@@ -13,3 +13,13 @@ services:
 
     Botilka\Bridge\ApiPlatform\Action\CommandAction:
         public: true
+
+    Botilka\Bus\Bus.commands:
+        class: Botilka\Infrastructure\Symfony\Messenger\SymfonyMessageBus
+        arguments:
+            $bus: '@messenger.bus.commands'
+
+    Botilka\Bus\Bus.queries:
+        class: Botilka\Infrastructure\Symfony\Messenger\SymfonyMessageBus
+        arguments:
+            $bus: '@messenger.bus.queries'

@@ -2,18 +2,18 @@
 
 namespace Botilka\Tests\Event;
 
+use Botilka\Bus\Bus;
 use Botilka\Event\DefaultEventDispatcher;
 use Botilka\Tests\Fixtures\Domain\StubEvent;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Exception\NoHandlerForMessageException;
-use Symfony\Component\Messenger\MessageBusInterface;
 
 final class DefaultEventDispatcherTest extends TestCase
 {
     public function testDispatchWithHandler()
     {
-        $eventBus = $this->createMock(MessageBusInterface::class);
+        $eventBus = $this->createMock(Bus::class);
         $logger = $this->createMock(LoggerInterface::class);
         $eventDispatcher = new DefaultEventDispatcher($eventBus, $logger);
 
@@ -28,7 +28,7 @@ final class DefaultEventDispatcherTest extends TestCase
 
     public function testDispatchWithouHandler()
     {
-        $eventBus = $this->createMock(MessageBusInterface::class);
+        $eventBus = $this->createMock(Bus::class);
         $logger = $this->createMock(LoggerInterface::class);
         $eventDispatcher = new DefaultEventDispatcher($eventBus, $logger);
 

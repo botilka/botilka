@@ -5,6 +5,7 @@ namespace Botilka\Tests\Bridge\ApiPlatform\DataProvider;
 use Botilka\Bridge\ApiPlatform\DataProvider\QueryDataProvider;
 use Botilka\Bridge\ApiPlatform\Description\DescriptionContainer;
 use Botilka\Bridge\ApiPlatform\Resource\Query;
+use Botilka\Bus\Bus;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,7 +16,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 
 final class QueryDataProviderTest extends TestCase
 {
-    /** @var MockObject|MessageBusInterface */
+    /** @var MockObject|Bus */
     private $queryBus;
     /** @var MockObject|SerializerInterface */
     private $serializer;
@@ -26,7 +27,7 @@ final class QueryDataProviderTest extends TestCase
 
     public function setUp()
     {
-        $queryBus = $this->createMock(MessageBusInterface::class);
+        $queryBus = $this->createMock(Bus::class);
         $serializer = $this->createMock(SerializerInterface::class);
         $descriptionContainer = new DescriptionContainer(['foo_query' => [
             'class' => 'Foo\\BarQuery',

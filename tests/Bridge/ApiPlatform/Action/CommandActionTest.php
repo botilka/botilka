@@ -7,16 +7,16 @@ use Botilka\Bridge\ApiPlatform\Command\CommandResponseAdapter;
 use Botilka\Bridge\ApiPlatform\Description\DescriptionContainer;
 use Botilka\Bridge\ApiPlatform\Resource\Command;
 use Botilka\Application\Command\CommandResponse;
+use Botilka\Bus\Bus;
 use Botilka\Tests\Fixtures\Domain\StubEvent;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 
 final class CommandActionTest extends TestCase
 {
     public function testInvoke()
     {
-        $commandBus = $this->createMock(MessageBusInterface::class);
+        $commandBus = $this->createMock(Bus::class);
         $serializer = $this->createMock(SerializerInterface::class);
         $descriptionContainer = new DescriptionContainer(['foo_command' => [
             'class' => 'Foo\\BarCommand',
