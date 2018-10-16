@@ -10,22 +10,22 @@ final class AppKernel extends Kernel
 {
     use MicroKernelTrait;
 
-    private $tmpRootDir = '/tmp';
+    private $volatileDir = '/tmp';
 
     public function __construct(string $environment, bool $debug)
     {
         parent::__construct($environment, $debug);
-        $this->tmpRootDir = \exec('mktemp -d'); // retrieve a new temporary root dir on each execution
+        $this->volatileDir = \exec('mktemp -d'); // retrieve a new temporary root dir on each execution
     }
 
     public function getCacheDir()
     {
-        return $this->tmpRootDir.'/cache/'.$this->environment;
+        return $this->volatileDir.'/cache/'.$this->environment;
     }
 
     public function getLogDir()
     {
-        return $this->tmpRootDir.'/logs/'.$this->environment;
+        return $this->volatileDir.'/logs/'.$this->environment;
     }
 
     protected function configureRoutes(RouteCollectionBuilder $routes)

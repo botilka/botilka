@@ -9,7 +9,6 @@ use Botilka\EventStore\EventStoreConcurrencyException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Middleware\MiddlewareInterface;
 
-// @todo test
 final class EventDispatcherBusMiddleware implements MiddlewareInterface
 {
     private $eventStore;

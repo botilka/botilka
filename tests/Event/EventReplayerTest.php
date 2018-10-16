@@ -6,7 +6,7 @@ use Botilka\Event\EventReplayer;
 use Botilka\Event\EventDispatcherInterface;
 use Botilka\Event\EventReplayerInterface;
 use Botilka\EventStore\EventStore;
-use Botilka\Tests\Domain\StubEvent;
+use Botilka\Tests\Fixtures\Domain\StubEvent;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 

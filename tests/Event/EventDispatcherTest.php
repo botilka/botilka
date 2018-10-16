@@ -3,7 +3,7 @@
 namespace Botilka\Tests\Event;
 
 use Botilka\Event\EventDispatcher;
-use Botilka\Tests\Domain\StubEvent;
+use Botilka\Tests\Fixtures\Domain\StubEvent;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Exception\NoHandlerForMessageException;
@@ -41,7 +41,7 @@ final class EventDispatcherTest extends TestCase
 
         $logger->expects($this->once())
             ->method('notice')
-            ->with('No handler for "Botilka\Tests\Domain\StubEvent".');
+            ->with('No handler for "Botilka\Tests\Fixtures\Domain\StubEvent".');
 
         $eventDispatcher->dispatch($event);
     }

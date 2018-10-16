@@ -3,7 +3,7 @@
 namespace Botilka\Tests\Infrastructure\InMemory;
 
 use Botilka\Infrastructure\InMemory\RepositoryInMemory;
-use Botilka\Tests\Domain\StubAggregateRoot;
+use Botilka\Tests\Fixtures\Domain\StubAggregateRoot;
 use PHPUnit\Framework\TestCase;
 
 final class RepositoryInMemoryTest extends TestCase

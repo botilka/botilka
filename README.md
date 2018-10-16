@@ -14,7 +14,7 @@ It can leverage [API Platform](https://api-platform.com) to expose the `Commands
 - Sync or async handling is a matter of configuration.
 - Replay all or some events.
 - Safe commands concurrency.
-- EvenSourced repositories are not mandatory.
+- EventSourced repositories are not mandatory.
 - *(optionnal)* Commands/queries handling & description on API Platform UI.
 - *(optionnal)* Read-only projections managed with Doctrine, easy to migrate.
 
@@ -22,6 +22,8 @@ It can leverage [API Platform](https://api-platform.com) to expose the `Commands
 ## todo
 
 - Snapshots.
+- One endpoint by command/query.
+- MongoDB / Redis / Elasticsearch
 - (maybe) Smart command retry on concurrency exception.
 
 ## Documentation
@@ -29,7 +31,7 @@ It can leverage [API Platform](https://api-platform.com) to expose the `Commands
 - [API Platform bridge](/documentation/api_platform_bridge.md)
 - See below.
 
-## How it works
+## Usage
 
 ### Messages & Buses
 

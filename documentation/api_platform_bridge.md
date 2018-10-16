@@ -2,7 +2,7 @@
 
 Botilka can detect [API Platform](https://api-platform.com/) and exposes commands & queries as resources.
 
-## How it works
+## Usage
 
 Each class implementing the [Command](/src/Command/Command.php) or [Query](/src/Query/Query.php) interface
 is described on the API Platform UI using their constructor parameters.

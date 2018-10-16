@@ -13,7 +13,6 @@ use Botilka\Infrastructure\Doctrine\EventStoreDoctrine;
 use Botilka\Infrastructure\EventDispatcherBusMiddleware;
 use Botilka\Infrastructure\InMemory\EventStoreInMemory;
 use PHPUnit\Framework\TestCase;
-use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -104,7 +103,7 @@ class BotilkaExtensionTest extends TestCase
                 ],
             ],
         ])->shouldBeCalled();
-        $containerBuilderProphecy->prependExtensionConfig('framework', Argument::type('array'))->shouldNotBeCalled();
+        $containerBuilderProphecy->prependExtensionConfig('framework')->shouldNotBeCalled();
 
         $this->extension->prepend($containerBuilderProphecy->reveal());
     }
