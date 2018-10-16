@@ -73,8 +73,6 @@ class ApiPlatformDataProviderPassTest extends TestCase
     {
         $container = $this->createMock(ContainerBuilder::class);
 
-        $this->assertInstanceOf(CompilerPassInterface::class, $this->compilerPass);
-
         $container->expects($this->exactly(2))
             ->method('hasDefinition')
             ->withConsecutive([CommandDataProvider::class], [QueryDataProvider::class])
