@@ -17,9 +17,9 @@ services:
         autoconfigure: true
         public: false
         bind:
-            $commandBus: '@messenger.bus.commands'
-            $queryBus: '@messenger.bus.queries'
-            $eventBus: '@messenger.bus.events'
+            $commandBus: '@Botilka\Infrastructure\Symfony\Messenger\SymfonyCommandBus'
+            $queryBus: '@Botilka\Infrastructure\Symfony\Messenger\SymfonyQueryBus'
+            $eventBus: '@Botilka\Infrastructure\Symfony\Messenger\SymfonyEventBus'
 
     # EventStore
     Botilka\Infrastructure\Doctrine\EventStoreDoctrine: ~
@@ -33,6 +33,19 @@ services:
     Botilka\Event\DefaultEventReplayer: ~
     Botilka\Event\EventReplayer: '@Botilka\Event\DefaultEventReplayer'
     Botilka\Ui\Console\ReplayCommand: ~
+
+    # Buses
+    Botilka\Infrastructure\Symfony\Messenger\SymfonyCommandBus:
+        arguments:
+            $bus: '@messenger.bus.commands'
+
+    Botilka\Infrastructure\Symfony\Messenger\SymfonyQueryBus:
+        arguments:
+            $bus: '@messenger.bus.queries'
+
+    Botilka\Infrastructure\Symfony\Messenger\SymfonyEventBus:
+        arguments:
+            $bus: '@messenger.bus.events'
 
     # API Platform bridge
     Botilka\Bridge\ApiPlatform\Description\DescriptionContainer: ~

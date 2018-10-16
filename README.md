@@ -1,6 +1,6 @@
 # BOTILKA
 
-An modern & easy-to-use Event Sourcing & CQRS library built on top of Symfony components.
+An modern & easy-to-use Event Sourcing & CQRS library framework. It's shipped with implementations built on top of Symfony components.
 
 It can leverage [API Platform](https://api-platform.com) to expose the `Commands` and `Queries` via REST.
 
@@ -14,7 +14,8 @@ It can leverage [API Platform](https://api-platform.com) to expose the `Commands
 - Sync or async handling is a matter of configuration.
 - Replay all or some events.
 - Safe commands concurrency.
-- EventSourced repositories are not mandatory.
+- EventSourced aggregates not mandatory.
+- *(optionnal)* EventStore persisted with Doctrine.
 - *(optionnal)* Commands/queries handling & description on API Platform UI.
 - *(optionnal)* Read-only projections managed with Doctrine, easy to migrate.
 
@@ -23,7 +24,8 @@ It can leverage [API Platform](https://api-platform.com) to expose the `Commands
 
 - Snapshots.
 - One endpoint by command/query.
-- MongoDB / Redis / Elasticsearch
+- EventStore in MongoDB / Redis
+- ReadModel Elasticsearch
 - (maybe) Smart command retry on concurrency exception.
 
 ## Documentation
@@ -36,8 +38,8 @@ It can leverage [API Platform](https://api-platform.com) to expose the `Commands
 ### Messages & Buses
 
 Messages are just POPO objects.
-All 3 (`command`, `query` & `event`) buses are managed by [Symfony Messenger Component](https://symfony.com/doc/4.1/messenger.html),
-so it's pretty easy to go async or add any middleware.
+All 3 (`command`, `query` & `event`) buses are (by default) managed by [Symfony Messenger Component](https://symfony.com/doc/4.1/messenger.html) buses,
+so it's pretty easy to go async on event handling or add any middleware.
 
 Messages & handlers just have to implement an empty interface and everything is automatically wired using auto-configuration.
 
