@@ -2,21 +2,21 @@
 
 namespace Botilka\Tests\Bridge\ApiPlatform\DataProvider;
 
+use Botilka\Application\Query\QueryBus;
 use Botilka\Bridge\ApiPlatform\DataProvider\QueryDataProvider;
 use Botilka\Bridge\ApiPlatform\Description\DescriptionContainer;
 use Botilka\Bridge\ApiPlatform\Resource\Query;
-use Botilka\Bus\Bus;
+use Botilka\Tests\Fixtures\Application\Query\SimpleQuery;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Serializer\Exception\MissingConstructorArgumentsException;
 use Symfony\Component\Serializer\SerializerInterface;
 
 final class QueryDataProviderTest extends TestCase
 {
-    /** @var MockObject|Bus */
+    /** @var MockObject|QueryBus */
     private $queryBus;
     /** @var MockObject|SerializerInterface */
     private $serializer;
@@ -27,7 +27,7 @@ final class QueryDataProviderTest extends TestCase
 
     public function setUp()
     {
-        $queryBus = $this->createMock(Bus::class);
+        $queryBus = $this->createMock(QueryBus::class);
         $serializer = $this->createMock(SerializerInterface::class);
         $descriptionContainer = new DescriptionContainer(['foo_query' => [
             'class' => 'Foo\\BarQuery',
@@ -48,14 +48,15 @@ final class QueryDataProviderTest extends TestCase
 
     public function testGetItem()
     {
+        $query = new SimpleQuery('foo', 456);
         $this->serializer->expects($this->once())
             ->method('deserialize')
             ->with(\json_encode($this->request->query->all()), 'Foo\\BarQuery', 'json')
-            ->willReturn('foo');
+            ->willReturn($query);
 
         $this->queryBus->expects($this->once())
             ->method('dispatch')
-            ->with('foo')
+            ->with($query)
             ->willReturn('bar_response');
 
         $this->assertSame('bar_response', $this->dataProvider->getItem('whatever', 'foo_query'));

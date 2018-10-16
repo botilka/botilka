@@ -18,11 +18,11 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 final class BotilkaExtension extends Extension implements PrependExtensionInterface
 {
     const AUTOCONFIGURAION_CLASSES_TAG = [
-        CommandHandler::class => 'messenger.message_handler',
-        QueryHandler::class => 'messenger.message_handler',
-        EventHandler::class => 'messenger.message_handler',
-        Command::class => 'cqrs.command',
-        Query::class => 'cqrs.query',
+        CommandHandler::class => ['messenger.message_handler', ['bus' => 'messenger.bus.commands']],
+        QueryHandler::class => ['messenger.message_handler', ['bus' => 'messenger.bus.queries']],
+        EventHandler::class => ['messenger.message_handler', ['bus' => 'messenger.bus.events']],
+        Command::class => ['cqrs.command'],
+        Query::class => ['cqrs.query'],
     ];
 
     public function prepend(ContainerBuilder $container)
@@ -117,15 +117,14 @@ final class BotilkaExtension extends Extension implements PrependExtensionInterf
 
         if (true === $config['default_messenger_config']) {
             $loader->load('messenger_default_config.yaml');
+            foreach (self::AUTOCONFIGURAION_CLASSES_TAG as $className => $tag) {
+                $container->registerForAutoconfiguration($className)
+                    ->addTag(...$tag);
+            }
         }
 
         if (EventStoreDoctrine::class === $config['event_store']) {
             $loader->load('doctrine_event_store.yaml');
-        }
-
-        foreach (self::AUTOCONFIGURAION_CLASSES_TAG as $className => $tagName) {
-            $container->registerForAutoconfiguration($className)
-                ->addTag($tagName);
         }
     }
 }

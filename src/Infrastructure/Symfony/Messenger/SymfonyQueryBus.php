@@ -1,12 +1,12 @@
 <?php
 
-
 namespace Botilka\Infrastructure\Symfony\Messenger;
 
-use Botilka\Bus\Bus;
+use Botilka\Application\Query\Query;
+use Botilka\Application\Query\QueryBus;
 use Symfony\Component\Messenger\MessageBusInterface;
 
-final class SymfonyMessageBus implements Bus
+final class SymfonyQueryBus implements QueryBus
 {
     private $bus;
 
@@ -15,7 +15,7 @@ final class SymfonyMessageBus implements Bus
         $this->bus = $bus;
     }
 
-    public function dispatch($message)
+    public function dispatch(Query $message)
     {
         return $this->bus->dispatch($message);
     }

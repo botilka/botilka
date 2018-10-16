@@ -19,6 +19,17 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 class BotilkaExtensionTest extends TestCase
 {
+    private const DEFAULT_CONFIG = [
+        [
+            'default_messenger_config' => true,
+            'doctrine_transaction_middleware' => true,
+            'api_platform' => [
+                'expose_cq' => true,
+                'expose_event_store' => true,
+            ],
+        ],
+    ];
+
     /** @var BotilkaExtension */
     private $extension;
 
@@ -45,16 +56,15 @@ class BotilkaExtensionTest extends TestCase
         if ($withDoctrineTranslationMiddleware) {
             $containerBuilderProphecy->hasExtension('doctrine')->willReturn(true)->shouldBeCalled();
         }
-        $containerBuilderProphecy->getExtensionConfig('botilka')->willReturn([
+        $containerBuilderProphecy->getExtensionConfig('botilka')->willReturn(\array_merge_recursive(self::DEFAULT_CONFIG, [
             [
-                'default_messenger_config' => true,
                 'doctrine_transaction_middleware' => $withDoctrineTranslationMiddleware,
                 'api_platform' => [
                     'expose_cq' => false,
                     'expose_event_store' => false,
                 ],
             ],
-        ])->shouldBeCalled();
+        ]))->shouldBeCalled();
         $containerBuilderProphecy->setParameter('botilka.messenger.doctrine_transaction_middleware', true)->shouldBeCalledTimes((int) $withDoctrineTranslationMiddleware);
 
         $middleware = [EventDispatcherBusMiddleware::class];
@@ -93,7 +103,7 @@ class BotilkaExtensionTest extends TestCase
         $containerBuilderProphecy = $this->prophesize(ContainerBuilder::class);
         $this->addDefaultCalls($containerBuilderProphecy);
         $containerBuilderProphecy->hasExtension('api_platform')->shouldBeCalled();
-        $containerBuilderProphecy->getExtensionConfig('botilka')->willReturn([
+        $containerBuilderProphecy->getExtensionConfig('botilka')->willReturn(\array_merge_recursive(self::DEFAULT_CONFIG, [
             [
                 'default_messenger_config' => false,
                 'doctrine_transaction_middleware' => false,
@@ -102,7 +112,7 @@ class BotilkaExtensionTest extends TestCase
                     'expose_event_store' => false,
                 ],
             ],
-        ])->shouldBeCalled();
+        ]))->shouldBeCalled();
         $containerBuilderProphecy->prependExtensionConfig('framework')->shouldNotBeCalled();
 
         $this->extension->prepend($containerBuilderProphecy->reveal());
@@ -113,7 +123,7 @@ class BotilkaExtensionTest extends TestCase
         $containerBuilderProphecy = $this->prophesize(ContainerBuilder::class);
         $this->addDefaultCalls($containerBuilderProphecy);
         $containerBuilderProphecy->hasExtension('api_platform')->willReturn(true)->shouldBeCalled();
-        $containerBuilderProphecy->getExtensionConfig('botilka')->willReturn([
+        $containerBuilderProphecy->getExtensionConfig('botilka')->willReturn(\array_merge_recursive(self::DEFAULT_CONFIG, [
             [
                 'default_messenger_config' => false,
                 'doctrine_transaction_middleware' => false,
@@ -122,7 +132,7 @@ class BotilkaExtensionTest extends TestCase
                     'expose_event_store' => true,
                 ],
             ],
-        ])->shouldBeCalled();
+        ]))->shouldBeCalled();
         $containerBuilderProphecy->prependExtensionConfig('doctrine', ['orm' => ['mappings' => ['Botilka' => ['is_bundle' => false, 'type' => 'annotation', 'dir' => '%kernel.project_dir%/vendor/botilka/botilka/src/Infrastructure/Doctrine', 'prefix' => 'Botilka\Infrastructure\Doctrine', 'alias' => 'Botilka']]]])->shouldBeCalled();
         $containerBuilderProphecy->prependExtensionConfig('api_platform', ['mapping' => ['paths' => ['%kernel.project_dir%/vendor/botilka/botilka/src/Bridge/ApiPlatform/Resource', '%kernel.project_dir%/vendor/botilka/botilka/src/Infrastructure/Doctrine']]])->shouldBeCalled();
         $containerBuilderProphecy->setParameter('botilka.bridge.api_platform', true)->shouldBeCalled();
@@ -137,12 +147,12 @@ class BotilkaExtensionTest extends TestCase
         $container->setParameter('botilka.bridge.api_platform', $hasApiPlatformBridge);
         $container->setParameter('botilka.messenger.doctrine_transaction_middleware', EventStoreDoctrine::class === $eventStore);
 
-        $configs = [
+        $configs = \array_merge_recursive(self::DEFAULT_CONFIG, [
             [
                 'event_store' => $eventStore,
                 'default_messenger_config' => $defaultMessengerConfig,
             ],
-        ];
+        ]);
 
         $this->extension->load($configs, $container);
 
@@ -167,17 +177,21 @@ class BotilkaExtensionTest extends TestCase
         ];
     }
 
-    public function testLoadAddTag()
+    public function testAddTagIfDefaultMessengerConfig()
     {
         $container = $this->createMock(ContainerBuilder::class);
         $count = \count(BotilkaExtension::AUTOCONFIGURAION_CLASSES_TAG);
 
+        $configs = \array_merge_recursive(self::DEFAULT_CONFIG, [
+            [
+                'default_messenger_config' => true,
+            ],
+        ]);
+
         $definition = $this->createMock(ChildDefinition::class);
         $definition->expects($this->exactly($count))
             ->method('addTag')
-            ->withConsecutive(...\array_values(\array_map(function ($item) {
-                return [$item];
-            }, BotilkaExtension::AUTOCONFIGURAION_CLASSES_TAG)));
+            ->withConsecutive(...\array_values(BotilkaExtension::AUTOCONFIGURAION_CLASSES_TAG));
 
         $container->expects($this->exactly($count))
             ->method('registerForAutoconfiguration')
@@ -186,6 +200,21 @@ class BotilkaExtensionTest extends TestCase
             }, \array_keys(BotilkaExtension::AUTOCONFIGURAION_CLASSES_TAG))))
             ->willReturn($definition);
 
-        $this->extension->load([], $container);
+        $this->extension->load($configs, $container);
+    }
+
+    public function testDontAddTagIfNotDefaultMessengerConfig()
+    {
+        $container = $this->createMock(ContainerBuilder::class);
+
+        $configs = \array_merge_recursive(self::DEFAULT_CONFIG, [
+            [
+                'default_messenger_config' => false,
+            ],
+        ]);
+        $container->expects($this->never())
+            ->method('registerForAutoconfiguration');
+
+        $this->extension->load($configs, $container);
     }
 }

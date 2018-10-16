@@ -15,7 +15,7 @@ final class UuidDenormalizer implements DenormalizerInterface, CacheableSupports
         try {
             return Uuid::fromString($data);
         } catch (InvalidUuidStringException $e) {
-            throw new \InvalidArgumentException(sprintf('Can not denormalize %s as an Uuid.', json_encode($data)));
+            throw new \InvalidArgumentException(\sprintf('Can not denormalize %s as an Uuid.', \json_encode($data)));
         }
     }
 

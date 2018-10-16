@@ -2,7 +2,6 @@
 
 namespace Botilka\Event;
 
-use Botilka\Bus\Bus;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Exception\NoHandlerForMessageException;
 
@@ -11,7 +10,7 @@ final class DefaultEventDispatcher implements EventDispatcher
     private $eventBus;
     private $logger;
 
-    public function __construct(Bus $eventBus, LoggerInterface $logger)
+    public function __construct(EventBus $eventBus, LoggerInterface $logger)
     {
         $this->eventBus = $eventBus;
         $this->logger = $logger;
