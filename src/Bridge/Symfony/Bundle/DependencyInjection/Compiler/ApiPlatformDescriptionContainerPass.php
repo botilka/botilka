@@ -12,7 +12,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 final class ApiPlatformDescriptionContainerPass implements CompilerPassInterface
 {
-    const RESOURCE_TO_TAG = [
+    private const RESOURCE_TO_TAG = [
         Command::class => 'cqrs.command',
         Query::class => 'cqrs.query',
     ];
