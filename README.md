@@ -53,8 +53,8 @@ Handlers get their dependencies (collaborators) using constructor injection:
 
 *Sample command & handler*
 ```php
-// src/TheDomain/Command/TheCommand.php
-namespace App\TheDomain\Command;
+// src/TheDomain/Application/Command/TheCommand.php
+namespace App\TheDomain\Application\Command;
 
 use Botilka\Application\Command\Command;
 
@@ -72,10 +72,11 @@ final class TheCommand implements Command {
     // add getters
 }
 
-// src/TheDomain/Command/TheCommandHandler.php
-namespace App\TheDomain\Command;
+// src/TheDomain/Application/Command/TheCommandHandler.php
+namespace App\TheDomain\Application\Command;
 
 use Botilka\Application\Command\CommandHandler;
+use App\TheDomain\Domain\TheDomainModel;
 
 final class TheCommandHandler implements CommandHandler {
 
@@ -89,8 +90,8 @@ final class TheCommandHandler implements CommandHandler {
     public function __invoke(TheCommand $command): CommandResponse
     {
         $theDomainModel = $this->repository->get($command->getModelId());
-        /** @var DomainModel $instance */
-        [$instance, $event] = $theDomainModel->makeSomething($command->getWhat());
+        /** @var TheDomainModel $instance */
+        [$instance, $event] = $theDomainModel->makeSomething($command->getWhat(), $command->getWhy());
 
         return CommandResponse::withValue($instance->getAggregateRootId(), $instance->getPlayhead(), $event);
     }
