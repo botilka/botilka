@@ -8,10 +8,10 @@ It can leverage [API Platform](https://api-platform.com) to expose the `Commands
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/botilka/botilka/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/botilka/botilka/?branch=master)
 [![Code Coverage](https://scrutinizer-ci.com/g/botilka/botilka/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/botilka/botilka/?branch=master)
 
-## Main features
+## Features
 
 - Fully immutable, not a single setter.
-- Sync or async handling is a matter of configuration.
+- Sync or async event handling is a matter of configuration.
 - Replay all or some events.
 - Safe commands concurrency.
 - EventSourced aggregates not mandatory.
