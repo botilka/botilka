@@ -6,9 +6,11 @@ use Botilka\Bridge\ApiPlatform\Description\DescriptionContainer;
 use Botilka\Bridge\ApiPlatform\Resource\Command;
 use Botilka\Bridge\ApiPlatform\Resource\Query;
 use Botilka\Bridge\Symfony\Bundle\DependencyInjection\Compiler\ApiPlatformDescriptionContainerPass;
+use Botilka\Tests\Fixtures\Application\Command\ParameterNotTypedCommand;
 use Botilka\Tests\Fixtures\Application\Command\SimpleCommand;
 use Botilka\Tests\Fixtures\Application\Command\WithoutConstructorCommand;
 use Botilka\Tests\Fixtures\Application\Command\WithValueObjectCommand;
+use Botilka\Tests\Fixtures\Application\Query\ParameterNotTypedQuery;
 use Botilka\Tests\Fixtures\Application\Query\SimpleQuery;
 use Botilka\Tests\Fixtures\Application\Query\WithoutConstructorQuery;
 use Botilka\Tests\Fixtures\Application\Query\WithValueObjectQuery;
@@ -100,6 +102,26 @@ class ApiPlatformDescriptionContainerPassTest extends TestCase
         $this->assertSame($expected, $descriptionContainerDefinition->getArgument('$data'));
     }
 
+    /** @dataProvider parameterNotTypedProvider */
+    public function testParameterNotTyped(string $className, string $tagName)
+    {
+        $container = $this->container;
+        $container->setDefinition($className, (new Definition($className))->addTag($tagName));
+
+        $this->expectException(\LogicException::class);
+        $this->expectExceptionMessage("Parameter '\$bar' of class '$className' is not typed. Please type hint all Query & Command parameters.");
+
+        $this->compilerPass->process($container);
+    }
+
+    public function parameterNotTypedProvider(): array
+    {
+        return [
+            [ParameterNotTypedCommand::class, 'cqrs.command'],
+            [ParameterNotTypedQuery::class, 'cqrs.query'],
+        ];
+    }
+
     /** @dataProvider processNoConstructorProvider */
     public function testProcessNoConstructor(string $className, string $tagName)
     {
@@ -107,7 +129,7 @@ class ApiPlatformDescriptionContainerPassTest extends TestCase
         $container->setDefinition($className, (new Definition($className))->addTag($tagName));
 
         $this->expectException(\LogicException::class);
-        $this->expectExceptionMessage("Class \"$className\" must have a constructor.");
+        $this->expectExceptionMessage("Class '$className' must have a constructor.");
 
         $this->compilerPass->process($container);
     }

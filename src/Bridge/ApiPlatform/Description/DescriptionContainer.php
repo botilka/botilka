@@ -2,12 +2,12 @@
 
 namespace Botilka\Bridge\ApiPlatform\Description;
 
-use Botilka\Bridge\Symfony\Bundle\DependencyInjection\Compiler\DescriptionContainerPass;
+use Botilka\Bridge\Symfony\Bundle\DependencyInjection\Compiler\ApiPlatformDescriptionContainerPass;
 
 /**
  * Will handle Commands & Queries descriptions in different instances.
  *
- * @see DescriptionContainerPass
+ * @see ApiPlatformDescriptionContainerPass
  */
 final class DescriptionContainer implements DescriptionContainerInterface
 {

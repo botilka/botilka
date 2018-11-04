@@ -54,17 +54,23 @@ final class ApiPlatformDescriptionContainerPass implements CompilerPassInterface
         $values = [];
         $constructor = $class->getConstructor();
         if (null === $constructor) {
-            throw new \LogicException(\sprintf('Class "%s" must have a constructor.', $class->getName()));
+            throw new \LogicException("Class '{$class->getName()}' must have a constructor.");
         }
         $constructorParameters = $constructor->getParameters();
         foreach ($constructorParameters as $parameter) {
-            $class = $parameter->getClass();
-            if (null !== $class) {
-                $values[$parameter->getName()] = $this->extractConstructorArgumentsUntilScalar($class);
+            $parameterClass = $parameter->getClass();
+            if (null !== $parameterClass) {
+                $values[$parameter->getName()] = $this->extractConstructorArgumentsUntilScalar($parameterClass);
                 continue;
             }
-            $type = $parameter->allowsNull() ? '?' : '';
-            $values[$parameter->getName()] = $type.$parameter->getType()->getName();
+
+            $parameterName = $parameter->getName();
+            /** @var \ReflectionType|null $parameterType */
+            $parameterType = $parameter->getType();
+            if (null === $parameterType) {
+                throw new \InvalidArgumentException("Parameter '$$parameterName' of class '{$class->getName()}' is not typed. Please type hint all Query & Command parameters.");
+            }
+            $values[$parameterName] = ($parameter->allowsNull() ? '?' : '').$parameterType->getName();
         }
 
         return $values;
