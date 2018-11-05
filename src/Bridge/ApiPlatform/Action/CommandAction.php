@@ -25,7 +25,7 @@ final class CommandAction
 
     public function __invoke(Command $data)
     {
-        $description = $this->descriptionContainer->get($data->getId());
+        $description = $this->descriptionContainer->get($data->getName());
 
         /** @var CQRSCommand $command */
         $command = $this->serializer->deserialize(\json_encode($data->getPayload()), $description['class'], 'json');

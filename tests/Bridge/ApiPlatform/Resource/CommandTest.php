@@ -15,9 +15,9 @@ final class CommandTest extends TestCase
         $this->command = new Command('foo_bar', ['foo' => 'baz']);
     }
 
-    public function testGetId()
+    public function testGetName()
     {
-        $this->assertSame('foo_bar', $this->command->getId());
+        $this->assertSame('foo_bar', $this->command->getName());
     }
 
     public function testGetPayload()

@@ -15,9 +15,9 @@ final class QueryTest extends TestCase
         $this->query = new Query('foo_bar', ['foo' => 'baz']);
     }
 
-    public function testGetId()
+    public function testGetName()
     {
-        $this->assertSame('foo_bar', $this->query->getId());
+        $this->assertSame('foo_bar', $this->query->getName());
     }
 
     public function testGetPayload()

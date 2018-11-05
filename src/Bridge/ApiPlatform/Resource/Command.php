@@ -5,7 +5,6 @@ namespace Botilka\Bridge\ApiPlatform\Resource;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Botilka\Bridge\ApiPlatform\Action\CommandAction;
-use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ApiResource(
@@ -13,32 +12,29 @@ use Symfony\Component\Serializer\Annotation\Groups;
  *     itemOperations={"get"},
  *     collectionOperations={
  *         "post"={"controller"=CommandAction::class},
- *         "get"={"normalization_context"={"groups"={"read"}}}
+ *         "get"
  *     }
  * )
  */
 final class Command implements ResourceInterface
 {
     /** @ApiProperty(identifier=true) */
-    private $id;
+    private $name;
 
     /** @var array An object representing the command arguments */
     private $payload;
 
-    public function __construct(string $id, array $payload)
+    public function __construct(string $name, array $payload)
     {
-        $this->id = $id;
+        $this->name = $name;
         $this->payload = $payload;
     }
 
-    public function getId(): string
+    public function getName(): string
     {
-        return $this->id;
+        return $this->name;
     }
 
-    /**
-     * @Groups("read")
-     */
     public function getPayload(): array
     {
         return $this->payload;

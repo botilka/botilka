@@ -7,7 +7,11 @@ namespace Botilka\Bridge\ApiPlatform\Resource;
  */
 interface ResourceInterface
 {
-    public function getId(): string;
+    /**
+     * We can't use the property "id" because ItemNormalizer explicitly look for it
+     * when deserializing and as we are POSTing a data, it throws an ApiPlatform\Core\Exception\InvalidArgumentException.
+     */
+    public function getName(): string;
 
     public function getPayload(): array;
 }
