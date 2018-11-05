@@ -4,39 +4,33 @@ namespace Botilka\Bridge\ApiPlatform\Resource;
 
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
-use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ApiResource(
  *     routePrefix="/cqrs",
  *     itemOperations={"get"},
- *     collectionOperations={
- *         "get"={"normalization_context"={"groups"={"read"}}}
- *     }
+ *     collectionOperations={"get"}
  * )
  */
 final class Query implements ResourceInterface
 {
     /** @ApiProperty(identifier=true) */
-    private $id;
+    private $name;
 
     /** @var array An object representing the query arguments */
     private $payload;
 
-    public function __construct(string $id, array $payload)
+    public function __construct(string $name, array $payload)
     {
-        $this->id = $id;
+        $this->name = $name;
         $this->payload = $payload;
     }
 
-    public function getId(): string
+    public function getName(): string
     {
-        return $this->id;
+        return $this->name;
     }
 
-    /**
-     * @Groups("read")
-     */
     public function getPayload(): array
     {
         return $this->payload;

@@ -1,7 +1,5 @@
 # CQRS
 
-
-
 ### Commands & Queries
 
 #### Handling

@@ -23,7 +23,6 @@ final class DescriptionContainer implements DescriptionContainerInterface
      */
     public function get(string $id): array
     {
-        // avoid a function call
         if (!isset($this->data[$id])) {
             throw new DescriptionNotFoundException(
                 \sprintf('Description "%s" was not found. Possible values: "%s".', $id, \implode('", "', \array_keys($this->data)))

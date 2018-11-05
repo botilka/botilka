@@ -2,24 +2,24 @@
 
 namespace Botilka\Tests\Infrastructure\Symfony\Messenger;
 
-use Botilka\Infrastructure\Symfony\Messenger\SymfonyQueryBus;
-use Botilka\Tests\Fixtures\Application\Query\SimpleQuery;
+use Botilka\Infrastructure\Symfony\Messenger\MessengerEventBus;
+use Botilka\Tests\Fixtures\Domain\StubEvent;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Messenger\MessageBusInterface;
 
-class SymfonyQueryBusTest extends TestCase
+class MessengerEventBusTest extends TestCase
 {
     public function testDispatch()
     {
-        $query = new SimpleQuery('bar', 321);
+        $event = new StubEvent(42);
 
         $symfonyBus = $this->createMock(MessageBusInterface::class);
         $symfonyBus->expects($this->once())
             ->method('dispatch')
-            ->with($query)
+            ->with($event)
             ->willReturn('bar');
 
-        $bus = new SymfonyQueryBus($symfonyBus);
-        $this->assertSame('bar', $bus->dispatch($query));
+        $bus = new MessengerEventBus($symfonyBus);
+        $this->assertSame('bar', $bus->dispatch($event));
     }
 }
