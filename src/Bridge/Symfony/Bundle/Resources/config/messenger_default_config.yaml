@@ -2,14 +2,24 @@ services:
     _defaults:
         autowire: true
         public: false
-        bind:
-            $eventBus: '@Botilka\Infrastructure\Symfony\Messenger\SymfonyEventBus'
 
     Botilka\Infrastructure\Symfony\Messenger\Middleware\EventDispatcherBusMiddleware: ~
 
     Botilka\Event\DefaultEventDispatcher: ~
     Botilka\Event\EventDispatcher: '@Botilka\Event\DefaultEventDispatcher'
 
-    Botilka\Infrastructure\Symfony\Messenger\SymfonyEventBus:
+    Botilka\Event\EventBus: '@Botilka\Infrastructure\Symfony\Messenger\MessengerEventBus'
+    Botilka\Application\Command\CommandBus: '@Botilka\Infrastructure\Symfony\Messenger\MessengerCommandBus'
+    Botilka\Application\Query\QueryBus: '@Botilka\Infrastructure\Symfony\Messenger\MessengerQueryBus'
+
+    Botilka\Infrastructure\Symfony\Messenger\MessengerCommandBus:
+        arguments:
+            $bus: '@messenger.bus.commands'
+
+    Botilka\Infrastructure\Symfony\Messenger\MessengerQueryBus:
+        arguments:
+            $bus: '@messenger.bus.queries'
+
+    Botilka\Infrastructure\Symfony\Messenger\MessengerEventBus:
         arguments:
             $bus: '@messenger.bus.events'

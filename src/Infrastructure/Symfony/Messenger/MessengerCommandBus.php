@@ -2,11 +2,11 @@
 
 namespace Botilka\Infrastructure\Symfony\Messenger;
 
-use Botilka\Event\Event;
-use Botilka\Event\EventBus;
+use Botilka\Application\Command\Command;
+use Botilka\Application\Command\CommandBus;
 use Symfony\Component\Messenger\MessageBusInterface;
 
-final class SymfonyEventBus implements EventBus
+final class MessengerCommandBus implements CommandBus
 {
     private $bus;
 
@@ -15,7 +15,7 @@ final class SymfonyEventBus implements EventBus
         $this->bus = $bus;
     }
 
-    public function dispatch(Event $message)
+    public function dispatch(Command $message)
     {
         return $this->bus->dispatch($message);
     }

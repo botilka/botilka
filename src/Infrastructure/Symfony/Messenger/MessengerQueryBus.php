@@ -6,7 +6,7 @@ use Botilka\Application\Query\Query;
 use Botilka\Application\Query\QueryBus;
 use Symfony\Component\Messenger\MessageBusInterface;
 
-final class SymfonyQueryBus implements QueryBus
+final class MessengerQueryBus implements QueryBus
 {
     private $bus;
 

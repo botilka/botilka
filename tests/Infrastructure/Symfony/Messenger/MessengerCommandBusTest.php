@@ -2,12 +2,12 @@
 
 namespace Botilka\Tests\Infrastructure\Symfony\Messenger;
 
-use Botilka\Infrastructure\Symfony\Messenger\SymfonyCommandBus;
+use Botilka\Infrastructure\Symfony\Messenger\MessengerCommandBus;
 use Botilka\Tests\Fixtures\Application\Command\SimpleCommand;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Messenger\MessageBusInterface;
 
-class SymfonyCommandBusTest extends TestCase
+class MessengerCommandBusTest extends TestCase
 {
     public function testDispatch()
     {
@@ -18,7 +18,7 @@ class SymfonyCommandBusTest extends TestCase
             ->with($command)
             ->willReturn('bar');
 
-        $bus = new SymfonyCommandBus($symfonyBus);
+        $bus = new MessengerCommandBus($symfonyBus);
         $this->assertSame('bar', $bus->dispatch($command));
     }
 }

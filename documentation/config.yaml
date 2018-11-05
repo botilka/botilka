@@ -1,5 +1,4 @@
 # This file is the full Botilka config, adapt to your needs
-
 framework:
     messenger:
         default_bus: messenger.bus.commands
@@ -17,9 +16,9 @@ services:
         autoconfigure: true
         public: false
         bind:
-            $commandBus: '@Botilka\Infrastructure\Symfony\Messenger\SymfonyCommandBus'
-            $queryBus: '@Botilka\Infrastructure\Symfony\Messenger\SymfonyQueryBus'
-            $eventBus: '@Botilka\Infrastructure\Symfony\Messenger\SymfonyEventBus'
+            $commandBus: '@Botilka\Application\Command\CommandBus'
+            $queryBus: '@Botilka\Application\Query\QueryBus'
+            $eventBus: '@Botilka\Event\EventBus'
 
     # EventStore
     Botilka\Infrastructure\Doctrine\EventStoreDoctrine: ~
@@ -35,17 +34,9 @@ services:
     Botilka\Ui\Console\ReplayCommand: ~
 
     # Buses
-    Botilka\Infrastructure\Symfony\Messenger\SymfonyCommandBus:
-        arguments:
-            $bus: '@messenger.bus.commands'
-
-    Botilka\Infrastructure\Symfony\Messenger\SymfonyQueryBus:
-        arguments:
-            $bus: '@messenger.bus.queries'
-
-    Botilka\Infrastructure\Symfony\Messenger\SymfonyEventBus:
-        arguments:
-            $bus: '@messenger.bus.events'
+    Botilka\Event\EventBus: '@Botilka\Infrastructure\Symfony\Messenger\MessengerEventBus'
+    Botilka\Application\Command\CommandBus: '@Botilka\Infrastructure\Symfony\Messenger\MessengerCommandBus'
+    Botilka\Application\Query\QueryBus: '@Botilka\Infrastructure\Symfony\Messenger\MessengerQueryBus'
 
     # API Platform bridge
     Botilka\Bridge\ApiPlatform\Description\DescriptionContainer: ~
@@ -54,6 +45,19 @@ services:
     Botilka\Bridge\ApiPlatform\Action\:
         resource: '%kernel.project_dir%/vendor/botilka/botilka/src/Bridge/ApiPlatform/Action/*'
         public: true
+
+    # Messenger buses implementation
+    Botilka\Infrastructure\Symfony\Messenger\MessengerCommandBus:
+        arguments:
+          $bus: '@messenger.bus.commands'
+
+    Botilka\Infrastructure\Symfony\Messenger\MessengerQueryBus:
+        arguments:
+            $bus: '@messenger.bus.queries'
+
+    Botilka\Infrastructure\Symfony\Messenger\MessengerEventBus:
+        arguments:
+            $bus: '@messenger.bus.events'
 
     # Messenger event dispatcher middleware
     Botilka\Infrastructure\Symfony\Messenger\Middleware\EventDispatcherBusMiddleware: ~
