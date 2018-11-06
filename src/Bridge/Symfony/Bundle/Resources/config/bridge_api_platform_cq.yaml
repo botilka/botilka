@@ -10,3 +10,6 @@ services:
 
     Botilka\Bridge\ApiPlatform\Action\CommandAction:
         public: true
+
+    Botilka\Bridge\ApiPlatform\Action\CommandHandlerAction:
+        public: true

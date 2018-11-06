@@ -10,6 +10,9 @@ use Botilka\Application\Command\CommandResponse;
 use Symfony\Component\Serializer\SerializerInterface;
 use Botilka\Application\Command\Command as CQRSCommand;
 
+/**
+ * @todo rename
+ */
 final class CommandAction
 {
     private $commandBus;
@@ -23,7 +26,7 @@ final class CommandAction
         $this->descriptionContainer = $descriptionContainer;
     }
 
-    public function __invoke(Command $data)
+    public function __invoke(Command $data): CommandResponseAdapter
     {
         $description = $this->descriptionContainer->get($data->getName());
 

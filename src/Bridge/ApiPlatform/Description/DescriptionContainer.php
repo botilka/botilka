@@ -23,6 +23,7 @@ final class DescriptionContainer implements DescriptionContainerInterface
      */
     public function get(string $id): array
     {
+        // avoid a function call
         if (!isset($this->data[$id])) {
             throw new DescriptionNotFoundException(
                 \sprintf('Description "%s" was not found. Possible values: "%s".', $id, \implode('", "', \array_keys($this->data)))
@@ -32,8 +33,18 @@ final class DescriptionContainer implements DescriptionContainerInterface
         return $this->data[$id];
     }
 
-    public function all(): array
+    public function has(string $id): bool
     {
-        return $this->data;
+        return isset($this->data[$id]);
+    }
+
+    public function getIterator()
+    {
+        return new \ArrayIterator($this->data);
+    }
+
+    public function count()
+    {
+        return \count($this->data);
     }
 }

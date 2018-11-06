@@ -34,7 +34,7 @@ final class QueryDataProvider implements CollectionDataProviderInterface, ItemDa
     public function getCollection(string $resourceClass, string $operationName = null)
     {
         $collection = [];
-        foreach ($this->descriptionContainer->all() as $id => $description) {
+        foreach ($this->descriptionContainer as $id => $description) {
             $collection[] = new Query($id, $description['payload']);
         }
 
@@ -56,7 +56,7 @@ final class QueryDataProvider implements CollectionDataProviderInterface, ItemDa
             /** @var CQRSQuery $query */
             $query = $this->serializer->deserialize(\json_encode($payload), $itemDescription['class'], 'json');
         } catch (MissingConstructorArgumentsException $e) {
-            throw new BadRequestHttpException(\sprintf('Unable to create "%s" query. Please check your parameters.', $id));
+            throw new BadRequestHttpException(\sprintf('Unable to create query "%s". Please check your parameters.', $id));
         }
 
         return $this->queryBus->dispatch($query);

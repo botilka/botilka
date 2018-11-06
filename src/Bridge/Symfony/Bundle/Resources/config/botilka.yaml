@@ -11,3 +11,12 @@ services:
     Botilka\Event\EventReplayer: '@Botilka\Event\DefaultEventReplayer'
 
     Botilka\Ui\Console\ReplayCommand: ~
+
+    Botilka\Bridge\ApiPlatform\EventListener\CommandResourceClassEventListener:
+        arguments:
+            $descriptionContainer: '@Botilka\Bridge\ApiPlatform\Resource\Command.description_container'
+
+    Botilka\Bridge\ApiPlatform\Metadata\Resource\Factory\BotilkaCommandResourceMetadataFactory:
+        decorates: api_platform.metadata.resource.metadata_factory
+        arguments:
+            $descriptionContainer: '@Botilka\Bridge\ApiPlatform\Resource\Command.description_container'
