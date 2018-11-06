@@ -16,7 +16,16 @@ services:
         arguments:
             $descriptionContainer: '@Botilka\Bridge\ApiPlatform\Resource\Command.description_container'
 
+    Botilka\Bridge\ApiPlatform\EventListener\QueryResourceClassEventListener:
+        arguments:
+            $descriptionContainer: '@Botilka\Bridge\ApiPlatform\Resource\Query.description_container'
+
     Botilka\Bridge\ApiPlatform\Metadata\Resource\Factory\BotilkaCommandResourceMetadataFactory:
         decorates: api_platform.metadata.resource.metadata_factory
         arguments:
             $descriptionContainer: '@Botilka\Bridge\ApiPlatform\Resource\Command.description_container'
+
+    Botilka\Bridge\ApiPlatform\Metadata\Resource\Factory\BotilkaQueryResourceMetadataFactory:
+        decorates: api_platform.metadata.resource.metadata_factory
+        arguments:
+            $descriptionContainer: '@Botilka\Bridge\ApiPlatform\Resource\Query.description_container'

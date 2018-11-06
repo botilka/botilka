@@ -8,8 +8,12 @@ use ApiPlatform\Core\Annotation\ApiResource;
 /**
  * @ApiResource(
  *     routePrefix="/cqrs",
- *     itemOperations={"get"},
- *     collectionOperations={"get"}
+ *     itemOperations={
+ *         "get"={"path"="/description/queries/{id}"}
+ *     },
+ *     collectionOperations={
+ *         "get"={"path"="/description/queries", "pagination_enabled"=false}
+ *     }
  * )
  */
 final class Query implements ResourceInterface

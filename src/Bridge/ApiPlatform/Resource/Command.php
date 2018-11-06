@@ -10,11 +10,11 @@ use Botilka\Bridge\ApiPlatform\Action\CommandAction;
  * @ApiResource(
  *     routePrefix="/cqrs",
  *     itemOperations={
- *         "get"
+ *         "get"={"path"="/description/commands/{id}"}
  *     },
  *     collectionOperations={
  *         "post"={"controller"=CommandAction::class},
- *         "get"
+ *         "get"={"path"="/description/commands", "pagination_enabled"=false}
  *     }
  * )
  */
