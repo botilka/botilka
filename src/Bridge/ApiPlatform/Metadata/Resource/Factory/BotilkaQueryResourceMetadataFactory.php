@@ -8,6 +8,7 @@ use ApiPlatform\Core\Metadata\Resource\ResourceMetadata;
 use Botilka\Bridge\ApiPlatform\Description\DescriptionContainerInterface;
 use Botilka\Bridge\ApiPlatform\Swagger\SwaggerResourcePayloadNormalizerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 final class BotilkaQueryResourceMetadataFactory implements ResourceMetadataFactoryInterface
 {
@@ -35,12 +36,35 @@ final class BotilkaQueryResourceMetadataFactory implements ResourceMetadataFacto
 
             $itemOperations = $resourceMetadata->getItemOperations();
 
-            foreach ($this->descriptionContainer as $id => $descritpion) {
-                $itemOperations[$id] = [
+            foreach ($this->descriptionContainer as $name => $descritpion) {
+                $itemOperations[$name] = [
                     'method' => Request::METHOD_GET,
-                    'path' => '/queries/'.$id.'.{_format}',
+                    'path' => '/queries/'.$name.'.{_format}',
                     'swagger_context' => [
+                        'description' => "Execute $name",
                         'parameters' => $this->payloadNormalizer->normalize($descritpion['payload']),
+                        'responses' => [
+                            Response::HTTP_OK => [
+                                'description' => "$name response",
+                                'content' => [
+                                    'application/json' => [
+                                        'schema' => [
+                                            'type' => 'object',
+                                        ],
+                                    ],
+                                ],
+                            ],
+                            Response::HTTP_BAD_REQUEST => [
+                                'description' => "$name error",
+                                'content' => [
+                                    'application/json' => [
+                                        'schema' => [
+                                            'type' => 'object',
+                                        ],
+                                    ],
+                                ],
+                            ],
+                        ],
                     ],
                 ];
             }

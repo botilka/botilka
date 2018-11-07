@@ -33,6 +33,7 @@ final class QueryResourceClassEventListener implements EventSubscriberInterface
         if (Query::class !== $attributes->get('_api_resource_class') || !$this->descriptionContainer->has($queryName = $attributes->get('_api_item_operation_name', ''))) {
             return;
         }
+
         $description = $this->descriptionContainer->get($queryName);
 
         /** @var CQRSQuery $query */
