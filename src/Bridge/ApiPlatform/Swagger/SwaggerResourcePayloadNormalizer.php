@@ -9,34 +9,35 @@ final class SwaggerResourcePayloadNormalizer implements SwaggerResourcePayloadNo
         $parameters = [];
 
         foreach ($payload as $name => $type) {
-            if (!\is_array($type)) {
-                $parameters[] = [
-                    'name' => $name,
-                    'in' => 'query',
-                    'required' => '?' !== $type[0],
-                    'type' => \str_replace(['?', 'int', 'bool'], ['', 'integer', 'boolean'], $type),
-                ];
-            } else {
-                $this->extractFromArray($name, $type, $parameters);
-            }
+            $this->flatten($name, $type, $parameters);
         }
 
         return $parameters;
     }
 
-    private function extractFromArray(string $groupName, array $toFlatten, array &$parameters): void
+    private function flatten(string $name, $type, array &$parameters): void
     {
-        foreach ($toFlatten as $name => $type) {
-            if (!\is_array($type)) {
-                $parameters[] = [
-                    'name' => $groupName.'['.$name.']',
-                    'in' => 'query',
-                    'required' => '?' !== $type[0],
-                    'type' => \str_replace(['?', 'int', 'bool'], ['', 'integer', 'boolean'], $type),
-                ];
-            } else {
-                $this->extractFromArray($groupName.'['.$name.']', $type, $parameters);
+        if (\is_array($type)) {
+            foreach ($type as $childName => $childType) {
+                $flattenedChildName = $name.'['.$childName.']';
+                if (\is_array($childType)) {
+                    $this->flatten($flattenedChildName, $childType, $parameters);
+                } else {
+                    $parameters[] = $this->getParameterDescription($flattenedChildName, $childType);
+                }
             }
+        } else {
+            $parameters[] = $this->getParameterDescription($name, $type);
         }
+    }
+
+    private function getParameterDescription(string $name, string $type): array
+    {
+        return [
+            'name' => $name,
+            'in' => 'query',
+            'required' => '?' !== $type[0],
+            'type' => \str_replace(['?', 'int', 'bool'], ['', 'integer', 'boolean'], $type),
+        ];
     }
 }
