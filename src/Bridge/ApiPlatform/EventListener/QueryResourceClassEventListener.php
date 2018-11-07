@@ -30,13 +30,9 @@ final class QueryResourceClassEventListener implements EventSubscriberInterface
         $request = $event->getRequest();
         $attributes = $request->attributes;
 
-        if ('api_queries_get_collection' === $attributes->get('_route') || !$this->descriptionContainer->has($queryName = $attributes->get('_api_collection_operation_name', ''))) {
+        if (Query::class !== $attributes->get('_api_resource_class') || !$this->descriptionContainer->has($queryName = $attributes->get('_api_item_operation_name', ''))) {
             return;
         }
-
-        /** @var Query $data */
-        $data = $request->attributes->get('data')[0]; // it's a collection, we need to retrieve the first item
-
         $description = $this->descriptionContainer->get($queryName);
 
         /** @var CQRSQuery $query */
@@ -44,6 +40,7 @@ final class QueryResourceClassEventListener implements EventSubscriberInterface
 
         $result = $this->queryBus->dispatch($query);
 
+        $attributes->set('_api_receive', false); // bypass ReadListener
         $attributes->set('data', $result);
     }
 
@@ -51,7 +48,7 @@ final class QueryResourceClassEventListener implements EventSubscriberInterface
     {
         return [
             KernelEvents::REQUEST => [
-                ['onKernelRequest', EventPriorities::POST_READ],
+                ['onKernelRequest', EventPriorities::PRE_READ],
             ],
         ];
     }

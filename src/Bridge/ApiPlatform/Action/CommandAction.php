@@ -8,7 +8,6 @@ use Botilka\Bridge\ApiPlatform\Description\DescriptionContainerInterface;
 use Botilka\Bridge\ApiPlatform\Resource\Command;
 use Botilka\Application\Command\CommandResponse;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
-use Symfony\Component\Serializer\SerializerInterface;
 use Botilka\Application\Command\Command as CQRSCommand;
 
 /**

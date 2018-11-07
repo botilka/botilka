@@ -29,3 +29,6 @@ services:
         decorates: api_platform.metadata.resource.metadata_factory
         arguments:
             $descriptionContainer: '@Botilka\Bridge\ApiPlatform\Resource\Query.description_container'
+
+    Botilka\Bridge\ApiPlatform\Swagger\SwaggerResourcePayloadNormalizerInterface:
+        class: Botilka\Bridge\ApiPlatform\Swagger\SwaggerResourcePayloadNormalizer
