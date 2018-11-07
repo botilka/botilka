@@ -7,7 +7,7 @@ use Botilka\Tests\Fixtures\Domain\StubEvent;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Messenger\MessageBusInterface;
 
-class MessengerEventBusTest extends TestCase
+final class MessengerEventBusTest extends TestCase
 {
     public function testDispatch()
     {

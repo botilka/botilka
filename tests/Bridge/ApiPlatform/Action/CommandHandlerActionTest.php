@@ -9,7 +9,7 @@ use Botilka\Bridge\ApiPlatform\Action\CommandHandlerAction;
 use Botilka\Tests\Fixtures\Application\Command\SimpleCommand;
 use PHPUnit\Framework\TestCase;
 
-class CommandHandlerActionTest extends TestCase
+final class CommandHandlerActionTest extends TestCase
 {
     public function testInvoke()
     {

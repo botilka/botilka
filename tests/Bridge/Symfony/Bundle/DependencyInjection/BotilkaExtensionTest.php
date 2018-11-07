@@ -22,7 +22,7 @@ use Prophecy\Prophecy\ObjectProphecy;
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
-class BotilkaExtensionTest extends TestCase
+final class BotilkaExtensionTest extends TestCase
 {
     private const DEFAULT_CONFIG = [
         [

@@ -7,7 +7,7 @@ use Botilka\Tests\Fixtures\Application\Command\SimpleCommand;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Messenger\MessageBusInterface;
 
-class MessengerCommandBusTest extends TestCase
+final class MessengerCommandBusTest extends TestCase
 {
     public function testDispatch()
     {

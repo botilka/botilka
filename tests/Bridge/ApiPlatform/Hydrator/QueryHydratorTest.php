@@ -11,7 +11,7 @@ use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class QueryHydratorTest extends TestCase
+final class QueryHydratorTest extends TestCase
 {
     /** @var QueryHydrator */
     private $hydrator;

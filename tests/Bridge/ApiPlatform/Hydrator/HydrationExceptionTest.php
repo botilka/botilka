@@ -6,7 +6,7 @@ use Botilka\Bridge\ApiPlatform\Hydrator\HydrationException;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 
-class HydrationExceptionTest extends TestCase
+final class HydrationExceptionTest extends TestCase
 {
     public function testGetConstraintViolationList()
     {

@@ -18,7 +18,7 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 
-class ApiPlatformDescriptionContainerPassTest extends TestCase
+final class ApiPlatformDescriptionContainerPassTest extends TestCase
 {
     /** @var ContainerBuilder */
     private $container;

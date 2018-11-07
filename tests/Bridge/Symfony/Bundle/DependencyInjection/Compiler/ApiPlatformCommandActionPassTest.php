@@ -10,7 +10,7 @@ use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 
-class ApiPlatformCommandActionPassTest extends TestCase
+final class ApiPlatformCommandActionPassTest extends TestCase
 {
     /** @var ApiPlatformCommandActionPass */
     private $compilerPass;

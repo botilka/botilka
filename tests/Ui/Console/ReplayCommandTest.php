@@ -8,7 +8,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 
-class ReplayCommandTest extends KernelTestCase
+final class ReplayCommandTest extends KernelTestCase
 {
     /** @dataProvider executeProvider */
     public function testExecute(string $id, ?int $from, ?int $to)

@@ -7,7 +7,7 @@ use Botilka\Tests\Fixtures\Application\Query\SimpleQuery;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Messenger\MessageBusInterface;
 
-class MessengerQueryBusTest extends TestCase
+final class MessengerQueryBusTest extends TestCase
 {
     public function testDispatch()
     {
