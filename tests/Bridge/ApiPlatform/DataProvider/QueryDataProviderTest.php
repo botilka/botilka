@@ -14,7 +14,7 @@ final class QueryDataProviderTest extends TestCase
 
     public function setUp()
     {
-        $descriptionContainer = new DescriptionContainer(['foo_query' => [
+        $descriptionContainer = new DescriptionContainer(['foo' => [
             'class' => 'Foo\\BarQuery',
             'payload' => ['some' => 'string'],
         ]]);
@@ -24,10 +24,10 @@ final class QueryDataProviderTest extends TestCase
 
     public function testGetItem()
     {
-        $item = $this->dataProvider->getItem('whatever', 'foo_query');
+        $item = $this->dataProvider->getItem('whatever', 'foo');
 
         $this->assertInstanceOf(Query::class, $item);
-        $this->assertSame('foo_query', $item->getName());
+        $this->assertSame('foo', $item->getName());
         $this->assertSame(['some' => 'string'], $item->getPayload());
     }
 

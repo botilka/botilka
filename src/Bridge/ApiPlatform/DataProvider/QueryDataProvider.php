@@ -24,8 +24,8 @@ final class QueryDataProvider implements CollectionDataProviderInterface, ItemDa
     public function getCollection(string $resourceClass, string $operationName = null)
     {
         $collection = [];
-        foreach ($this->descriptionContainer as $id => $description) {
-            $collection[] = new Query($id, $description['payload']);
+        foreach ($this->descriptionContainer as $name => $description) {
+            $collection[] = new Query($name, $description['payload']);
         }
 
         return $collection;

@@ -24,8 +24,8 @@ final class CommandDataProvider implements CollectionDataProviderInterface, Item
     public function getCollection(string $resourceClass, string $operationName = null)
     {
         $descriptionContainer = [];
-        foreach ($this->descriptionContainer as $id => $description) {
-            $descriptionContainer[] = new Command($id, $description['payload']);
+        foreach ($this->descriptionContainer as $name => $description) {
+            $descriptionContainer[] = new Command($name, $description['payload']);
         }
 
         return $descriptionContainer;
