@@ -30,14 +30,14 @@ final class QueryResourceClassEventListener implements EventSubscriberInterface
         $request = $event->getRequest();
         $attributes = $request->attributes;
 
-        if ('api_queries_get_collection' === $attributes->get('_route') || !$this->descriptionContainer->has($attributes->get('_api_collection_operation_name', ''))) {
+        if ('api_queries_get_collection' === $attributes->get('_route') || !$this->descriptionContainer->has($queryName = $attributes->get('_api_collection_operation_name', ''))) {
             return;
         }
 
         /** @var Query $data */
-        $data = $request->attributes->get('data')[0]; // it'a a collection, we need to retrieve the first item
+        $data = $request->attributes->get('data')[0]; // it's a collection, we need to retrieve the first item
 
-        $description = $this->descriptionContainer->get($data->getName());
+        $description = $this->descriptionContainer->get($queryName);
 
         /** @var CQRSQuery $query */
         $query = $this->serializer->denormalize($request->query->all(), $description['class']);
