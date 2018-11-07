@@ -19,20 +19,20 @@ final class CommandActionTest extends TestCase
     {
         $commandBus = $this->createMock(CommandBus::class);
         $denormalizer = $this->createMock(DenormalizerInterface::class);
-        $descriptionContainer = new DescriptionContainer(['foo_command' => [
-            'class' => 'Foo\\BarCommand',
+        $descriptionContainer = new DescriptionContainer(['foo' => [
+            'class' => 'Foo\\Bar',
             'payload' => ['some' => 'string'],
         ]]);
 
-        $commandResource = new Command('foo_command', ['foo' => 'baz']);
+        $commandResource = new Command('foo', ['foo' => 'baz']);
         $command = new SimpleCommand('foo', 3210);
 
         $denormalizer->expects($this->once())
             ->method('denormalize')
-            ->with($commandResource->getPayload(), 'Foo\\BarCommand')
+            ->with($commandResource->getPayload(), 'Foo\\Bar')
             ->willReturn($command);
 
-        $commandResponse = new CommandResponse('foo_response_id', 123, new StubEvent(123));
+        $commandResponse = new CommandResponse('plop', 123, new StubEvent(123));
 
         $commandBus->expects($this->once())
             ->method('dispatch')
@@ -44,6 +44,6 @@ final class CommandActionTest extends TestCase
         $response = $action($commandResource);
 
         $this->assertInstanceOf(CommandResponseAdapter::class, $response);
-        $this->assertSame('foo_response_id', $response->getId());
+        $this->assertSame('plop', $response->getId());
     }
 }

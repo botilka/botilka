@@ -15,7 +15,7 @@ final class CommandDataProviderTest extends TestCase
     public function setUp()
     {
         $descriptionContainer = new DescriptionContainer(['foo' => [
-            'class' => 'Foo\\BarCommand',
+            'class' => 'Foo\\Bar',
             'payload' => ['some' => 'string'],
         ]]);
 

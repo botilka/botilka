@@ -15,7 +15,7 @@ final class QueryDataProviderTest extends TestCase
     public function setUp()
     {
         $descriptionContainer = new DescriptionContainer(['foo' => [
-            'class' => 'Foo\\BarQuery',
+            'class' => 'Foo\\Bar',
             'payload' => ['some' => 'string'],
         ]]);
 
