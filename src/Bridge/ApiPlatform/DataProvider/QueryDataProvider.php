@@ -5,11 +5,13 @@ namespace Botilka\Bridge\ApiPlatform\DataProvider;
 use ApiPlatform\Core\DataProvider\CollectionDataProviderInterface;
 use ApiPlatform\Core\DataProvider\ItemDataProviderInterface;
 use ApiPlatform\Core\DataProvider\RestrictedDataProviderInterface;
-use Botilka\Bridge\ApiPlatform\Description\DescriptionNotFoundException;
 use Botilka\Bridge\ApiPlatform\Description\DescriptionContainerInterface;
 use Botilka\Bridge\ApiPlatform\Resource\Query;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
+/**
+ * @see DescriptionContainerPass
+ */
 final class QueryDataProvider implements CollectionDataProviderInterface, ItemDataProviderInterface, RestrictedDataProviderInterface
 {
     private $descriptionContainer;
@@ -31,11 +33,11 @@ final class QueryDataProvider implements CollectionDataProviderInterface, ItemDa
 
     public function getItem(string $resourceClass, $id, string $operationName = null, array $context = [])
     {
-        try {
-            $description = $this->descriptionContainer->get($id);
-        } catch (DescriptionNotFoundException $e) {
+        if (!$this->descriptionContainer->has($id)) {
             throw new NotFoundHttpException(\sprintf('Query "%s" not found.', $id));
         }
+
+        $description = $this->descriptionContainer->get($id);
 
         return new Query($id, $description['payload']);
     }

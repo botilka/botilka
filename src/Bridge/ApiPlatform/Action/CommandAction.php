@@ -22,7 +22,7 @@ final class CommandAction
     public function __construct(CommandBus $commandBus, DenormalizerInterface $denormalizer, DescriptionContainerInterface $descriptionContainer)
     {
         $this->commandBus = $commandBus;
-        $this->serializer = $denormalizer;
+        $this->denormalizer = $denormalizer;
         $this->descriptionContainer = $descriptionContainer;
     }
 
@@ -31,7 +31,7 @@ final class CommandAction
         $description = $this->descriptionContainer->get($data->getName());
 
         /** @var CQRSCommand $command */
-        $command = $this->serializer->denormalize($data->getPayload(), $description['class']);
+        $command = $this->denormalizer->denormalize($data->getPayload(), $description['class']);
 
         /** @var CommandResponse $response */
         $response = $this->commandBus->dispatch($command);

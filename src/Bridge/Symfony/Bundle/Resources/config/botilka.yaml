@@ -32,3 +32,9 @@ services:
 
     Botilka\Bridge\ApiPlatform\Swagger\SwaggerResourcePayloadNormalizerInterface:
         class: Botilka\Bridge\ApiPlatform\Swagger\SwaggerResourcePayloadNormalizer
+
+    Botilka\Bridge\ApiPlatform\Hydrator\CommandHydratorInterface:
+        class: Botilka\Bridge\ApiPlatform\Hydrator\CommandHydrator
+
+    Botilka\Bridge\ApiPlatform\Hydrator\QueryHydratorInterface:
+        class: Botilka\Bridge\ApiPlatform\Hydrator\QueryHydrator

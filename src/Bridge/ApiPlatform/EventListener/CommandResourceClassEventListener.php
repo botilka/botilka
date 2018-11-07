@@ -5,6 +5,7 @@ namespace Botilka\Bridge\ApiPlatform\EventListener;
 use ApiPlatform\Core\EventListener\EventPriorities;
 use Botilka\Bridge\ApiPlatform\Description\DescriptionContainerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
@@ -19,10 +20,11 @@ final class CommandResourceClassEventListener implements EventSubscriberInterfac
 
     public function onKernelRequest(GetResponseEvent $event)
     {
-        $attributes = $event->getRequest()->attributes;
+        $request = $event->getRequest();
+        $attributes = $request->attributes;
         $collectionOperationName = $attributes->get('_api_collection_operation_name');
 
-        if (null === $collectionOperationName || !$this->descriptionContainer->has($collectionOperationName)) {
+        if (Request::METHOD_POST !== $request->getMethod() || null === $collectionOperationName || !$this->descriptionContainer->has($collectionOperationName)) {
             return;
         }
 
