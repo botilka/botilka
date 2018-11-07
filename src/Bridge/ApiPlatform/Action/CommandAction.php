@@ -7,6 +7,7 @@ use Botilka\Bridge\ApiPlatform\Command\CommandResponseAdapter;
 use Botilka\Bridge\ApiPlatform\Description\DescriptionContainerInterface;
 use Botilka\Bridge\ApiPlatform\Resource\Command;
 use Botilka\Application\Command\CommandResponse;
+use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Botilka\Application\Command\Command as CQRSCommand;
 
@@ -16,13 +17,13 @@ use Botilka\Application\Command\Command as CQRSCommand;
 final class CommandAction
 {
     private $commandBus;
-    private $serializer;
+    private $denormalizer;
     private $descriptionContainer;
 
-    public function __construct(CommandBus $commandBus, SerializerInterface $serializer, DescriptionContainerInterface $descriptionContainer)
+    public function __construct(CommandBus $commandBus, DenormalizerInterface $denormalizer, DescriptionContainerInterface $descriptionContainer)
     {
         $this->commandBus = $commandBus;
-        $this->serializer = $serializer;
+        $this->serializer = $denormalizer;
         $this->descriptionContainer = $descriptionContainer;
     }
 
@@ -31,7 +32,7 @@ final class CommandAction
         $description = $this->descriptionContainer->get($data->getName());
 
         /** @var CQRSCommand $command */
-        $command = $this->serializer->deserialize(\json_encode($data->getPayload()), $description['class'], 'json');
+        $command = $this->serializer->denormalize($data->getPayload(), $description['class']);
 
         /** @var CommandResponse $response */
         $response = $this->commandBus->dispatch($command);
