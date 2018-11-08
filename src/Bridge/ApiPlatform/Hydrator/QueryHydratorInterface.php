@@ -3,7 +3,6 @@
 namespace Botilka\Bridge\ApiPlatform\Hydrator;
 
 use Botilka\Application\Query\Query;
-use Doctrine\ORM\Internal\Hydration\HydrationException;
 
 interface QueryHydratorInterface
 {
