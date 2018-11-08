@@ -30,8 +30,8 @@ services:
         arguments:
             $descriptionContainer: '@Botilka\Bridge\ApiPlatform\Resource\Query.description_container'
 
-    Botilka\Bridge\ApiPlatform\Swagger\SwaggerResourcePayloadNormalizerInterface:
-        class: Botilka\Bridge\ApiPlatform\Swagger\SwaggerResourcePayloadNormalizer
+    Botilka\Bridge\ApiPlatform\Swagger\SwaggerQueryParameterNormalizerInterface:
+        class: Botilka\Bridge\ApiPlatform\Swagger\SwaggerQueryParameterNormalizer
 
     Botilka\Bridge\ApiPlatform\Hydrator\CommandHydratorInterface:
         class: Botilka\Bridge\ApiPlatform\Hydrator\CommandHydrator

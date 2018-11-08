@@ -6,7 +6,7 @@ use ApiPlatform\Core\Exception\ResourceClassNotFoundException;
 use ApiPlatform\Core\Metadata\Resource\Factory\ResourceMetadataFactoryInterface;
 use ApiPlatform\Core\Metadata\Resource\ResourceMetadata;
 use Botilka\Bridge\ApiPlatform\Description\DescriptionContainerInterface;
-use Botilka\Bridge\ApiPlatform\Swagger\SwaggerResourcePayloadNormalizerInterface;
+use Botilka\Bridge\ApiPlatform\Swagger\SwaggerQueryParameterNormalizerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -18,7 +18,7 @@ final class BotilkaQueryResourceMetadataFactory implements ResourceMetadataFacto
     private $descriptionContainer;
     private $payloadNormalizer;
 
-    public function __construct(ResourceMetadataFactoryInterface $decorated, DescriptionContainerInterface $descriptionContainer, SwaggerResourcePayloadNormalizerInterface $payloadNormalizer)
+    public function __construct(ResourceMetadataFactoryInterface $decorated, DescriptionContainerInterface $descriptionContainer, SwaggerQueryParameterNormalizerInterface $payloadNormalizer)
     {
         $this->decorated = $decorated;
         $this->descriptionContainer = $descriptionContainer;

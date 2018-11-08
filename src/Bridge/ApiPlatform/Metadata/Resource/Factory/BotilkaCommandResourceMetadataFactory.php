@@ -38,6 +38,22 @@ final class BotilkaCommandResourceMetadataFactory implements ResourceMetadataFac
                     'controller' => CommandHandlerAction::class,
                     'method' => Request::METHOD_POST,
                     'path' => '/commands/'.$id.'.{_format}',
+                    'swagger_context' => [
+                        'consumes' => 'application/json',
+                        'parameters' => [
+                            [
+                                'in' => 'body',
+                                'schema' => [
+                                    'type' => 'object',
+                                    'required' => ['foo'],
+                                    'properties' => [
+                                        'foo' => ['type' => 'string'],
+                                        'bar' => ['type' => 'string'],
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
                 ];
             }
 
