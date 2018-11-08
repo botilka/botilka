@@ -38,22 +38,19 @@ class CommandResourceClassEventListenerTest extends TestCase
 
     public function testOnKernelRequestNotPost()
     {
-        $request = Request::create('http://localhost', Request::METHOD_GET);
-        $event = new GetResponseEvent($this->createMock(KernelInterface::class), $request, HttpKernelInterface::MASTER_REQUEST);
+        $event = $this->getEvent();
 
         $this->descriptionContainer->expects($this->never())
             ->method('get');
 
         $this->listener->onKernelRequest($event);
-        $this->assertNull($request->attributes->get('_api_resource_class'));
+        $this->assertNull($event->getRequest()->attributes->get('_api_resource_class'));
     }
 
     /** @dataProvider onKernelRequestCommandNotExistingProvider */
     public function testOnKernelRequestCommandNotExisting(?string $collectionOperationName)
     {
-        $request = Request::create('http://localhost', Request::METHOD_POST);
-        $event = new GetResponseEvent($this->createMock(KernelInterface::class), $request, HttpKernelInterface::MASTER_REQUEST);
-        $request->attributes->set('_api_collection_operation_name', $collectionOperationName);
+        $event = $this->getEvent(['_api_collection_operation_name' => $collectionOperationName]);
 
         if (null !== $collectionOperationName) {
             $this->descriptionContainer->expects($this->once())
@@ -63,7 +60,7 @@ class CommandResourceClassEventListenerTest extends TestCase
         }
 
         $this->listener->onKernelRequest($event);
-        $this->assertNull($request->attributes->get('_api_resource_class'));
+        $this->assertNull($event->getRequest()->attributes->get('_api_resource_class'));
     }
 
     public function onKernelRequestCommandNotExistingProvider(): array
@@ -76,9 +73,7 @@ class CommandResourceClassEventListenerTest extends TestCase
 
     public function testOnKernelRequest()
     {
-        $request = Request::create('http://localhost', Request::METHOD_POST);
-        $event = new GetResponseEvent($this->createMock(KernelInterface::class), $request, HttpKernelInterface::MASTER_REQUEST);
-        $request->attributes->set('_api_collection_operation_name', 'foo');
+        $event = $this->getEvent(['_api_collection_operation_name' => 'foo']);
 
         $descriptionContainer = new DescriptionContainer(['foo' => [
             'class' => 'Foo\\Bar',
@@ -87,6 +82,14 @@ class CommandResourceClassEventListenerTest extends TestCase
 
         $listener = new CommandResourceClassEventListener($descriptionContainer);
         $listener->onKernelRequest($event);
-        $this->assertSame('Foo\\Bar', $request->attributes->get('_api_resource_class'));
+        $this->assertSame('Foo\\Bar', $event->getRequest()->attributes->get('_api_resource_class'));
+    }
+
+    private function getEvent(array $attributes = [], string $method = Request::METHOD_POST): GetResponseEvent
+    {
+        $request = new Request([], [], $attributes);
+        $request->setMethod($method);
+
+        return new GetResponseEvent($this->createMock(KernelInterface::class), $request, HttpKernelInterface::MASTER_REQUEST);
     }
 }
