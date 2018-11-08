@@ -2,10 +2,10 @@
 
 namespace Botilka\Bridge\ApiPlatform\EventListener;
 
+use ApiPlatform\Core\Bridge\Symfony\Validator\Exception\ValidationException;
 use ApiPlatform\Core\EventListener\EventPriorities;
 use Botilka\Application\Query\QueryBus;
 use Botilka\Bridge\ApiPlatform\Description\DescriptionContainerInterface;
-use Botilka\Bridge\ApiPlatform\Hydrator\HydrationException;
 use Botilka\Bridge\ApiPlatform\Hydrator\QueryHydratorInterface;
 use Botilka\Bridge\ApiPlatform\Resource\Query;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -43,7 +43,7 @@ final class QueryResourceClassEventListener implements EventSubscriberInterface
             $query = $this->queryHydrator->hydrate($request->query->all(), $description['class']);
             $result = $this->queryBus->dispatch($query);
             $attributes->set('data', $result);
-        } catch (HydrationException $e) {
+        } catch (ValidationException $e) {
             $attributes->set('data', $e->getConstraintViolationList());
 
             return;

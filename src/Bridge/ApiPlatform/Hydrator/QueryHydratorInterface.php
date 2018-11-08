@@ -6,8 +6,5 @@ use Botilka\Application\Query\Query;
 
 interface QueryHydratorInterface
 {
-    /**
-     * @throws HydrationException
-     */
     public function hydrate($data, string $class): Query;
 }
