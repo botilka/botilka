@@ -6,7 +6,7 @@ use Botilka\Application\Command\Command;
 use Botilka\Application\Command\CommandHandler;
 use Botilka\Application\Query\Query;
 use Botilka\Application\Query\QueryHandler;
-use Botilka\Bridge\ApiPlatform\Action\CommandAction;
+use Botilka\Bridge\ApiPlatform\Action\CommandEntrypointAction;
 use Botilka\Bridge\ApiPlatform\DataProvider\CommandDataProvider;
 use Botilka\Bridge\ApiPlatform\DataProvider\QueryDataProvider;
 use Botilka\Bridge\ApiPlatform\Description\DescriptionContainer;
@@ -168,7 +168,7 @@ final class BotilkaExtensionTest extends TestCase
         $this->assertSame($hasApiPlatformBridge, $container->hasDefinition(DescriptionContainer::class));
         $this->assertSame($hasApiPlatformBridge, $container->hasDefinition(CommandDataProvider::class));
         $this->assertSame($hasApiPlatformBridge, $container->hasDefinition(QueryDataProvider::class));
-        $this->assertSame($hasApiPlatformBridge, $container->hasDefinition(CommandAction::class));
+        $this->assertSame($hasApiPlatformBridge, $container->hasDefinition(CommandEntrypointAction::class));
     }
 
     public function loadProvider(): array

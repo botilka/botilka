@@ -44,7 +44,7 @@ final class CommandHydratorTest extends TestCase
         $this->assertSame($command, $this->hydrator->hydrate(['bar' => 'baz'], 'Foo\\Bar'));
     }
 
-    /** @expectedException \Botilka\Bridge\ApiPlatform\Hydrator\HydrationException */
+    /** @expectedException \ApiPlatform\Core\Bridge\Symfony\Validator\Exception\ValidationException */
     public function testHydrateViolation()
     {
         $command = new SimpleCommand('foo', null);

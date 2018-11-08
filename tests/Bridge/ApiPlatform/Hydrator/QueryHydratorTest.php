@@ -44,7 +44,7 @@ final class QueryHydratorTest extends TestCase
         $this->assertSame($Query, $this->hydrator->hydrate(['bar' => 'baz'], 'Foo\\Bar'));
     }
 
-    /** @expectedException \Botilka\Bridge\ApiPlatform\Hydrator\HydrationException */
+    /** @expectedException \ApiPlatform\Core\Bridge\Symfony\Validator\Exception\ValidationException */
     public function testHydrateViolation()
     {
         $query = new SimpleQuery('foo', null);

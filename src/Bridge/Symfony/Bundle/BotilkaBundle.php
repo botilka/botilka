@@ -2,7 +2,7 @@
 
 namespace Botilka\Bridge\Symfony\Bundle;
 
-use Botilka\Bridge\Symfony\Bundle\DependencyInjection\Compiler\ApiPlatformCommandActionPass;
+use Botilka\Bridge\Symfony\Bundle\DependencyInjection\Compiler\ApiPlatformCommandEntrypointActionPass;
 use Botilka\Bridge\Symfony\Bundle\DependencyInjection\Compiler\ApiPlatformDataProviderPass;
 use Botilka\Bridge\Symfony\Bundle\DependencyInjection\Compiler\ApiPlatformDescriptionContainerPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -15,7 +15,7 @@ class BotilkaBundle extends Bundle
         if ($container->hasExtension('api_platform')) {
             $container->addCompilerPass(new ApiPlatformDescriptionContainerPass());
             $container->addCompilerPass(new ApiPlatformDataProviderPass());
-            $container->addCompilerPass(new ApiPlatformCommandActionPass());
+            $container->addCompilerPass(new ApiPlatformCommandEntrypointActionPass());
         }
     }
 }

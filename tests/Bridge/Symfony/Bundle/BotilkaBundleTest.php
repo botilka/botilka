@@ -3,7 +3,7 @@
 namespace Botilka\Tests\Bridge\Symfony\Bundle;
 
 use Botilka\Bridge\Symfony\Bundle\BotilkaBundle;
-use Botilka\Bridge\Symfony\Bundle\DependencyInjection\Compiler\ApiPlatformCommandActionPass;
+use Botilka\Bridge\Symfony\Bundle\DependencyInjection\Compiler\ApiPlatformCommandEntrypointActionPass;
 use Botilka\Bridge\Symfony\Bundle\DependencyInjection\Compiler\ApiPlatformDataProviderPass;
 use Botilka\Bridge\Symfony\Bundle\DependencyInjection\Compiler\ApiPlatformDescriptionContainerPass;
 use PHPUnit\Framework\TestCase;
@@ -25,7 +25,7 @@ final class BotilkaBundleTest extends TestCase
             ->withConsecutive(
                 [$this->isInstanceOf(ApiPlatformDescriptionContainerPass::class)],
                 [$this->isInstanceOf(ApiPlatformDataProviderPass::class)],
-                [$this->isInstanceOf(ApiPlatformCommandActionPass::class)]
+                [$this->isInstanceOf(ApiPlatformCommandEntrypointActionPass::class)]
             );
 
         $bundle->build($container);

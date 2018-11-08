@@ -4,7 +4,7 @@ namespace Botilka\Bridge\ApiPlatform\Resource;
 
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
-use Botilka\Bridge\ApiPlatform\Action\CommandAction;
+use Botilka\Bridge\ApiPlatform\Action\CommandEntrypointAction;
 
 /**
  * @ApiResource(
@@ -13,7 +13,7 @@ use Botilka\Bridge\ApiPlatform\Action\CommandAction;
  *         "get"={"path"="/description/commands/{id}"}
  *     },
  *     collectionOperations={
- *         "post"={"controller"=CommandAction::class},
+ *         "post"={"controller"=CommandEntrypointAction::class},
  *         "get"={"path"="/description/commands", "pagination_enabled"=false}
  *     }
  * )

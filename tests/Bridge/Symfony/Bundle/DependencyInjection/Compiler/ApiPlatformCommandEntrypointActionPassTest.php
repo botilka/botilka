@@ -2,22 +2,22 @@
 
 namespace Botilka\Tests\Bridge\Symfony\Bundle\DependencyInjection\Compiler;
 
-use Botilka\Bridge\ApiPlatform\Action\CommandAction;
-use Botilka\Bridge\Symfony\Bundle\DependencyInjection\Compiler\ApiPlatformCommandActionPass;
+use Botilka\Bridge\ApiPlatform\Action\CommandEntrypointAction;
+use Botilka\Bridge\Symfony\Bundle\DependencyInjection\Compiler\ApiPlatformCommandEntrypointActionPass;
 use Botilka\Bridge\ApiPlatform\Resource\Command;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 
-final class ApiPlatformCommandActionPassTest extends TestCase
+final class ApiPlatformCommandEntrypointActionPassTest extends TestCase
 {
-    /** @var ApiPlatformCommandActionPass */
+    /** @var ApiPlatformCommandEntrypointActionPass */
     private $compilerPass;
 
     public function setUp()
     {
-        $this->compilerPass = new ApiPlatformCommandActionPass();
+        $this->compilerPass = new ApiPlatformCommandEntrypointActionPass();
     }
 
     public function testProcess()
@@ -28,14 +28,14 @@ final class ApiPlatformCommandActionPassTest extends TestCase
 
         $container->expects($this->once())
             ->method('hasDefinition')
-            ->with(CommandAction::class)
+            ->with(CommandEntrypointAction::class)
             ->willReturn(true);
 
         $commandActionDefinition = $this->createMock(Definition::class);
 
         $container->expects($this->exactly(2))
             ->method('getDefinition')
-            ->withConsecutive([CommandAction::class], [Command::class.'.description_container'])
+            ->withConsecutive([CommandEntrypointAction::class], [Command::class.'.description_container'])
             ->willReturnOnConsecutiveCalls($commandActionDefinition, 'foo');
 
         $commandActionDefinition->expects($this->once())
@@ -51,10 +51,10 @@ final class ApiPlatformCommandActionPassTest extends TestCase
 
         $container->expects($this->once())
             ->method('hasDefinition')
-            ->with(CommandAction::class)
+            ->with(CommandEntrypointAction::class)
             ->willReturn(false);
 
-        $container->expects($this->never())->method('getDefinition')->with(CommandAction::class);
+        $container->expects($this->never())->method('getDefinition')->with(CommandEntrypointAction::class);
 
         $this->compilerPass->process($container);
     }
