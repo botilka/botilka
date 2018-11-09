@@ -29,9 +29,8 @@ final class QueryResourceClassEventListener implements EventSubscriberInterface
     {
         $request = $event->getRequest();
         $attributes = $request->attributes;
-        $queryName = $attributes->get('_api_item_operation_name');
 
-        if (Query::class !== $attributes->get('_api_resource_class') || null === $queryName || !$this->descriptionContainer->has($queryName)) {
+        if (Query::class !== $attributes->get('_api_resource_class') || null === ($queryName = $attributes->get('_api_item_operation_name')) || !$this->descriptionContainer->has($queryName)) {
             return;
         }
 
@@ -44,9 +43,8 @@ final class QueryResourceClassEventListener implements EventSubscriberInterface
             $result = $this->queryBus->dispatch($query);
             $attributes->set('data', $result);
         } catch (ValidationException $e) {
+            // will be serialized by API Platform
             $attributes->set('data', $e->getConstraintViolationList());
-
-            return;
         }
     }
 

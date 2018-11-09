@@ -8,13 +8,13 @@ use Doctrine\Common\Inflector\Inflector;
 
 final class IdentifierGenerator
 {
-    private const REMOVED_PART_NAME = [
+    private const PART_NAME_TO_REMOVE = [
         Command::class => 'Command',
         Query::class => 'Query',
     ];
 
     public static function generate(string $type, string $className): string
     {
-        return Inflector::tableize(\str_replace([self::REMOVED_PART_NAME[$className], '\\'], '', $type));
+        return Inflector::tableize(\str_replace([self::PART_NAME_TO_REMOVE[$className], '\\'], '', $type));
     }
 }

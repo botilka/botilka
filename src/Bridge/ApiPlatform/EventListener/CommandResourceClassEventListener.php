@@ -30,7 +30,7 @@ final class CommandResourceClassEventListener implements EventSubscriberInterfac
 
         $resource = $this->descriptionContainer->get($collectionOperationName);
 
-        // override "_api_resource_class" so API Platform will deserialize the command we want.
+        // override "_api_resource_class" so API Platform will use this class when deserializing.
         $attributes->set('_api_resource_class', $resource['class']);
     }
 
