@@ -87,7 +87,6 @@ class BotilkaCommandResourceMetadataFactoryTest extends TestCase
                 'path' => '/commands/foo.{_format}',
                 'swagger_context' => [
                     'description' => 'Execute foo',
-                    'consumes' => 'application/json',
                     'parameters' => [
                         [
                             'in' => 'body',

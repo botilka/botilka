@@ -44,7 +44,6 @@ final class BotilkaCommandResourceMetadataFactory implements ResourceMetadataFac
                     'path' => '/commands/'.$name.'.{_format}',
                     'swagger_context' => [
                         'description' => "Execute $name",
-                        'consumes' => 'application/json',
                         'parameters' => [
                             [
                                 'in' => 'body',

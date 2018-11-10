@@ -38,6 +38,7 @@ services:
         arguments:
             $descriptionContainer: '@Botilka\Bridge\ApiPlatform\Resource\Query.description_container'
             $parameterNormalizer: '@Botilka\Bridge\ApiPlatform\Swagger\SwaggerQueryParameterNormalizer'
+            $formats: '%api_platform.formats%'
 
     Botilka\Bridge\ApiPlatform\Swagger\SwaggerQueryParameterNormalizer: ~
     Botilka\Bridge\ApiPlatform\Swagger\SwaggerCommandBodyNormalizer: ~

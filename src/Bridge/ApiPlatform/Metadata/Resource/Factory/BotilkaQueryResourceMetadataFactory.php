@@ -13,16 +13,25 @@ use Symfony\Component\HttpFoundation\Response;
 final class BotilkaQueryResourceMetadataFactory implements ResourceMetadataFactoryInterface
 {
     private const SHORT_NAME_TO_EXTEND = 'Query';
+    const SUPPORTED_FORMATS = [
+        'jsonld' => ['application/ld+json'],
+        'json' => ['application/json'],
+        'xml' => ['application/xml', 'text/xml'],
+        'yaml' => ['application/x-yaml'],
+        'csv' => ['text/csv'],
+    ];
 
     private $decorated;
     private $descriptionContainer;
     private $parameterNormalizer;
+    private $formats;
 
-    public function __construct(ResourceMetadataFactoryInterface $decorated, DescriptionContainerInterface $descriptionContainer, SwaggerPayloadNormalizerInterface $parameterNormalizer)
+    public function __construct(ResourceMetadataFactoryInterface $decorated, DescriptionContainerInterface $descriptionContainer, SwaggerPayloadNormalizerInterface $parameterNormalizer, array $formats)
     {
         $this->decorated = $decorated;
         $this->descriptionContainer = $descriptionContainer;
         $this->parameterNormalizer = $parameterNormalizer;
+        $this->formats = $formats;
     }
 
     public function create(string $resourceClass): ResourceMetadata
@@ -40,6 +49,7 @@ final class BotilkaQueryResourceMetadataFactory implements ResourceMetadataFacto
                 $itemOperations[$name] = [
                     'method' => Request::METHOD_GET,
                     'path' => '/queries/'.$name.'.{_format}',
+                    'formats' => \array_intersect_key(self::SUPPORTED_FORMATS, $this->formats),
                     'swagger_context' => [
                         'description' => "Execute $name",
                         'parameters' => $this->parameterNormalizer->normalize($descritpion['payload']),
