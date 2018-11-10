@@ -45,4 +45,5 @@ services:
 
     Botilka\Ui\Console\EventStoreCreateUniqueIndexCommand:
         arguments:
-            $eventStores: !tagged botilka.event_store
+            $eventStores: !tagged botilka.event_store.indexable
+            $projectDir: '%kernel.project_dir%'

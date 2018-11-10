@@ -27,7 +27,7 @@ final class EventStoreInMemory implements EventStore
     /**
      * We can't have a concurrency here as memory is not shared.
      */
-    public function append(string $id, int $playhead, string $type, Event $payload, ?array $metadata, \DateTimeImmutable $recordedOn)
+    public function append(string $id, int $playhead, string $type, Event $payload, ?array $metadata, \DateTimeImmutable $recordedOn): void
     {
         $this->store[$id][$playhead] = $payload;
     }

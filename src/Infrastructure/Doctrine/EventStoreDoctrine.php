@@ -50,7 +50,7 @@ final class EventStoreDoctrine implements EventStore
         return $this->deserialize($stmt->fetchAll());
     }
 
-    public function append(string $id, int $playhead, string $type, DomainEvent $payload, ?array $metadata, \DateTimeImmutable $recordedOn)
+    public function append(string $id, int $playhead, string $type, DomainEvent $payload, ?array $metadata, \DateTimeImmutable $recordedOn): void
     {
         $stmt = $this->connection->prepare('INSERT INTO event_store VALUES (:id, :playhead, :type, :payload, :metadata, :recordedOn)');
 

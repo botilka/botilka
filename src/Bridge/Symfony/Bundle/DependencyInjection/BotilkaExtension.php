@@ -4,8 +4,8 @@ namespace Botilka\Bridge\Symfony\Bundle\DependencyInjection;
 
 use Botilka\Application\Command\Command;
 use Botilka\Application\Command\CommandHandler;
+use Botilka\Application\EventStore\EventStoreUniqueIndex;
 use Botilka\Event\EventHandler;
-use Botilka\EventStore\EventStore;
 use Botilka\Infrastructure\Doctrine\EventStoreDoctrine;
 use Botilka\Infrastructure\Symfony\Messenger\Middleware\EventDispatcherBusMiddleware;
 use Botilka\Application\Query\Query;
@@ -124,7 +124,7 @@ final class BotilkaExtension extends Extension implements PrependExtensionInterf
             }
         }
 
-        $container->registerForAutoconfiguration(EventStore::class)->addArgument('botilka.event_store');
+        $container->registerForAutoconfiguration(EventStoreUniqueIndex::class)->addTag('botilka.event_store.indexable');
 
         if (EventStoreDoctrine::class === $config['event_store']) {
             $loader->load('doctrine_event_store.yaml');
