@@ -16,13 +16,13 @@ final class QueryResourceClassEventListener implements EventSubscriberInterface
 {
     private $queryBus;
     private $descriptionContainer;
-    private $queryHydrator;
+    private $hydrator;
 
-    public function __construct(QueryBus $queryBus, DescriptionContainerInterface $descriptionContainer, QueryHydratorInterface $queryHydrator)
+    public function __construct(QueryBus $queryBus, DescriptionContainerInterface $descriptionContainer, QueryHydratorInterface $hydrator)
     {
         $this->queryBus = $queryBus;
         $this->descriptionContainer = $descriptionContainer;
-        $this->queryHydrator = $queryHydrator;
+        $this->hydrator = $hydrator;
     }
 
     public function onKernelRequest(GetResponseEvent $event)
@@ -39,7 +39,7 @@ final class QueryResourceClassEventListener implements EventSubscriberInterface
         $description = $this->descriptionContainer->get($queryName);
 
         try {
-            $query = $this->queryHydrator->hydrate($request->query->all(), $description['class']);
+            $query = $this->hydrator->hydrate($request->query->all(), $description['class']);
             $result = $this->queryBus->dispatch($query);
             $attributes->set('data', $result);
         } catch (ValidationException $e) {
