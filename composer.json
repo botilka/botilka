@@ -26,6 +26,7 @@
     },
     "suggest": {
         "doctrine/orm": "To use Doctrine as an EventStore",
+        "mongodb/mongodb": "To use MongDB as an EventStore",
         "api-platform/core": "To expose your commands & queries via REST"
     },
     "config": {
