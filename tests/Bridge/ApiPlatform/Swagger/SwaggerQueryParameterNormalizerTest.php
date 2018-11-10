@@ -67,7 +67,7 @@ class SwaggerQueryParameterNormalizerTest extends TestCase
                         'name' => 'bar[biz][oof]',
                         'in' => 'query',
                         'required' => false,
-                        'type' => 'float',
+                        'type' => 'number',
                     ],
                 ],
             ],

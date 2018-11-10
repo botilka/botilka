@@ -67,7 +67,7 @@ class SwaggerCommandBodyNormalizerTest extends TestCase
                                     'required' => [],
                                     'properties' => [
                                         'oof' => [
-                                            'type' => 'float',
+                                            'type' => 'number',
                                         ],
                                     ],
                                 ],

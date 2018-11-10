@@ -37,7 +37,7 @@ final class SwaggerQueryParameterNormalizer implements SwaggerPayloadNormalizerI
             'name' => $name,
             'in' => 'query',
             'required' => '?' !== $type[0],
-            'type' => \str_replace(['?', 'int', 'bool'], ['', 'integer', 'boolean'], $type),
+            'type' => \str_replace(['?', 'int', 'bool', 'float'], ['', 'integer', 'boolean', 'number'], $type),
         ];
     }
 }

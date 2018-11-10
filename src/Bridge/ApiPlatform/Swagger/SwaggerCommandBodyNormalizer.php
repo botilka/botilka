@@ -15,7 +15,7 @@ final class SwaggerCommandBodyNormalizer implements SwaggerPayloadNormalizerInte
         foreach ($payload as $name => $type) {
             if (!\is_array($type)) {
                 $body['properties'][$name] = [
-                    'type' => \str_replace(['?', 'int', 'bool'], ['', 'integer', 'boolean'], $type),
+                    'type' => \str_replace(['?', 'int', 'bool', 'float'], ['', 'integer', 'boolean', 'number'], $type),
                 ];
                 if ('?' !== $type[0]) {
                     $body['required'][] = $name;
