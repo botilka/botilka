@@ -1,12 +1,63 @@
 # API Platform bridge
 
-Botilka can detect [API Platform](https://api-platform.com/) and exposes commands & queries as resources.
+Botilka can detect [API Platform](https://api-platform.com/) and exposes entrypoint for domain commands & queries
+as well as their descriptions.
 
 ## Usage
 
 ### Execution
 
-TODO
+#### Command
+
+`POST /cqrs/commands/app_bank_account_application_perform_deposit`
+
+Send data in JSON
+```json
+{
+	"accountId": "06e941d4-f3d1-40d4-a67e-fa36bb7f44e1",
+	"amount": 55.21,
+	"reason": "why not"
+}
+```
+or in XML
+```xml
+<request>
+	<accountId>06e941d4-f3d1-40d4-a67e-fa36bb7f44e1</accountId>
+	<amount>55.21</amount>
+	<reason>why not</reason>
+</request>
+```
+
+#### Query
+
+`GET /cqrs/queries/app_bank_account_application_find_bank_account_by_currency?currency=DOL`
+
+Response in JSON
+```json
+[
+    {
+        "id": "39ce3633-70ed-4470-b87e-40b32a0bd563",
+        "name": "account 1 in $",
+        "currency": "DOL",
+        "balance": 1337
+    },
+    {
+        "id": "30c8e895-6594-431c-8cb5-91aadedeeb5b",
+        "name": "account 2 in $",
+        "currency": "DOL",
+        "balance": 42
+    }
+]
+```
+or in CSV
+```csv
+id,name,currency,balance
+39ce3633-70ed-4470-b87e-40b32a0bd563,"account 1 in $",DOL,1337
+30c8e895-6594-431c-8cb5-91aadedeeb5b,"account 2 in $",DOL,42
+```
+
+> Supported output formats (depending on [your configuration](https://api-platform.com/docs/core/content-negotiation)): `jsonld`, `json`, `xml`, `yaml`, `csv`.
+
 
 ### Description
 
@@ -17,7 +68,7 @@ A description consist of the name of the *item* and what's expected as payload.
 
 You can get the description by issuing a GET request on `/cqrs/description/commands` / `/cqrs/description/queries`. 
 
-*Command*
+#### Command
 ```json
 {
     "@id": "/api/cqrs/description/commands/app_bank_account_perform_deposit",
@@ -30,7 +81,7 @@ You can get the description by issuing a GET request on `/cqrs/description/comma
 }
 ```
 
-*Query*
+#### Query
 ```json
 {
     "@id": "/api/cqrs/description/queries/app_bank_account_find_bank_account_by_currency",
