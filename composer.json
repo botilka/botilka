@@ -10,7 +10,8 @@
         "symfony/console": "^4.1",
         "symfony/messenger": "^4.1",
         "symfony/monolog-bundle": "^3.3",
-        "symfony/serializer": "^4.1"
+        "symfony/serializer": "^4.1",
+        "symfony/validator": "^4.1"
     },
     "require-dev": {
         "api-platform/core": "^2.3",

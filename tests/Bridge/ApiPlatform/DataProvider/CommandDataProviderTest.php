@@ -9,28 +9,48 @@ use PHPUnit\Framework\TestCase;
 
 final class CommandDataProviderTest extends TestCase
 {
-    public function testGetCollection()
+    /** @var CommandDataProvider */
+    private $dataProvider;
+
+    public function setUp()
     {
-        $descriptionContainer = new DescriptionContainer(['foo' => ['type' => 'foo', 'payload' => ['foo' => 'bar']]]);
-        $dataProvider = new CommandDataProvider($descriptionContainer);
-        $collection = $dataProvider->getCollection('whatever');
-        $this->assertCount(1, $collection);
-        $this->assertInstanceOf(Command::class, $collection[0]);
+        $descriptionContainer = new DescriptionContainer(['foo' => [
+            'class' => 'Foo\\Bar',
+            'payload' => ['some' => 'string'],
+        ]]);
+
+        $this->dataProvider = new CommandDataProvider($descriptionContainer);
     }
 
     public function testGetItem()
     {
-        $descriptionContainer = new DescriptionContainer(['foo' => ['type' => 'foo', 'payload' => ['foo' => 'bar']]]);
-        $dataProvider = new CommandDataProvider($descriptionContainer);
-        $item = $dataProvider->getItem('whatever', 'foo');
+        $item = $this->dataProvider->getItem('whatever', 'foo');
+
         $this->assertInstanceOf(Command::class, $item);
+        $this->assertSame('foo', $item->getName());
+        $this->assertSame(['some' => 'string'], $item->getPayload());
+    }
+
+    /**
+     * @expectedException \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
+     * @expectedExceptionMessage Command "non-existent" not found.
+     */
+    public function testGetItemNotFoundException()
+    {
+        $this->dataProvider->getItem('whatever', 'non-existent');
+    }
+
+    public function testGetCollection()
+    {
+        $collection = $this->dataProvider->getCollection('whatever');
+        $this->assertCount(1, $collection);
+        $this->assertInstanceOf(Command::class, $collection[0]);
     }
 
     /** @dataProvider supportsDataProvider */
     public function testSupports(bool $expected, string $resourceClass)
     {
-        $dataProvider = new CommandDataProvider(new DescriptionContainer([]));
-        $this->assertSame($expected, $dataProvider->supports($resourceClass));
+        $this->assertSame($expected, $this->dataProvider->supports($resourceClass));
     }
 
     public function supportsDataProvider()

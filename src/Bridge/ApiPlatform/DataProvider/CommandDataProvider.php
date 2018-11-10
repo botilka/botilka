@@ -7,6 +7,7 @@ use ApiPlatform\Core\DataProvider\ItemDataProviderInterface;
 use ApiPlatform\Core\DataProvider\RestrictedDataProviderInterface;
 use Botilka\Bridge\ApiPlatform\Description\DescriptionContainerInterface;
 use Botilka\Bridge\ApiPlatform\Resource\Command;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * @see DescriptionContainerPass
@@ -23,8 +24,8 @@ final class CommandDataProvider implements CollectionDataProviderInterface, Item
     public function getCollection(string $resourceClass, string $operationName = null)
     {
         $descriptionContainer = [];
-        foreach ($this->descriptionContainer->all() as $id => $description) {
-            $descriptionContainer[] = new Command($id, $description['payload']);
+        foreach ($this->descriptionContainer as $name => $description) {
+            $descriptionContainer[] = new Command($name, $description['payload']);
         }
 
         return $descriptionContainer;
@@ -32,9 +33,13 @@ final class CommandDataProvider implements CollectionDataProviderInterface, Item
 
     public function getItem(string $resourceClass, $id, string $operationName = null, array $context = [])
     {
-        $itemDescription = $this->descriptionContainer->get($id);
+        if (!$this->descriptionContainer->has($id)) {
+            throw new NotFoundHttpException(\sprintf('Command "%s" not found.', $id));
+        }
 
-        return new Command($id, $itemDescription['payload']);
+        $description = $this->descriptionContainer->get($id);
+
+        return new Command($id, $description['payload']);
     }
 
     public function supports(string $resourceClass, string $operationName = null, array $context = []): bool

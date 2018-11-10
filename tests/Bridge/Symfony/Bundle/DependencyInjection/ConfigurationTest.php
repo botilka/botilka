@@ -9,7 +9,7 @@ use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\Definition\Processor;
 
-class ConfigurationTest extends TestCase
+final class ConfigurationTest extends TestCase
 {
     /** @var ConfigurationInterface */
     private $configuration;

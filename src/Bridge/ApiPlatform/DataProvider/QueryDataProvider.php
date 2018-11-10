@@ -5,37 +5,27 @@ namespace Botilka\Bridge\ApiPlatform\DataProvider;
 use ApiPlatform\Core\DataProvider\CollectionDataProviderInterface;
 use ApiPlatform\Core\DataProvider\ItemDataProviderInterface;
 use ApiPlatform\Core\DataProvider\RestrictedDataProviderInterface;
-use Botilka\Application\Query\QueryBus;
-use Botilka\Bridge\ApiPlatform\Description\DescriptionNotFoundException;
-use Botilka\Application\Query\Query as CQRSQuery;
 use Botilka\Bridge\ApiPlatform\Description\DescriptionContainerInterface;
 use Botilka\Bridge\ApiPlatform\Resource\Query;
-use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Serializer\Exception\MissingConstructorArgumentsException;
-use Symfony\Component\Serializer\SerializerInterface;
 
+/**
+ * @see DescriptionContainerPass
+ */
 final class QueryDataProvider implements CollectionDataProviderInterface, ItemDataProviderInterface, RestrictedDataProviderInterface
 {
-    private $queryBus;
-    private $serializer;
     private $descriptionContainer;
-    private $requestStack;
 
-    public function __construct(QueryBus $queryBus, SerializerInterface $serializer, DescriptionContainerInterface $descriptionContainer, RequestStack $requestStack)
+    public function __construct(DescriptionContainerInterface $descriptionContainer)
     {
-        $this->queryBus = $queryBus;
-        $this->serializer = $serializer;
         $this->descriptionContainer = $descriptionContainer;
-        $this->requestStack = $requestStack;
     }
 
     public function getCollection(string $resourceClass, string $operationName = null)
     {
         $collection = [];
-        foreach ($this->descriptionContainer->all() as $id => $description) {
-            $collection[] = new Query($id, $description['payload']);
+        foreach ($this->descriptionContainer as $name => $description) {
+            $collection[] = new Query($name, $description['payload']);
         }
 
         return $collection;
@@ -43,23 +33,13 @@ final class QueryDataProvider implements CollectionDataProviderInterface, ItemDa
 
     public function getItem(string $resourceClass, $id, string $operationName = null, array $context = [])
     {
-        try {
-            $itemDescription = $this->descriptionContainer->get($id);
-        } catch (DescriptionNotFoundException $e) {
+        if (!$this->descriptionContainer->has($id)) {
             throw new NotFoundHttpException(\sprintf('Query "%s" not found.', $id));
         }
-        $request = $this->requestStack->getCurrentRequest();
 
-        $payload = $request->query->all();
+        $description = $this->descriptionContainer->get($id);
 
-        try {
-            /** @var CQRSQuery $query */
-            $query = $this->serializer->deserialize(\json_encode($payload), $itemDescription['class'], 'json');
-        } catch (MissingConstructorArgumentsException $e) {
-            throw new BadRequestHttpException(\sprintf('Unable to create "%s" query. Please check your parameters.', $id));
-        }
-
-        return $this->queryBus->dispatch($query);
+        return new Query($id, $description['payload']);
     }
 
     public function supports(string $resourceClass, string $operationName = null, array $context = []): bool

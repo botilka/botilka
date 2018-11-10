@@ -2,19 +2,19 @@
 
 namespace Botilka\Bridge\Symfony\Bundle\DependencyInjection\Compiler;
 
-use Botilka\Bridge\ApiPlatform\Action\CommandAction;
+use Botilka\Bridge\ApiPlatform\Action\CommandEntrypointAction;
 use Botilka\Bridge\ApiPlatform\Resource\Command;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
-final class ApiPlatformCommandActionPass implements CompilerPassInterface
+final class ApiPlatformCommandEntrypointActionPass implements CompilerPassInterface
 {
     public function process(ContainerBuilder $container)
     {
-        if (!$container->hasDefinition(CommandAction::class)) {
+        if (!$container->hasDefinition(CommandEntrypointAction::class)) {
             return;
         }
-        $actionDefinition = $container->getDefinition(CommandAction::class);
+        $actionDefinition = $container->getDefinition(CommandEntrypointAction::class);
         $actionDefinition->setArgument('$descriptionContainer', $container->getDefinition(Command::class.'.description_container'));
     }
 }

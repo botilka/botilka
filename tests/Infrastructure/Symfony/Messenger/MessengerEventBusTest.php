@@ -7,19 +7,19 @@ use Botilka\Tests\Fixtures\Domain\StubEvent;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Messenger\MessageBusInterface;
 
-class MessengerEventBusTest extends TestCase
+final class MessengerEventBusTest extends TestCase
 {
     public function testDispatch()
     {
         $event = new StubEvent(42);
 
-        $symfonyBus = $this->createMock(MessageBusInterface::class);
-        $symfonyBus->expects($this->once())
+        $messengerBus = $this->createMock(MessageBusInterface::class);
+        $messengerBus->expects($this->once())
             ->method('dispatch')
             ->with($event)
             ->willReturn('bar');
 
-        $bus = new MessengerEventBus($symfonyBus);
+        $bus = new MessengerEventBus($messengerBus);
         $this->assertSame('bar', $bus->dispatch($event));
     }
 }

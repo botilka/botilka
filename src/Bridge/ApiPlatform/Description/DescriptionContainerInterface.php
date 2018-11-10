@@ -2,12 +2,12 @@
 
 namespace Botilka\Bridge\ApiPlatform\Description;
 
-interface DescriptionContainerInterface
+interface DescriptionContainerInterface extends \IteratorAggregate
 {
+    public function has(string $name): bool;
+
     /**
      * @throws DescriptionNotFoundException
      */
-    public function get(string $id): array;
-
-    public function all(): array;
+    public function get(string $name): array;
 }

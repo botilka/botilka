@@ -7,19 +7,19 @@ use Botilka\Tests\Fixtures\Application\Query\SimpleQuery;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Messenger\MessageBusInterface;
 
-class MessengerQueryBusTest extends TestCase
+final class MessengerQueryBusTest extends TestCase
 {
     public function testDispatch()
     {
         $query = new SimpleQuery('bar', 321);
 
-        $symfonyBus = $this->createMock(MessageBusInterface::class);
-        $symfonyBus->expects($this->once())
+        $messengerBus = $this->createMock(MessageBusInterface::class);
+        $messengerBus->expects($this->once())
             ->method('dispatch')
             ->with($query)
             ->willReturn('bar');
 
-        $bus = new MessengerQueryBus($symfonyBus);
+        $bus = new MessengerQueryBus($messengerBus);
         $this->assertSame('bar', $bus->dispatch($query));
     }
 }

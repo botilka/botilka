@@ -23,7 +23,6 @@ It can leverage [API Platform](https://api-platform.com) to expose the `Commands
 ## todo
 
 - Snapshots.
-- One endpoint by command/query.
 - EventStore in MongoDB / Redis.
 - (maybe) Smart command retry on concurrency exception.
 

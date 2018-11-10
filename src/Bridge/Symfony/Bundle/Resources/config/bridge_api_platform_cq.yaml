@@ -8,5 +8,8 @@ services:
     Botilka\Bridge\ApiPlatform\DataProvider\CommandDataProvider: ~
     Botilka\Bridge\ApiPlatform\DataProvider\QueryDataProvider: ~
 
-    Botilka\Bridge\ApiPlatform\Action\CommandAction:
+    Botilka\Bridge\ApiPlatform\Action\CommandEntrypointAction:
+        public: true
+
+    Botilka\Bridge\ApiPlatform\Action\CommandHandlerAction:
         public: true

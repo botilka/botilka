@@ -12,7 +12,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
-class EventDispatcherBusMiddlewareTest extends TestCase
+final class EventDispatcherBusMiddlewareTest extends TestCase
 {
     /** @var EventStore|MockObject */
     private $eventStore;

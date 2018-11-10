@@ -12,17 +12,15 @@ final class DescriptionContainerTest extends TestCase
 
     public function setUp()
     {
-        $this->descriptionContainer = new DescriptionContainer(['foo' => ['class' => 'Foo\\Bar', 'payload' => ['bar' => 'baz']]]);
-    }
-
-    public function testAll()
-    {
-        $this->assertSame(['foo' => ['class' => 'Foo\\Bar', 'payload' => ['bar' => 'baz']]], $this->descriptionContainer->all());
+        $this->descriptionContainer = new DescriptionContainer(['foo' => [
+            'class' => 'Foo\\Bar',
+            'payload' => ['some' => 'string'], ],
+        ]);
     }
 
     public function testGetFound()
     {
-        $this->assertSame(['class' => 'Foo\\Bar', 'payload' => ['bar' => 'baz']], $this->descriptionContainer->get('foo'));
+        $this->assertSame(['class' => 'Foo\\Bar', 'payload' => ['some' => 'string']], $this->descriptionContainer->get('foo'));
     }
 
     /**
@@ -32,5 +30,19 @@ final class DescriptionContainerTest extends TestCase
     public function testGetNotFound()
     {
         $this->descriptionContainer->get('bar');
+    }
+
+    /** @dataProvider hasProvider */
+    public function testHas(bool $expected, string $name)
+    {
+        $this->assertSame($expected, $this->descriptionContainer->has($name));
+    }
+
+    public function hasProvider(): array
+    {
+        return [
+            [false, 'bar'],
+            [true, 'foo'],
+        ];
     }
 }
