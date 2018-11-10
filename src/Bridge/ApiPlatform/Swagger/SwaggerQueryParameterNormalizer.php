@@ -2,7 +2,7 @@
 
 namespace Botilka\Bridge\ApiPlatform\Swagger;
 
-final class SwaggerQueryParameterNormalizer implements SwaggerQueryParameterNormalizerInterface
+final class SwaggerQueryParameterNormalizer implements SwaggerPayloadNormalizerInterface
 {
     public function normalize(array $payload): array
     {

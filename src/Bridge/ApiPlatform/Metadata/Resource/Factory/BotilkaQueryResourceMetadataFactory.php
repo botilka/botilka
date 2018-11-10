@@ -6,7 +6,7 @@ use ApiPlatform\Core\Exception\ResourceClassNotFoundException;
 use ApiPlatform\Core\Metadata\Resource\Factory\ResourceMetadataFactoryInterface;
 use ApiPlatform\Core\Metadata\Resource\ResourceMetadata;
 use Botilka\Bridge\ApiPlatform\Description\DescriptionContainerInterface;
-use Botilka\Bridge\ApiPlatform\Swagger\SwaggerQueryParameterNormalizerInterface;
+use Botilka\Bridge\ApiPlatform\Swagger\SwaggerPayloadNormalizerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -16,13 +16,13 @@ final class BotilkaQueryResourceMetadataFactory implements ResourceMetadataFacto
 
     private $decorated;
     private $descriptionContainer;
-    private $payloadNormalizer;
+    private $parameterNormalizer;
 
-    public function __construct(ResourceMetadataFactoryInterface $decorated, DescriptionContainerInterface $descriptionContainer, SwaggerQueryParameterNormalizerInterface $payloadNormalizer)
+    public function __construct(ResourceMetadataFactoryInterface $decorated, DescriptionContainerInterface $descriptionContainer, SwaggerPayloadNormalizerInterface $parameterNormalizer)
     {
         $this->decorated = $decorated;
         $this->descriptionContainer = $descriptionContainer;
-        $this->payloadNormalizer = $payloadNormalizer;
+        $this->parameterNormalizer = $parameterNormalizer;
     }
 
     public function create(string $resourceClass): ResourceMetadata
@@ -42,7 +42,7 @@ final class BotilkaQueryResourceMetadataFactory implements ResourceMetadataFacto
                     'path' => '/queries/'.$name.'.{_format}',
                     'swagger_context' => [
                         'description' => "Execute $name",
-                        'parameters' => $this->payloadNormalizer->normalize($descritpion['payload']),
+                        'parameters' => $this->parameterNormalizer->normalize($descritpion['payload']),
                         'responses' => [
                             Response::HTTP_OK => [
                                 'description' => "$name response",

@@ -7,6 +7,7 @@ use ApiPlatform\Core\Metadata\Resource\Factory\ResourceMetadataFactoryInterface;
 use ApiPlatform\Core\Metadata\Resource\ResourceMetadata;
 use Botilka\Bridge\ApiPlatform\Action\CommandHandlerAction;
 use Botilka\Bridge\ApiPlatform\Description\DescriptionContainerInterface;
+use Botilka\Bridge\ApiPlatform\Swagger\SwaggerPayloadNormalizerInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 final class BotilkaCommandResourceMetadataFactory implements ResourceMetadataFactoryInterface
@@ -15,11 +16,13 @@ final class BotilkaCommandResourceMetadataFactory implements ResourceMetadataFac
 
     private $decorated;
     private $descriptionContainer;
+    private $payloadNormalizer;
 
-    public function __construct(ResourceMetadataFactoryInterface $decorated, DescriptionContainerInterface $descriptionContainer)
+    public function __construct(ResourceMetadataFactoryInterface $decorated, DescriptionContainerInterface $descriptionContainer, SwaggerPayloadNormalizerInterface $payloadNormalizer)
     {
         $this->decorated = $decorated;
         $this->descriptionContainer = $descriptionContainer;
+        $this->payloadNormalizer = $payloadNormalizer;
     }
 
     public function create(string $resourceClass): ResourceMetadata
@@ -43,14 +46,7 @@ final class BotilkaCommandResourceMetadataFactory implements ResourceMetadataFac
                         'parameters' => [
                             [
                                 'in' => 'body',
-                                'schema' => [
-                                    'type' => 'object',
-                                    'required' => ['foo'],
-                                    'properties' => [
-                                        'foo' => ['type' => 'string'],
-                                        'bar' => ['type' => 'string'],
-                                    ],
-                                ],
+                                'schema' => $this->payloadNormalizer->normalize($descritpion['payload']),
                             ],
                         ],
                     ],
