@@ -9,6 +9,7 @@ use Botilka\Bridge\ApiPlatform\Action\CommandHandlerAction;
 use Botilka\Bridge\ApiPlatform\Description\DescriptionContainerInterface;
 use Botilka\Bridge\ApiPlatform\Swagger\SwaggerPayloadNormalizerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 final class BotilkaCommandResourceMetadataFactory implements ResourceMetadataFactoryInterface
 {
@@ -36,17 +37,40 @@ final class BotilkaCommandResourceMetadataFactory implements ResourceMetadataFac
 
             $collectionOperations = $resourceMetadata->getCollectionOperations() ?? [];
 
-            foreach ($this->descriptionContainer as $id => $descritpion) {
-                $collectionOperations[$id] = [
+            foreach ($this->descriptionContainer as $name => $descritpion) {
+                $collectionOperations[$name] = [
                     'controller' => CommandHandlerAction::class,
                     'method' => Request::METHOD_POST,
-                    'path' => '/commands/'.$id.'.{_format}',
+                    'path' => '/commands/'.$name.'.{_format}',
                     'swagger_context' => [
+                        'description' => "Execute $name",
                         'consumes' => 'application/json',
                         'parameters' => [
                             [
                                 'in' => 'body',
                                 'schema' => $this->payloadNormalizer->normalize($descritpion['payload']),
+                            ],
+                        ],
+                        'responses' => [
+                            Response::HTTP_OK => [
+                                'description' => "$name response",
+                                'content' => [
+                                    'application/json' => [
+                                        'schema' => [
+                                            'type' => 'object',
+                                        ],
+                                    ],
+                                ],
+                            ],
+                            Response::HTTP_BAD_REQUEST => [
+                                'description' => "$name error",
+                                'content' => [
+                                    'application/json' => [
+                                        'schema' => [
+                                            'type' => 'object',
+                                        ],
+                                    ],
+                                ],
                             ],
                         ],
                     ],

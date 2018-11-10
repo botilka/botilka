@@ -12,7 +12,10 @@ final class DescriptionContainerTest extends TestCase
 
     public function setUp()
     {
-        $this->descriptionContainer = new DescriptionContainer(['foo' => ['class' => 'Foo\\Bar', 'payload' => ['some' => 'string']]]);
+        $this->descriptionContainer = new DescriptionContainer(['foo' => [
+            'class' => 'Foo\\Bar',
+            'payload' => ['some' => 'string'], ],
+        ]);
     }
 
     public function testGetFound()
