@@ -25,6 +25,11 @@
         "symfony/framework-bundle": "^4.1",
         "symfony/yaml": "^4.1"
     },
+    "scripts": {
+        "analyze": "phpstan analyze",
+        "test": "phpunit",
+        "testcov": "phpunit --coverage-text"
+    },
     "suggest": {
         "doctrine/orm": "To use Doctrine as an EventStore",
         "mongodb/mongodb": "To use MongDB as an EventStore",
