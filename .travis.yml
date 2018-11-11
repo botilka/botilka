@@ -21,7 +21,7 @@ matrix:
     - env: deps=low
 
 before_script:
-  - pecl install mongodb
+  - pecl install mongodb && echo "extension = mongo.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
   - composer global require friendsofphp/php-cs-fixer
   - export PATH="$PATH:$HOME/.composer/vendor/bin"
 
