@@ -7,7 +7,6 @@ use Doctrine\Bundle\DoctrineBundle\Command\CreateDatabaseDoctrineCommand;
 use Doctrine\Bundle\DoctrineBundle\Command\DropDatabaseDoctrineCommand;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\HttpKernel\KernelInterface;
 
@@ -24,21 +23,10 @@ abstract class AbstractKernelTestCase extends KernelTestCase
     {
         $application = new DropDatabaseDoctrineCommand();
         $application->setContainer(self::$container);
-
-        $input = new ArrayInput([
-            '--force' => true,
-        ]);
-
-        $output = new BufferedOutput();
-        $application->run($input, $output);
+        $application->run(new ArrayInput(['--force' => true]), new NullOutput());
 
         $application = new CreateDatabaseDoctrineCommand();
         $application->setContainer(self::$container);
-        $output = new NullOutput();
-        $input = new ArrayInput([]);
-        \ob_start();
-        $application->run($input, $output);
-        $stdout = \ob_get_contents();
-        \ob_end_flush();
+        $application->run(new ArrayInput([]), new NullOutput());
     }
 }
