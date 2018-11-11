@@ -7,20 +7,20 @@ use Botilka\EventStore\EventStore;
 use Botilka\EventStore\EventStoreConcurrencyException;
 use Doctrine\DBAL\Driver\Connection;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
+use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
-use Symfony\Component\Serializer\SerializerInterface;
 
 final class EventStoreDoctrine implements EventStore
 {
     private $connection;
-    private $serializer;
     private $normalizer;
+    private $denormalizer;
 
-    public function __construct(Connection $connection, SerializerInterface $serializer, NormalizerInterface $normalizer)
+    public function __construct(Connection $connection, NormalizerInterface $normalizer, DenormalizerInterface $denormalizer)
     {
         $this->connection = $connection;
-        $this->serializer = $serializer;
         $this->normalizer = $normalizer;
+        $this->denormalizer = $denormalizer;
     }
 
     public function load(string $id): array
@@ -66,15 +66,16 @@ final class EventStoreDoctrine implements EventStore
             throw new EventStoreConcurrencyException(\sprintf('Duplicate storage of event "%s" on aggregate "%s" with playhead %d.', $values['type'], $values['id'], $values['playhead']));
         }
     }
+
     /**
      * @return Event[]
      */
-    private function deserialize(array $events): array
+    private function deserialize(array $storedEvents): array
     {
         $events = [];
         /** @var array $event */
-        foreach ($cursor as $event) {
-            $events[] = $this->serializer->deserialize($event['payload'], $event['type'], 'json');
+        foreach ($storedEvents as $event) {
+            $events[] = $this->denormalizer->denormalize(\json_decode($event['payload'], true), $event['type']);
         }
 
         return $events;
