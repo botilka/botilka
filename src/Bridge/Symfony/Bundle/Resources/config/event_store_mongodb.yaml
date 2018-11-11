@@ -15,10 +15,13 @@ services:
         arguments:
            $collection: '@MongoDB\Collection'
 
-    Botilka\EventStore\EventStore: '@Botilka\Infrastructure\MongoDB\EventStoreMongoDB'
+#    Botilka\EventStore\EventStore: '@Botilka\Infrastructure\MongoDB\EventStoreMongoDB'
 
     Botilka\Infrastructure\MongoDB\EventStoreMongoDBInitializer:
         arguments:
             $client: '@MongoDB\Client'
             $database: '%env(MONGODB_DB)%'
             $collection: '%env(MONGODB_COLLECTION)%'
+#    Botilka\Infrastructure\Doctrine\EventStoreDoctrineInitializer:
+#        arguments:
+#            $table: '%env(MONGODB_DB)%'

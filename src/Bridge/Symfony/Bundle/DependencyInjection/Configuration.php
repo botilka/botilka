@@ -2,9 +2,7 @@
 
 namespace Botilka\Bridge\Symfony\Bundle\DependencyInjection;
 
-use Botilka\Infrastructure\Doctrine\EventStoreDoctrine;
 use Botilka\Infrastructure\InMemory\EventStoreInMemory;
-use Doctrine\ORM\Version;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
@@ -17,7 +15,7 @@ final class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
-                ->scalarNode('event_store')->defaultValue(\class_exists(Version::class) ? EventStoreDoctrine::class : EventStoreInMemory::class)->info('Event store to use')->end()
+                ->scalarNode('event_store')->defaultValue(EventStoreInMemory::class)->info('Event store to use')->end()
                 ->scalarNode('default_messenger_config')->defaultTrue()->info('Auto-configure Messenger buses')->end()
                 ->booleanNode('doctrine_transaction_middleware')->defaultTrue()->info('Add Doctrine transaction middleware')->end()
                 ->arrayNode('api_platform')
