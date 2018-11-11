@@ -4,7 +4,7 @@ namespace Botilka\Bridge\Symfony\Bundle\DependencyInjection;
 
 use Botilka\Application\Command\Command;
 use Botilka\Application\Command\CommandHandler;
-use Botilka\Application\EventStore\EventStoreUniqueIndex;
+use Botilka\Application\EventStore\EventStoreInitializer;
 use Botilka\Event\EventHandler;
 use Botilka\Infrastructure\Doctrine\EventStoreDoctrine;
 use Botilka\Infrastructure\Symfony\Messenger\Middleware\EventDispatcherBusMiddleware;
@@ -32,18 +32,20 @@ final class BotilkaExtension extends Extension implements PrependExtensionInterf
         $container->setParameter('botilka.bridge.api_platform', false);
         $container->setParameter('botilka.messenger.doctrine_transaction_middleware', false);
 
+        // default is to use Messenger
         if ($botilkaConfig['default_messenger_config'] ?? true) {
-            $this->prependDefaultMessengerConfig($container, $botilkaConfig['doctrine_transaction_middleware'] ?? true);
+            $this->prependDefaultMessengerConfig($container, $botilkaConfig);
         }
 
         $this->prependApliPlatformConfig($container, $botilkaConfig['api_platform'] ?? []);
     }
 
-    private function prependDefaultMessengerConfig(ContainerBuilder $container, bool $addDoctrineTransactionMiddleware): void
+    private function prependDefaultMessengerConfig(ContainerBuilder $container, array $config): void
     {
         $commandBusMiddleware = [EventDispatcherBusMiddleware::class];
-        // depends on Doctrine availability too
-        if (true === $addDoctrineTransactionMiddleware && $container->hasExtension('doctrine')) {
+
+        // if EventStoreDoctrine is used, add doctrine_transaction_middleware by default
+        if ('Botilka\\Infrastructure\\Doctrine\\EventStoreDoctrine' === ($config['event_store'] ?? '') && ($config['doctrine_transaction_middleware'] ?? true)) {
             $container->setParameter('botilka.messenger.doctrine_transaction_middleware', true);
             \array_unshift($commandBusMiddleware, 'doctrine_transaction_middleware');
         }
@@ -124,10 +126,14 @@ final class BotilkaExtension extends Extension implements PrependExtensionInterf
             }
         }
 
-        $container->registerForAutoconfiguration(EventStoreUniqueIndex::class)->addTag('botilka.event_store.indexable');
+        $container->registerForAutoconfiguration(EventStoreInitializer::class)->addTag('botilka.event_store.initializable');
 
-        if (EventStoreDoctrine::class === $config['event_store']) {
-            $loader->load('doctrine_event_store.yaml');
+        if ('Botilka\\Infrastructure\\Doctrine\\EventStoreDoctrine' === $config['event_store']) {
+            $loader->load('event_store_doctrine.yaml');
+        }
+
+        if ('Botilka\\Infrastructure\\MongoDB\\EventStoreMongoDB' === $config['event_store']) {
+            $loader->load('event_store_mongodb.yaml');
         }
     }
 }

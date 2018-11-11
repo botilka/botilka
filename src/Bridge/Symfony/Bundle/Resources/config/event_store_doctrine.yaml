@@ -3,6 +3,5 @@ services:
         autowire: true
         public: false
 
-    # activate Doctrine as EventStore
     Botilka\Infrastructure\Doctrine\EventStoreDoctrine: ~
     Botilka\EventStore\EventStore: '@Botilka\Infrastructure\Doctrine\EventStoreDoctrine'

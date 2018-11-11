@@ -1,0 +1,24 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+
+    MongoDB\Client:
+       arguments: ['mongodb://%env(MONGODB_HOST)%:%env(MONGODB_PORT)%']
+
+    MongoDB\Collection:
+        factory: ['@MongoDB\Client', selectCollection]
+        arguments: ['%env(MONGODB_DB)%', '%env(MONGODB_COLLECTION)%']
+
+    Botilka\Infrastructure\MongoDB\EventStoreMongoDB:
+        arguments:
+           $collection: '@MongoDB\Collection'
+
+    Botilka\EventStore\EventStore: '@Botilka\Infrastructure\MongoDB\EventStoreMongoDB'
+
+    Botilka\Infrastructure\MongoDB\EventStoreMongoDBInitializer:
+        arguments:
+            $client: '@MongoDB\Client'
+            $database: '%env(MONGODB_DB)%'
+            $collection: '%env(MONGODB_COLLECTION)%'
