@@ -2,29 +2,27 @@
 
 namespace Botilka\Ui\Console;
 
-use Botilka\Application\EventStore\EventStoreUniqueIndex;
-use Botilka\EventStore\EventStore;
+use Botilka\Application\EventStore\EventStoreInitializer;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-final class EventStoreCreateUniqueIndexCommand extends Command
+final class EventStoreInitializeCommand extends Command
 {
-    private $eventStores;
+    private $initializers;
     private $projectDir;
 
-    public function __construct(iterable $eventStores, string $projectDir)
+    public function __construct(iterable $initializers)
     {
         parent::__construct('botilka:event_store:initialize');
-        $this->eventStores = $eventStores;
-        $this->projectDir = $projectDir;
+        $this->initializers = $initializers;
     }
 
     protected function configure()
     {
-        $this->setDescription('Create unique index for an EventStore implementation if supported. ')
+        $this->setDescription('Initializer an event store implementation (create, unique index, ...).')
             ->addArgument('implementation', InputArgument::REQUIRED, 'Implementation name');
     }
 
@@ -35,21 +33,21 @@ final class EventStoreCreateUniqueIndexCommand extends Command
         /** @var string $implementation */
         $implementation = $input->getArgument('implementation');
 
-        $found = null;
-        /** @var EventStoreUniqueIndex $eventStore */
-        foreach ($this->eventStores as $eventStore) {
-            $className = \get_class($eventStore);
+        $found = false;
+        /** @var EventStoreInitializer $initializer */
+        foreach ($this->initializers as $initializer) {
+            $className = \get_class($initializer);
             if (false !== \stripos($className, $implementation)) {
                 $io->text("Matched: $className");
                 $found = true;
-                $eventStore->createIndex($this->projectDir);
+                $initializer->initialize();
             }
         }
 
-        if (null === $found) {
+        if (true === $found) {
             $io->success('Finished.');
         } else {
-            $io->warning('No implementation found.');
+            $io->warning('No initializer found.');
         }
     }
 }
