@@ -9,14 +9,18 @@ php:
   - '7.2'
 
 env:
-  - deps=low
-  - deps=high
+  global:
+    - POSTGRES_HOST=localhost
+  matrix:
+    - deps=low
+    - deps=high
 
 matrix:
   allow_failures:
     - env: deps=low
 
 before_script:
+  - pecl install mongodb
   - composer global require friendsofphp/php-cs-fixer
   - export PATH="$PATH:$HOME/.composer/vendor/bin"
 
