@@ -14,7 +14,6 @@ use Symfony\Component\Serializer\SerializerInterface;
 
 final class EventStoreMongoDB implements EventStore
 {
-    /** @var Collection */
     private $collection;
     private $normalizer;
     private $serializer;
