@@ -6,6 +6,7 @@ use Botilka\Application\EventStore\EventStoreInitializer;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -23,24 +24,33 @@ final class EventStoreInitializeCommand extends Command
     protected function configure()
     {
         $this->setDescription('Initializer an event store implementation (create, unique index, ...).')
-            ->addArgument('implementation', InputArgument::REQUIRED, 'Implementation name');
+            ->addArgument('implementation', InputArgument::REQUIRED, 'Implementation name')
+            ->addOption('force', 'f', InputOption::VALUE_NONE, 'Force to recreate the event store. ⚠ You lost all the data, don\'t use it in production.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $io = new SymfonyStyle($input, $output);
-
         /** @var string $implementation */
         $implementation = $input->getArgument('implementation');
+        /** @var bool $force */
+        $force = $input->getOption('force');
+
+        $io = new SymfonyStyle($input, $output);
 
         $found = false;
         /** @var EventStoreInitializer $initializer */
         foreach ($this->initializers as $initializer) {
             $className = \get_class($initializer);
-            if (false !== \stripos($className, $implementation)) {
-                $io->text("Matched: $className");
+            if (false === \stripos($className, $implementation)) {
+                continue;
+            }
+
+            $io->text("Matched: $className");
+            try {
+                $initializer->initialize($force);
                 $found = true;
-                $initializer->initialize();
+            } catch (\RuntimeException $e) {
+                $io->error($e->getMessage());
             }
         }
 
