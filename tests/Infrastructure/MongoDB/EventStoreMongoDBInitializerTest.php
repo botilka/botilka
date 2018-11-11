@@ -4,10 +4,7 @@ namespace Botilka\Tests\Infrastructure\MongoDB;
 
 use Botilka\Infrastructure\MongoDB\EventStoreMongoDBInitializer;
 use Botilka\Tests\AbstractKernelTestCase;
-use Botilka\Tests\app\AppKernel;
 use MongoDB\Client;
-use PHPUnit\Framework\TestCase;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class EventStoreMongoDBInitializerTest extends AbstractKernelTestCase
 {
@@ -29,7 +26,7 @@ class EventStoreMongoDBInitializerTest extends AbstractKernelTestCase
 
         $client->selectDatabase($database)->dropCollection($collection);
 
-        $this->initializer  = new EventStoreMongoDBInitializer($client, $database, $collection);
+        $this->initializer = new EventStoreMongoDBInitializer($client, $database, $collection);
     }
 
     /**

@@ -3,17 +3,11 @@
 namespace Botilka\Tests\Infrastructure\MongoDB;
 
 use Botilka\EventStore\EventStore;
-use Botilka\EventStore\EventStoreConcurrencyException;
 use Botilka\Infrastructure\MongoDB\EventStoreMongoDB;
 use Botilka\Infrastructure\MongoDB\EventStoreMongoDBInitializer;
 use Botilka\Tests\AbstractKernelTestCase;
-use Botilka\Tests\app\AppKernel;
 use Botilka\Tests\Fixtures\Domain\StubEvent;
 use MongoDB\Client;
-use MongoDB\Collection;
-use MongoDB\Driver\Cursor;
-use PHPUnit\Framework\MockObject\MockObject;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 

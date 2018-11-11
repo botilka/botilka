@@ -2,11 +2,9 @@
 
 namespace Botilka\Tests\Infrastructure\Doctrine;
 
-use Botilka\Infrastructure\Doctrine\EventStoreDoctrine;
 use Botilka\Infrastructure\Doctrine\EventStoreDoctrineInitializer;
 use Botilka\Tests\AbstractKernelTestCase;
 use Doctrine\DBAL\Connection;
-use PHPUnit\Framework\TestCase;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
 class EventStoreDoctrineInitializerTest extends AbstractKernelTestCase
@@ -33,7 +31,7 @@ class EventStoreDoctrineInitializerTest extends AbstractKernelTestCase
         $connection->getConfiguration()->setSQLLogger(null);
         $connection->exec("DROP TABLE IF EXISTS $table;");
 
-        $this->initializer  = new EventStoreDoctrineInitializer($connection, $table);
+        $this->initializer = new EventStoreDoctrineInitializer($connection, $table);
     }
 
     /**

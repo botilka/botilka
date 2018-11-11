@@ -3,6 +3,7 @@ language: php
 
 services:
   - mongodb
+  - postgresql
 
 php:
   - '7.1'
