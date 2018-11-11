@@ -13,6 +13,9 @@ env:
   global:
     - POSTGRES_HOST=localhost
     - DATABASE_URL=pgsql://postgres@localhost:5432/database
+    - MONGODB_HOST=localhost
+    - MONGODB_DB=botilka_test
+    - MONGODB_COLLECTION=event_store_test
   matrix:
     - deps=low
     - deps=high
