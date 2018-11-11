@@ -10,15 +10,15 @@ use Doctrine\DBAL\Driver\Statement;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
-use Symfony\Component\Serializer\SerializerInterface;
 
 final class EventStoreDoctrineTest extends TestCase
 {
     /** @var Connection|MockObject */
     private $connection;
-    /** @var SerializerInterface|MockObject */
-    private $serializer;
+    /** @var DenormalizerInterface|MockObject */
+    private $denormalizer;
     /** @var NormalizerInterface|MockObject */
     private $normalizer;
     /** @var EventStoreDoctrine|MockObject */
@@ -27,9 +27,9 @@ final class EventStoreDoctrineTest extends TestCase
     public function setUp()
     {
         $this->connection = $this->createMock(Connection::class);
-        $this->serializer = $this->createMock(SerializerInterface::class);
         $this->normalizer = $this->createMock(NormalizerInterface::class);
-        $this->eventStore = new EventStoreDoctrine($this->connection, $this->serializer, $this->normalizer);
+        $this->denormalizer = $this->createMock(DenormalizerInterface::class);
+        $this->eventStore = new EventStoreDoctrine($this->connection, $this->normalizer, $this->denormalizer);
     }
 
     /**
@@ -45,7 +45,7 @@ final class EventStoreDoctrineTest extends TestCase
             ->method('fetchAll')
             ->willReturn($result);
 
-        $this->serializer->expects($this->once())
+        $this->denormalizer->expects($this->once())
             ->method('deserialize')
             ->with(['foo' => 'bar'], 'Foo\\Bar', 'json')
             ->willReturn('baz');
