@@ -9,6 +9,7 @@ use MongoDB\Collection;
 use MongoDB\Driver\Cursor;
 use MongoDB\Driver\Exception\BulkWriteException;
 use MongoDB\Model\BSONDocument;
+use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 
@@ -16,13 +17,13 @@ final class EventStoreMongoDB implements EventStore
 {
     private $collection;
     private $normalizer;
-    private $serializer;
+    private $denormalizer;
 
-    public function __construct(Collection $collection, NormalizerInterface $normalizer, SerializerInterface $serializer)
+    public function __construct(Collection $collection, NormalizerInterface $normalizer, DenormalizerInterface $denormalizer)
     {
         $this->collection = $collection;
         $this->normalizer = $normalizer;
-        $this->serializer = $serializer;
+        $this->denormalizer = $denormalizer;
     }
 
     public function load(string $id): array
@@ -60,9 +61,7 @@ final class EventStoreMongoDB implements EventStore
         $events = [];
         /** @var BSONDocument $event */
         foreach ($cursor as $event) {
-            $values = $event->getArrayCopy();
-            unset($values['_id']);
-            $events[] = $this->serializer->deserialize($values['payload'], $values['type'], 'json');
+            $events[] = $this->denormalizer->denormalize($event->offsetGet('payload'), $event->offsetGet('type'));
         }
 
         return $events;
@@ -74,8 +73,8 @@ final class EventStoreMongoDB implements EventStore
             'id' => $id,
             'playhead' => $playhead,
             'type' => $type,
-            'payload' => \json_encode($this->normalizer->normalize($payload)),
-            'metadata' => \json_encode($metadata),
+            'payload' => $this->normalizer->normalize($payload),
+            'metadata' => $this->normalizer->normalize($metadata),
             'recordedOn' => $recordedOn->format('Y-m-d H:i:s.u'),
         ];
 
