@@ -73,7 +73,7 @@ final class BotilkaExtensionTest extends TestCase
 
         $middleware = [EventDispatcherBusMiddleware::class];
 
-        if ('Botilka\\Infrastructure\\Doctrine\\EventStoreDoctrine' === $eventStore) {
+        if (EventStoreDoctrine::class === $eventStore) {
             $containerBuilderProphecy->setParameter('botilka.messenger.doctrine_transaction_middleware', true)->shouldBeCalledTimes((int) $withDoctrineTranslationMiddleware);
             if (true === $withDoctrineTranslationMiddleware) {
                 \array_unshift($middleware, 'doctrine_transaction_middleware');
@@ -101,10 +101,10 @@ final class BotilkaExtensionTest extends TestCase
     public function prependWithDefaultMessengerProvider(): array
     {
         return [
-            ['Botilka\\Infrastructure\\Doctrine\\EventStoreDoctrine', true],
-            ['Botilka\\Infrastructure\\Doctrine\\EventStoreDoctrine', false],
-            ['Botilka\\Infrastructure\\InMemory\\EventStoreInMemory', true],
-            ['Botilka\\Infrastructure\\InMemory\\EventStoreInMemory', false],
+            [EventStoreDoctrine::class, true],
+            [EventStoreDoctrine::class, false],
+            [EventStoreInMemory::class, true],
+            [EventStoreInMemory::class, false],
         ];
     }
 
