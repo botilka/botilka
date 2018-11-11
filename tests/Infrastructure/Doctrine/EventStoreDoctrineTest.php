@@ -38,7 +38,7 @@ final class EventStoreDoctrineTest extends TestCase
     private function addDenormalizerExpectation(MockObject $stmt): void
     {
         $result = [
-            ['type' => 'Foo\\Bar', 'payload' => json_encode(['foo' => 'bar'])],
+            ['type' => 'Foo\\Bar', 'payload' => \json_encode(['foo' => 'bar'])],
         ];
 
         $stmt->expects($this->once())

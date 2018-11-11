@@ -24,6 +24,7 @@ final class BotilkaExtension extends Extension implements PrependExtensionInterf
         EventHandler::class => ['messenger.message_handler', ['bus' => 'messenger.bus.events']],
         Command::class => ['cqrs.command'],
         Query::class => ['cqrs.query'],
+        EventStoreInitializer::class => ['botilka.event_store.initializable'],
     ];
 
     public function prepend(ContainerBuilder $container)
@@ -125,8 +126,6 @@ final class BotilkaExtension extends Extension implements PrependExtensionInterf
                     ->addTag($tag[0], $tag[1] ?? []);
             }
         }
-
-        $container->registerForAutoconfiguration(EventStoreInitializer::class)->addTag('botilka.event_store.initializable');
 
         if ('Botilka\\Infrastructure\\Doctrine\\EventStoreDoctrine' === $config['event_store']) {
             $loader->load('event_store_doctrine.yaml');
