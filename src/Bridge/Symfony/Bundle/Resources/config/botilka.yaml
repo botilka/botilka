@@ -42,3 +42,8 @@ services:
 
     Botilka\Bridge\ApiPlatform\Swagger\SwaggerQueryParameterNormalizer: ~
     Botilka\Bridge\ApiPlatform\Swagger\SwaggerCommandBodyNormalizer: ~
+
+    Botilka\Ui\Console\EventStoreCreateUniqueIndexCommand:
+        arguments:
+            $eventStores: !tagged botilka.event_store.indexable
+            $projectDir: '%kernel.project_dir%'
