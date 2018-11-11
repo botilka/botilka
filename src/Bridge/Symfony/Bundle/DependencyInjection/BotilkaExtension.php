@@ -126,8 +126,6 @@ final class BotilkaExtension extends Extension implements PrependExtensionInterf
                     ->addTag($tag[0], $tag[1] ?? []);
             }
         }
-        $loader->load('event_store_doctrine.yaml');
-//        $loader->load('event_store_mongodb.yaml');
 
         if ('Botilka\\Infrastructure\\Doctrine\\EventStoreDoctrine' === $config['event_store']) {
             $loader->load('event_store_doctrine.yaml');

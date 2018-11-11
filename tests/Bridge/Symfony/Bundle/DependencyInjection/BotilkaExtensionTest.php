@@ -17,6 +17,7 @@ use Botilka\Event\EventDispatcher;
 use Botilka\Event\EventHandler;
 use Botilka\EventStore\EventStore;
 use Botilka\Infrastructure\Doctrine\EventStoreDoctrine;
+use Botilka\Infrastructure\MongoDB\EventStoreMongoDB;
 use Botilka\Infrastructure\Symfony\Messenger\Middleware\EventDispatcherBusMiddleware;
 use Botilka\Infrastructure\InMemory\EventStoreInMemory;
 use PHPUnit\Framework\TestCase;
@@ -60,6 +61,9 @@ final class BotilkaExtensionTest extends TestCase
         $containerBuilderProphecy = $this->prophesize(ContainerBuilder::class);
         $this->addDefaultCalls($containerBuilderProphecy);
         $containerBuilderProphecy->hasExtension('api_platform')->shouldBeCalled();
+//        if ($withDoctrineTranslationMiddleware) {
+//            $containerBuilderProphecy->hasExtension('doctrine')->willReturn(true)->shouldBeCalled();
+//        }
         $containerBuilderProphecy->getExtensionConfig('botilka')->willReturn(\array_merge_recursive(self::DEFAULT_CONFIG, [
             [
                 'event_store' => $eventStore,
@@ -73,12 +77,14 @@ final class BotilkaExtensionTest extends TestCase
 
         $middleware = [EventDispatcherBusMiddleware::class];
 
-        if (EventStoreDoctrine::class === $eventStore) {
+        if ('Botilka\\Infrastructure\\Doctrine\\EventStoreDoctrine' === $eventStore) {
             $containerBuilderProphecy->setParameter('botilka.messenger.doctrine_transaction_middleware', true)->shouldBeCalledTimes((int) $withDoctrineTranslationMiddleware);
             if (true === $withDoctrineTranslationMiddleware) {
                 \array_unshift($middleware, 'doctrine_transaction_middleware');
             }
+
         }
+
 
         $containerBuilderProphecy->prependExtensionConfig(
             'framework', [
@@ -101,10 +107,10 @@ final class BotilkaExtensionTest extends TestCase
     public function prependWithDefaultMessengerProvider(): array
     {
         return [
-            [EventStoreDoctrine::class, true],
-            [EventStoreDoctrine::class, false],
-            [EventStoreInMemory::class, true],
-            [EventStoreInMemory::class, false],
+            ['Botilka\\Infrastructure\\Doctrine\\EventStoreDoctrine', true],
+            ['Botilka\\Infrastructure\\Doctrine\\EventStoreDoctrine', false],
+            ['Botilka\\Infrastructure\\InMemory\\EventStoreInMemory', true],
+            ['Botilka\\Infrastructure\\InMemory\\EventStoreInMemory', false],
         ];
     }
 
@@ -167,12 +173,7 @@ final class BotilkaExtensionTest extends TestCase
         $this->extension->load($configs, $container);
 
         $this->assertSame($eventStore, (string) $container->getAlias(EventStore::class));
-        if ($defaultMessengerConfig) {
-            $this->assertSame(DefaultEventDispatcher::class, $container->getDefinition(EventDispatcher::class)->getClass());
-        } else {
-            $this->assertFalse($container->hasDefinition(EventDispatcher::class));
-        }
-        $this->assertSame($defaultMessengerConfig || EventStoreDoctrine::class === $eventStore, $container->hasDefinition('messenger.middleware.doctrine_transaction_middleware'));
+        $this->assertSame((bool) $container->getParameter('botilka.messenger.doctrine_transaction_middleware'), $container->hasDefinition('messenger.middleware.doctrine_transaction_middleware'));
         $this->assertSame($defaultMessengerConfig, $container->hasDefinition(EventDispatcherBusMiddleware::class));
         $this->assertSame($hasApiPlatformBridge, $container->hasDefinition(DescriptionContainer::class));
         $this->assertSame($hasApiPlatformBridge, $container->hasDefinition(CommandDataProvider::class));
@@ -187,7 +188,16 @@ final class BotilkaExtensionTest extends TestCase
             [EventStoreDoctrine::class, false, false],
             [EventStoreDoctrine::class, true, false],
             [EventStoreDoctrine::class, false, true],
+
+            [EventStoreInMemory::class, true, true],
             [EventStoreInMemory::class, false, false],
+            [EventStoreInMemory::class, true, false],
+            [EventStoreInMemory::class, false, true],
+
+            [EventStoreMongoDB::class, true, true],
+            [EventStoreMongoDB::class, false, false],
+            [EventStoreMongoDB::class, true, false],
+            [EventStoreMongoDB::class, false, true],
         ];
     }
 

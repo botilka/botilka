@@ -15,7 +15,7 @@ services:
         arguments:
            $collection: '@MongoDB\Collection'
 
-#    Botilka\EventStore\EventStore: '@Botilka\Infrastructure\MongoDB\EventStoreMongoDB'
+    Botilka\EventStore\EventStore: '@Botilka\Infrastructure\MongoDB\EventStoreMongoDB'
 
     Botilka\Infrastructure\MongoDB\EventStoreMongoDBInitializer:
         arguments:

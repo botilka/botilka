@@ -7,6 +7,6 @@ services:
             $table: '%env(POSTGRES_TABLE)%'
 
     Botilka\Infrastructure\Doctrine\EventStoreDoctrine: ~
-#    Botilka\EventStore\EventStore: '@Botilka\Infrastructure\Doctrine\EventStoreDoctrine'
+    Botilka\EventStore\EventStore: '@Botilka\Infrastructure\Doctrine\EventStoreDoctrine'
 
     Botilka\Infrastructure\Doctrine\EventStoreDoctrineInitializer: ~
