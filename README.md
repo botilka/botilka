@@ -11,6 +11,7 @@ It can leverage [API Platform](https://api-platform.com) to expose the `Commands
 ## Features
 
 - Fully immutable, not a single setter.
+- [Doctrine](https://www.doctrine-project.org/) & [MongoDB](https://www.mongodb.com) supported.
 - Sync or async event handling is a matter of configuration.
 - Replay all or some events.
 - Safe commands concurrency.
@@ -27,6 +28,8 @@ It can leverage [API Platform](https://api-platform.com) to expose the `Commands
 - (maybe) Smart command retry on concurrency exception.
 
 ## Documentation
+
+
 
 - [API Platform bridge](/documentation/api_platform_bridge.md)
 - See below.
