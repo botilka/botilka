@@ -12,6 +12,7 @@ php:
 env:
   global:
     - POSTGRES_HOST=localhost
+    - DATABASE_URL=pgsql://postgres@localhost:5432/database
   matrix:
     - deps=low
     - deps=high
@@ -34,7 +35,7 @@ after_script:
   - php ocular.phar code-coverage:upload --format=php-clover coverage.clover
 
 install:
-  - pecl install mongodb && echo "extension = mongodb.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+  - pecl -q install mongodb
   - if [[ $deps = 'low' ]]; then
       composer update --prefer-dist --no-progress --no-suggest --ansi --prefer-stable --prefer-lowest;
     else
