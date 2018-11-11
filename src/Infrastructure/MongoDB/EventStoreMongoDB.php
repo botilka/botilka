@@ -11,7 +11,6 @@ use MongoDB\Driver\Exception\BulkWriteException;
 use MongoDB\Model\BSONDocument;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
-use Symfony\Component\Serializer\SerializerInterface;
 
 final class EventStoreMongoDB implements EventStore
 {
@@ -29,7 +28,7 @@ final class EventStoreMongoDB implements EventStore
     public function load(string $id): array
     {
         return $this->deserialize(
-            $this->collection->find(['id' => $id], ['sort' => ['payload' => 1]])
+            $this->collection->find(['id' => $id], ['sort' => ['payload' => -1]])
         );
     }
 
@@ -39,7 +38,7 @@ final class EventStoreMongoDB implements EventStore
             $this->collection->find([
                 'id' => $id,
                 'playhead' => ['$gte' => $fromPlayhead],
-            ], ['sort' => ['payload' => 1]])
+            ], ['sort' => ['payload' => -1]])
         );
     }
 
@@ -49,7 +48,7 @@ final class EventStoreMongoDB implements EventStore
             $this->collection->find([
                 'id' => $id,
                 'playhead' => ['$gte' => $fromPlayhead, '$gle' => $fromPlayhead],
-            ], ['sort' => ['payload' => 1]])
+            ], ['sort' => ['payload' => -1]])
         );
     }
 
