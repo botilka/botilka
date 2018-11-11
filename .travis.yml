@@ -21,7 +21,6 @@ matrix:
     - env: deps=low
 
 before_script:
-  - pecl install mongodb && echo "extension = mongodb.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
   - composer global require friendsofphp/php-cs-fixer
   - export PATH="$PATH:$HOME/.composer/vendor/bin"
 
@@ -35,6 +34,7 @@ after_script:
   - php ocular.phar code-coverage:upload --format=php-clover coverage.clover
 
 install:
+  - pecl install mongodb && echo "extension = mongodb.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
   - if [[ $deps = 'low' ]]; then
       composer update --prefer-dist --no-progress --no-suggest --ansi --prefer-stable --prefer-lowest;
     else
