@@ -2,85 +2,81 @@
 
 namespace Botilka\Tests\Infrastructure\MongoDB;
 
+use Botilka\EventStore\EventStore;
+use Botilka\EventStore\EventStoreConcurrencyException;
 use Botilka\Infrastructure\MongoDB\EventStoreMongoDB;
+use Botilka\Infrastructure\MongoDB\EventStoreMongoDBInitializer;
+use Botilka\Tests\AbstractKernelTestCase;
+use Botilka\Tests\app\AppKernel;
+use Botilka\Tests\Fixtures\Domain\StubEvent;
+use MongoDB\Client;
 use MongoDB\Collection;
 use MongoDB\Driver\Cursor;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
-use Symfony\Component\Serializer\Normalizer\NormalizableInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
-class EventStoreMongoDBTest extends TestCase
+class EventStoreMongoDBTest extends AbstractKernelTestCase
 {
     /** @var EventStoreMongoDB */
-    private $eventStore;
-    /** @var Collection|MockObject */
-    private $collection;
-    /** @var NormalizerInterface|MockObject */
-    private $normalizer;
-    /** @var DenormalizerInterface|MockObject */
-    private $denormalizer;
-
-    /** @var Cursor|MockObject */
-    private $cursor;
+    private static $eventStore;
 
     protected function setUp()
     {
+        if (null !== static::$eventStore) {
+            return;
+        }
 
-        $this->collection = $this->createMock(Collection::class);
-        $this->normalizer = $this->createMock(NormalizerInterface::class);
-        $this->denormalizer = $this->createMock(DenormalizerInterface::class);
+        static::bootKernel();
+        $container = static::$container;
 
-        $this->eventStore = new EventStoreMongoDB($this->collection, $this->normalizer, $this->denormalizer);
+        /** @var Client $client */
+        $client = $container->get(Client::class);
+        $database = \getenv('MONGODB_DB').'_test';
+        $collection = \getenv('MONGODB_COLLECTION').'_test';
 
-        $reflectionClass = new \ReflectionClass(Cursor::class);
-        $constructor = $reflectionClass->getConstructor();
-        $constructor->setAccessible(true);
+        $initializer = new EventStoreMongoDBInitializer($client, $database, $collection);
+        $initializer->initialize(true);
 
+        /** @var NormalizerInterface $normalizer */
+        $normalizer = $container->get('serializer');
+        /** @var DenormalizerInterface $denormalizer */
+        $denormalizer = $container->get('serializer');
 
-        $this->cursor = $reflectionClass->newInstance([
-            ['type' => 'Foo\\Bar', 'payload' => \json_encode(['foo' => 'bar'])],
-        ]);
-
-        $this->collection->expects($this->once())
-            ->method('find')
-            ->willReturn($this->cursor);
-
+        $eventStore = new EventStoreMongoDB($client->selectCollection($database, $collection), $normalizer, $denormalizer);
+        $eventStore->append('bar', 1, StubEvent::class, new StubEvent(42), null, new \DateTimeImmutable());
+        for ($i = 0; $i < 5; ++$i) {
+            $eventStore->append('foo', $i, StubEvent::class, new StubEvent($i * 100), null, new \DateTimeImmutable());
+        }
+        $this->assertInstanceOf(EventStore::class, $eventStore);
+        static::$eventStore = $eventStore;
     }
 
     public function testLoad()
     {
-
-        $this->eventStore->load(1);
-
-    }
-
-    public function testAppend()
-    {
-
+        $this->assertCount(5, static::$eventStore->load('foo'));
+        $this->assertCount(1, static::$eventStore->load('bar'));
     }
 
     public function testLoadFromPlayheadToPlayhead()
     {
-
+        $this->assertCount(1, static::$eventStore->loadFromPlayheadToPlayhead('foo', 2, 3));
+        $this->assertCount(1, static::$eventStore->loadFromPlayheadToPlayhead('foo', 4, 10));
     }
-
 
     public function testLoadFromPlayhead()
     {
-
+        $this->assertCount(3, static::$eventStore->loadFromPlayhead('foo', 2));
+        $this->assertCount(1, static::$eventStore->loadFromPlayhead('foo', 4));
     }
 
-
     /**
-     * @param MockObject|Collection $collection
+     * @expectedException \Botilka\EventStore\EventStoreConcurrencyException
+     * @expectedExceptionMessage Duplicate storage of event "Botilka\Tests\Fixtures\Domain\StubEvent" on aggregate "bar" with playhead 1.
      */
-    private function addDenormalizerExpectation(MockObject $collection): void
+    public function testAppendBulkWriteException()
     {
-        $this->denormalizer->expects($this->once())
-            ->method('denormalize')
-            ->with(['foo' => 'bar'], 'Foo\\Bar')
-            ->willReturn('baz');
+        static::$eventStore->append('bar', 1, StubEvent::class, new StubEvent(42), null, new \DateTimeImmutable());
     }
 }

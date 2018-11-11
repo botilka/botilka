@@ -1,0 +1,9 @@
+services:
+
+    _defaults:
+        autoconfigure: true
+        autowire: true
+        public: true
+
+    MongoDB\Client:
+        arguments: ['mongodb://%env(MONGODB_HOST)%:%env(MONGODB_PORT)%']

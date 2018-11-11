@@ -2,6 +2,7 @@
 
 namespace Botilka\Tests\Infrastructure\Doctrine;
 
+use Botilka\EventStore\EventStore;
 use Botilka\Infrastructure\Doctrine\EventStoreDoctrine;
 use Botilka\Tests\Fixtures\Domain\StubEvent;
 use Doctrine\DBAL\Driver\Connection;
@@ -30,6 +31,7 @@ final class EventStoreDoctrineTest extends TestCase
         $this->normalizer = $this->createMock(NormalizerInterface::class);
         $this->denormalizer = $this->createMock(DenormalizerInterface::class);
         $this->eventStore = new EventStoreDoctrine($this->connection, $this->normalizer, $this->denormalizer);
+        $this->assertInstanceOf(EventStore::class, $this->eventStore);
     }
 
     /**

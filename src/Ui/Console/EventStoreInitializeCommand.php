@@ -15,7 +15,7 @@ final class EventStoreInitializeCommand extends Command
     private $initializers;
     private $projectDir;
 
-    public function __construct(iterable $initializers)
+    public function __construct(iterable $initializers = [])
     {
         parent::__construct('botilka:event_store:initialize');
         $this->initializers = $initializers;
@@ -23,7 +23,7 @@ final class EventStoreInitializeCommand extends Command
 
     protected function configure()
     {
-        $this->setDescription('Initializer an event store implementation (create, unique index, ...).')
+        $this->setDescription('Initialize an event store implementation (create, unique index, ...).')
             ->addArgument('implementation', InputArgument::REQUIRED, 'Implementation name')
             ->addOption('force', 'f', InputOption::VALUE_NONE, 'Force to recreate the event store. ⚠ You lost all the data, don\'t use it in production.');
     }

@@ -12,8 +12,6 @@ use Botilka\Bridge\ApiPlatform\DataProvider\CommandDataProvider;
 use Botilka\Bridge\ApiPlatform\DataProvider\QueryDataProvider;
 use Botilka\Bridge\ApiPlatform\Description\DescriptionContainer;
 use Botilka\Bridge\Symfony\Bundle\DependencyInjection\BotilkaExtension;
-use Botilka\Event\DefaultEventDispatcher;
-use Botilka\Event\EventDispatcher;
 use Botilka\Event\EventHandler;
 use Botilka\EventStore\EventStore;
 use Botilka\Infrastructure\Doctrine\EventStoreDoctrine;
@@ -82,9 +80,7 @@ final class BotilkaExtensionTest extends TestCase
             if (true === $withDoctrineTranslationMiddleware) {
                 \array_unshift($middleware, 'doctrine_transaction_middleware');
             }
-
         }
-
 
         $containerBuilderProphecy->prependExtensionConfig(
             'framework', [

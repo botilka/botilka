@@ -3,7 +3,6 @@
 namespace Botilka\Tests\Bridge\Symfony\Bundle\DependencyInjection;
 
 use Botilka\Bridge\Symfony\Bundle\DependencyInjection\Configuration;
-use Botilka\Infrastructure\Doctrine\EventStoreDoctrine;
 use Botilka\Infrastructure\InMemory\EventStoreInMemory;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
