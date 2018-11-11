@@ -35,10 +35,10 @@ final class EventStoreDoctrineTest extends TestCase
     /**
      * @param MockObject|Statement $stmt
      */
-    private function addSerializerExpectation(MockObject $stmt): void
+    private function addDenormalizerExpectation(MockObject $stmt): void
     {
         $result = [
-            ['type' => 'Foo\\Bar', 'payload' => ['foo' => 'bar']],
+            ['type' => 'Foo\\Bar', 'payload' => json_encode(['foo' => 'bar'])],
         ];
 
         $stmt->expects($this->once())
@@ -46,8 +46,8 @@ final class EventStoreDoctrineTest extends TestCase
             ->willReturn($result);
 
         $this->denormalizer->expects($this->once())
-            ->method('deserialize')
-            ->with(['foo' => 'bar'], 'Foo\\Bar', 'json')
+            ->method('denormalize')
+            ->with(['foo' => 'bar'], 'Foo\\Bar')
             ->willReturn('baz');
     }
 
@@ -64,7 +64,7 @@ final class EventStoreDoctrineTest extends TestCase
             ->method('execute')
             ->with(['id' => 'foo']);
 
-        $this->addSerializerExpectation($stmt);
+        $this->addDenormalizerExpectation($stmt);
 
         $this->assertSame(['baz'], $this->eventStore->load('foo'));
     }
@@ -82,7 +82,7 @@ final class EventStoreDoctrineTest extends TestCase
             ->method('execute')
             ->with(['id' => 'foo', 'playhead' => 2]);
 
-        $this->addSerializerExpectation($stmt);
+        $this->addDenormalizerExpectation($stmt);
 
         $this->assertSame(['baz'], $this->eventStore->loadFromPlayhead('foo', 2));
     }
@@ -100,7 +100,7 @@ final class EventStoreDoctrineTest extends TestCase
             ->method('execute')
             ->with(['id' => 'foo', 'from' => 2, 'to' => 4]);
 
-        $this->addSerializerExpectation($stmt);
+        $this->addDenormalizerExpectation($stmt);
 
         $this->assertSame(['baz'], $this->eventStore->loadFromPlayheadToPlayhead('foo', 2, 4));
     }
