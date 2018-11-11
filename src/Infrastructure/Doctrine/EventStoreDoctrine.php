@@ -23,9 +23,6 @@ final class EventStoreDoctrine implements EventStore
         $this->normalizer = $normalizer;
     }
 
-    /**
-     * Does not call loadFromPlayhead with playhead "0" to avoid a function call.
-     */
     public function load(string $id): array
     {
         $stmt = $this->connection->prepare('SELECT type, payload FROM event_store WHERE id = :id ORDER BY playhead');
@@ -69,11 +66,17 @@ final class EventStoreDoctrine implements EventStore
             throw new EventStoreConcurrencyException(\sprintf('Duplicate storage of event "%s" on aggregate "%s" with playhead %d.', $values['type'], $values['id'], $values['playhead']));
         }
     }
-
-    private function deserialize(array $events)
+    /**
+     * @return Event[]
+     */
+    private function deserialize(array $events): array
     {
-        return \array_map(function ($event) {
-            return $this->serializer->deserialize($event['payload'], $event['type'], 'json');
-        }, $events);
+        $events = [];
+        /** @var array $event */
+        foreach ($cursor as $event) {
+            $events[] = $this->serializer->deserialize($event['payload'], $event['type'], 'json');
+        }
+
+        return $events;
     }
 }
