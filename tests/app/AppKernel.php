@@ -14,12 +14,12 @@ final class AppKernel extends Kernel
 {
     use MicroKernelTrait;
 
-    private $volatileDir = '/tmp';
+    private $volatileDir = '/tmp/botilka_test';
 
     public function __construct(string $environment, bool $debug)
     {
         parent::__construct($environment, $debug);
-        $this->volatileDir = \exec('mktemp -d'); // retrieve a new temporary root dir on each execution
+        $this->volatileDir = sys_get_temp_dir().'/botilka_test';
     }
 
     public function getCacheDir()
