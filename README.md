@@ -47,138 +47,16 @@ bin/console botilka:event_store:initialize doctrine -f # or 'mongodb'
 
 ## Usage
 
-### Api Platform bridge
+**CQRS & EventSourcing** \
+You can find how to use this framework 
 
+
+**Api Platform bridge** \
 See the [API Platform bridge](/documentation/api_platform_bridge.md) documentation.
-
-### Command
-
-Create a command:
-```php
-<?php
-use Botilka\Application\Command\Command;
-
-final class CreateBankAccountCommand implements Command
-{
-    private $name;
-    private $currency;
-
-    public function __construct(string $name, ?string $currency)
-    {
-        $this->name = $name;
-        $this->currency = $currency;
-    }
-    // add getters
-}
-```
-
-Create a command handler:
-```php
-<?php
-namespace App\BankAccount\Application\Command;
-
-use App\BankAccount\Domain\BankAccount;
-use Botilka\Application\Command\CommandHandler;
-use Botilka\Application\Command\CommandResponse;
-use Ramsey\Uuid\Uuid;
-
-final class CreateBankAccountHandler implements CommandHandler
-{
-    public function __invoke(CreateBankAccountCommand $command): CommandResponse
-    {
-        $id = Uuid::uuid4();
-        /** @var BankAccount $instance */
-        [$instance, $event] = BankAccount::create($id->toString(), $command->getName(), $command->getCurrency());
-        return CommandResponse::withValue($instance->getAggregateRootId(), $instance->getPlayhead(), $event);
-    }
-}
-```
-Create a command handler:
-```php
-<?php
-
-namespace App\BankAccount\Domain;
-
-use Botilka\Domain\EventSourcedAggregateRoot;
-use Botilka\Domain\EventSourcedAggregateRootApplier;
-
-final class BankAccount implements EventSourcedAggregateRoot
-{
-    use EventSourcedAggregateRootApplier;
-
-    /** @var string */
-    private $id;
-    /** @var string */
-    private $name;
-    /** @var string */
-    private $currency;
-    /** @var int */
-    private $balance;
-    private $playhead = -1;
-
-    protected $eventMap = [
-        BankAccountCreated::class => 'bankAccountCreated',
-    ];
-
-    public static function create(string $id, string $name, string $currency): array
-    {
-        $instance = new self();
-        $event = new BankAccountCreated($id, $name, $currency);
-        return [$instance->apply($event), $event];
-    }
-
-    private function bankAccountCreated(BankAccountCreated $event): BankAccount
-    {
-        $instance = clone $this;
-        $instance->id = $event->getId();
-        $instance->name = $event->getName();
-        $instance->currency = $event->getCurrency();
-        $instance->balance = 0;
-        return $instance;
-    }
-}
-```
-and the corresponding event:
-```php
-<?php
-
-namespace App\BankAccount\Domain;
-
-use Botilka\Event\Event;
-
-final class BankAccountCreated implements Event
-{
-    private $id;
-    private $name;
-    private $currency;
-
-    public function __construct(string $id, string $name, string $currency)
-    {
-        $this->id = $id;
-        $this->name = $name;
-        $this->currency = $currency;
-    }
-    // add getters
-}
-
-``` 
-Then dispatch the command
-```php
-<?php
-use Botilka\Application\Command\CommandBus;
-
-$command = new CreateBankAccountCommand('account in $', 'DOL');
-
-/** @var CommandBus $bus */
-$bus = $container->get(CommandBus::class); // retrieve it by injection
-$response = $bus->dispatch($command);
-
-echo $response->getId(); // aggregate root id
-```
 
 ### How it works
 
-Each `Command`, `Query` & `Event` are just POPO. For all of them, we use the Bus pattern to dispatch and
+Each `Command`, `Query` & `Event` are just POPO seen as messages. For all of them, we use the Bus pattern to dispatch and
 handle these messages. They are all transported on their own bus.
 
 Buses are (by default) managed by [Symfony Messenger Component](https://symfony.com/doc/4.1/messenger.html).
