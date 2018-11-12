@@ -30,7 +30,7 @@ final class EventStoreDoctrineTest extends TestCase
         $this->connection = $this->createMock(Connection::class);
         $this->normalizer = $this->createMock(NormalizerInterface::class);
         $this->denormalizer = $this->createMock(DenormalizerInterface::class);
-        $this->eventStore = new EventStoreDoctrine($this->connection, $this->normalizer, $this->denormalizer);
+        $this->eventStore = new EventStoreDoctrine($this->connection, $this->normalizer, $this->denormalizer, 'event_store');
         $this->assertInstanceOf(EventStore::class, $this->eventStore);
     }
 

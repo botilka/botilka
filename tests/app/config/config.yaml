@@ -1,6 +1,5 @@
 framework:
     secret: footest
-    test: true
 
 services:
 
