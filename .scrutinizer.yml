@@ -2,7 +2,7 @@ tools:
     external_code_coverage: true
 
 build:
-    node:
+    nodes:
         my-tests:
             services:
                 mongo: 4

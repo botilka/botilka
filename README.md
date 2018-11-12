@@ -25,8 +25,8 @@ It can leverage [API Platform](https://api-platform.com) to expose the `Commands
 
 ## Configuration
 
-An event store should be peristed and the default implementation is not!
-Choose between `Botilka\Infrastructure\Doctrine\EventStoreDoctrine` & `Botilka\Infrastructure\MongoDB\EventStoreMongoDB`.
+An event store should be persisted and the default implementation is not!
+Choose between `Botilka\Infrastructure\Doctrine\EventStoreDoctrine` or `Botilka\Infrastructure\MongoDB\EventStoreMongoDB`.
 ```yaml
 # config/packages/botilka.yaml
 botilka:
@@ -80,20 +80,12 @@ Create a command handler:
 namespace App\BankAccount\Application\Command;
 
 use App\BankAccount\Domain\BankAccount;
-use App\BankAccount\Domain\BankAccountRepository;
 use Botilka\Application\Command\CommandHandler;
 use Botilka\Application\Command\CommandResponse;
 use Ramsey\Uuid\Uuid;
 
 final class CreateBankAccountHandler implements CommandHandler
 {
-    private $repository;
-
-    public function __construct(BankAccountRepository $repository)
-    {
-        $this->repository = $repository;
-    }
-
     public function __invoke(CreateBankAccountCommand $command): CommandResponse
     {
         $id = Uuid::uuid4();
@@ -126,6 +118,9 @@ final class BankAccount implements EventSourcedAggregateRoot
     private $balance;
     private $playhead = -1;
 
+    protected $eventMap = [
+        BankAccountCreated::class => 'bankAccountCreated',
+    ];
 
     public static function create(string $id, string $name, string $currency): array
     {
@@ -133,17 +128,6 @@ final class BankAccount implements EventSourcedAggregateRoot
         $event = new BankAccountCreated($id, $name, $currency);
         return [$instance->apply($event), $event];
     }
-
-    public function apply(Event $event): EventSourcedAggregateRoot
-    {
-        ++$this->playhead;
-        $applier = $this->eventMap[\get_class($event)];
-        return $this->$applier($event);
-    }
-    
-    protected $eventMap = [
-        BankAccountCreated::class => 'bankAccountCreated',
-    ];
 
     private function bankAccountCreated(BankAccountCreated $event): BankAccount
     {
@@ -156,7 +140,31 @@ final class BankAccount implements EventSourcedAggregateRoot
     }
 }
 ```
-Dispatch the command
+and the corresponding event:
+```php
+<?php
+
+namespace App\BankAccount\Domain;
+
+use Botilka\Event\Event;
+
+final class BankAccountCreated implements Event
+{
+    private $id;
+    private $name;
+    private $currency;
+
+    public function __construct(string $id, string $name, string $currency)
+    {
+        $this->id = $id;
+        $this->name = $name;
+        $this->currency = $currency;
+    }
+    // add getters
+}
+
+``` 
+Then dispatch the command
 ```php
 <?php
 use Botilka\Application\Command\CommandBus;
