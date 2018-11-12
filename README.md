@@ -25,16 +25,17 @@ It can leverage [API Platform](https://api-platform.com) to expose the `Commands
 
 ## Configuration
 
-An event store should be persisted and the default implementation is not!
-Choose between `Botilka\Infrastructure\Doctrine\EventStoreDoctrine` or `Botilka\Infrastructure\MongoDB\EventStoreMongoDB`.
+An event store should (must) be persisted and the default implementation is not! \
+Choose between:
+ - `Botilka\Infrastructure\Doctrine\EventStoreDoctrine`
+ - `Botilka\Infrastructure\MongoDB\EventStoreMongoDB`
+ 
 ```yaml
 # config/packages/botilka.yaml
 botilka:
     
-    # default implementation is 'Botilka\Infrastructure\InMemory\EventStoreInMemory'
+    # default implementation is 'Botilka\Infrastructure\InMemory\EventStoreInMemory', not persisted!!
     event_store: Botilka\Infrastructure\Doctrine\EventStoreDoctrine # or 'Botilka\Infrastructure\MongoDB\EventStoreMongoDB'
-    
-
 ```
 
 Botilka provide a command to create add unique index to the event store:

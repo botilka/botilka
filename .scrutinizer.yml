@@ -2,10 +2,8 @@ tools:
     external_code_coverage: true
 
 build:
-    nodes:
-        my-tests:
-            services:
-                mongo: 4
-            dependencies:
-                before:
-                - pecl install mongodb
+    services:
+        mongo: 4
+    dependencies:
+        before:
+            - pecl install mongodb
