@@ -4,3 +4,4 @@
 /vendor/
 
 /coverage/
+/*.phar
