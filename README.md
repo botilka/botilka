@@ -7,11 +7,12 @@
 
 An modern & easy-to-use Event Sourcing & CQRS library framework. It's shipped with implementations built on top of Symfony components.
 
+
 It can leverage [API Platform](https://api-platform.com) to expose the `Commands` and `Queries` via REST.
 
 ## Features
 
-- Fully immutable, not a single setter.
+- Fully immutable, not a single setter, and fully typed.
 - [Doctrine](https://www.doctrine-project.org/) & [MongoDB](https://www.mongodb.com) supported.
 - Sync or async event handling is a matter of configuration.
 - Replay all or some events.
@@ -20,13 +21,17 @@ It can leverage [API Platform](https://api-platform.com) to expose the `Commands
 - *(optionnal)* EventStore persisted with Doctrine.
 - *(optionnal)* Commands/queries handling & description on API Platform UI.
 - *(optionnal)* Read-only projections managed with Doctrine, easy to migrate.
+- Tested, 100% code coverage. 
 
-## todo
+### todo
 
 - Snapshots.
+- Projectors.
+- Process manager.
 - (maybe) Smart command retry on concurrency exception.
 
 ## Configuration
+
 
 
 
@@ -36,7 +41,7 @@ It can leverage [API Platform](https://api-platform.com) to expose the `Commands
 
 See the [API Platform bridge](/documentation/api_platform_bridge.md) documentation.
 
-### Command & query
+### Command
 
 Create a command:
 ```php
