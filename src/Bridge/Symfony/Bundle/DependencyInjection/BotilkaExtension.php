@@ -127,12 +127,13 @@ final class BotilkaExtension extends Extension implements PrependExtensionInterf
             }
         }
 
-        if ('Botilka\\Infrastructure\\Doctrine\\EventStoreDoctrine' === $config['event_store']) {
-            $loader->load('event_store_doctrine.yaml');
-        }
-
-        if ('Botilka\\Infrastructure\\MongoDB\\EventStoreMongoDB' === $config['event_store']) {
-            $loader->load('event_store_mongodb.yaml');
+        switch ($config['event_store']) {
+            case 'Botilka\\Infrastructure\\Doctrine\\EventStoreDoctrine':
+                $loader->load('event_store_doctrine.yaml');
+                break;
+            case '\'Botilka\\Infrastructure\\MongoDB\\EventStoreMongoDB\'':
+                $loader->load('event_store_mongodb.yaml');
+                break;
         }
     }
 }

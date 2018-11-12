@@ -21,7 +21,7 @@
         "mongodb/mongodb": "^1.4",
         "phpstan/phpstan": "^0.10.3",
         "phpstan/phpstan-phpunit": "^0.10.0",
-        "phpunit/phpunit": "^7.4",
+        "phpunit/phpunit": "7.3.*",
         "ramsey/uuid-doctrine": "^1.5",
         "symfony/framework-bundle": "^4.1",
         "symfony/yaml": "^4.1"
