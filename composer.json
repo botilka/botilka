@@ -7,6 +7,7 @@
         "php": ">=7.1",
         "doctrine/common": "^2.9",
         "ramsey/uuid": "^3.8",
+        "symfony/dependency-injection": ">=4.1.7",
         "symfony/console": "^4.1",
         "symfony/messenger": "^4.1",
         "symfony/monolog-bundle": "^3.3",
