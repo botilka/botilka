@@ -34,10 +34,9 @@ final class EventStoreDoctrineInitializer implements EventStoreInitializer
         $table->addColumn('playhead', 'integer', ['unsigned' => true]);
         $table->addColumn('type', 'text');
         $table->addColumn('payload', 'json');
-        $table->addColumn('metadata', 'json', ['nullable' => true]);
+        $table->addColumn('metadata', 'json');
         $table->addColumn('recorded_on', 'datetime_immutable');
-        $table->setPrimaryKey(['id']);
-        $table->addUniqueIndex(['id', 'playhead']);
+        $table->setPrimaryKey(['id', 'playhead']);
 
         $sql = $schema->toSql($connection->getDatabasePlatform());
 
