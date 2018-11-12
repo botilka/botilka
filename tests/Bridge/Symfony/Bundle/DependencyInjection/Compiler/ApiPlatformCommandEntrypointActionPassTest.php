@@ -20,7 +20,7 @@ final class ApiPlatformCommandEntrypointActionPassTest extends TestCase
         $this->compilerPass = new ApiPlatformCommandEntrypointActionPass();
     }
 
-    public function testProcess()
+    public function testProcess(): void
     {
         $container = $this->createMock(ContainerBuilder::class);
 
@@ -45,7 +45,7 @@ final class ApiPlatformCommandEntrypointActionPassTest extends TestCase
         $this->compilerPass->process($container);
     }
 
-    public function testNoProcess()
+    public function testNoProcess(): void
     {
         $container = $this->createMock(ContainerBuilder::class);
 

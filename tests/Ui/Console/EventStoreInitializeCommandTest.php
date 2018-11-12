@@ -11,7 +11,7 @@ use Symfony\Component\Console\Output\BufferedOutput;
 
 final class EventStoreInitializeCommandTest extends TestCase
 {
-    public function testExecuteNoInitializer()
+    public function testExecuteNoInitializer(): void
     {
         $command = new EventStoreInitializeCommand();
 
@@ -25,7 +25,7 @@ final class EventStoreInitializeCommandTest extends TestCase
     }
 
     /** @dataProvider executeProvider */
-    public function testExecuteSuccess(bool $force)
+    public function testExecuteSuccess(bool $force): void
     {
         $initializer = $this->createMock(EventStoreInitializer::class);
         $initializer->expects($this->once())->method('initialize');
@@ -51,7 +51,7 @@ final class EventStoreInitializeCommandTest extends TestCase
     }
 
     /** @dataProvider executeProvider */
-    public function testExecuteRuntimeException(bool $force)
+    public function testExecuteRuntimeException(bool $force): void
     {
         $initializer = $this->createMock(EventStoreInitializer::class);
         $initializer->expects($this->once())->method('initialize')

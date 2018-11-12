@@ -17,7 +17,7 @@ use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 final class CommandEntrypointActionTest extends TestCase
 {
-    public function testInvoke()
+    public function testInvoke(): void
     {
         $commandBus = $this->createMock(CommandBus::class);
         $hydrator = $this->createMock(CommandHydratorInterface::class);
@@ -53,7 +53,7 @@ final class CommandEntrypointActionTest extends TestCase
      * @expectedException \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      * @expectedExceptionMessage Command 'foo' not found.
      */
-    public function testInvokeNotFound()
+    public function testInvokeNotFound(): void
     {
         $commandBus = $this->createMock(CommandBus::class);
         $hydrator = $this->createMock(CommandHydratorInterface::class);
@@ -72,7 +72,7 @@ final class CommandEntrypointActionTest extends TestCase
     /**
      * @expectedException \Symfony\Component\HttpKernel\Exception\BadRequestHttpException
      */
-    public function testInvokeBadRequest()
+    public function testInvokeBadRequest(): void
     {
         $commandBus = $this->createMock(CommandBus::class);
         $hydrator = $this->createMock(CommandHydratorInterface::class);

@@ -34,7 +34,7 @@ final class ApiPlatformDescriptionContainerPassTest extends TestCase
         $this->container->setDefinition(DescriptionContainer::class, new Definition(DescriptionContainer::class));
     }
 
-    public function testProcessCommand()
+    public function testProcessCommand(): void
     {
         $container = $this->container;
 
@@ -68,7 +68,7 @@ final class ApiPlatformDescriptionContainerPassTest extends TestCase
         $this->assertSame($expected, $descriptionContainerDefinition->getArgument('$data'));
     }
 
-    public function testProcessQuery()
+    public function testProcessQuery(): void
     {
         $container = $this->container;
 
@@ -103,7 +103,7 @@ final class ApiPlatformDescriptionContainerPassTest extends TestCase
     }
 
     /** @dataProvider parameterNotTypedProvider */
-    public function testParameterNotTyped(string $className, string $tagName)
+    public function testParameterNotTyped(string $className, string $tagName): void
     {
         $container = $this->container;
         $container->setDefinition($className, (new Definition($className))->addTag($tagName));
@@ -123,7 +123,7 @@ final class ApiPlatformDescriptionContainerPassTest extends TestCase
     }
 
     /** @dataProvider processNoConstructorProvider */
-    public function testProcessNoConstructor(string $className, string $tagName)
+    public function testProcessNoConstructor(string $className, string $tagName): void
     {
         $container = $this->container;
         $container->setDefinition($className, (new Definition($className))->addTag($tagName));
@@ -142,7 +142,7 @@ final class ApiPlatformDescriptionContainerPassTest extends TestCase
         ];
     }
 
-    public function testNoProcess()
+    public function testNoProcess(): void
     {
         $container = $this->createMock(ContainerBuilder::class);
         $container->expects($this->once())

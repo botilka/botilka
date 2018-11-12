@@ -16,7 +16,7 @@ final class RepositoryInMemoryTest extends TestCase
         $this->repository = new RepositoryInMemory();
     }
 
-    public function testDelete()
+    public function testDelete(): void
     {
         $aggretate = new StubAggregateRoot('foo');
         $this->repository->add($aggretate);
@@ -24,7 +24,7 @@ final class RepositoryInMemoryTest extends TestCase
         $this->assertNull($this->repository->get('foo'));
     }
 
-    public function testAll()
+    public function testAll(): void
     {
         $aggretateFoo = new StubAggregateRoot('foo');
         $aggretateBar = new StubAggregateRoot('bar');
@@ -39,14 +39,14 @@ final class RepositoryInMemoryTest extends TestCase
         $this->assertSame($expected, $this->repository->all());
     }
 
-    public function testGet()
+    public function testGet(): void
     {
         $aggretate = new StubAggregateRoot('foo');
         $this->repository->add($aggretate);
         $this->assertSame($aggretate, $this->repository->get('foo'));
     }
 
-    public function testSave()
+    public function testSave(): void
     {
         $aggretate = new StubAggregateRoot('foo');
         $this->repository->save($aggretate);

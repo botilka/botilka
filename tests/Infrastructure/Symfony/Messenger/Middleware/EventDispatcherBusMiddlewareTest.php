@@ -28,7 +28,7 @@ final class EventDispatcherBusMiddlewareTest extends TestCase
         $this->logger = $this->createMock(LoggerInterface::class);
     }
 
-    public function testHandle()
+    public function testHandle(): void
     {
         $event = new StubEvent(1337);
 
@@ -55,7 +55,7 @@ final class EventDispatcherBusMiddlewareTest extends TestCase
         $this->assertSame($commandResponse, $result);
     }
 
-    public function testHandleEventStoreConcurrencyException()
+    public function testHandleEventStoreConcurrencyException(): void
     {
         $event = new StubEvent(1337);
 
@@ -81,7 +81,7 @@ final class EventDispatcherBusMiddlewareTest extends TestCase
         $this->assertNull($middleware->handle('foofoo', $callable));
     }
 
-    public function testHandleNotCommandResponse()
+    public function testHandleNotCommandResponse(): void
     {
         $result = new \stdClass();
         $callable = function ($message) use ($result) {

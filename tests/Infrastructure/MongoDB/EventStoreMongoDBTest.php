@@ -47,19 +47,19 @@ final class EventStoreMongoDBTest extends AbstractKernelTestCase
         static::$eventStore = $eventStore;
     }
 
-    public function testLoad()
+    public function testLoad(): void
     {
         $this->assertCount(5, static::$eventStore->load('foo'));
         $this->assertCount(1, static::$eventStore->load('bar'));
     }
 
-    public function testLoadFromPlayheadToPlayhead()
+    public function testLoadFromPlayheadToPlayhead(): void
     {
         $this->assertCount(1, static::$eventStore->loadFromPlayheadToPlayhead('foo', 2, 3));
         $this->assertCount(1, static::$eventStore->loadFromPlayheadToPlayhead('foo', 4, 10));
     }
 
-    public function testLoadFromPlayhead()
+    public function testLoadFromPlayhead(): void
     {
         $this->assertCount(3, static::$eventStore->loadFromPlayhead('foo', 2));
         $this->assertCount(1, static::$eventStore->loadFromPlayhead('foo', 4));
@@ -69,7 +69,7 @@ final class EventStoreMongoDBTest extends AbstractKernelTestCase
      * @expectedException \Botilka\EventStore\EventStoreConcurrencyException
      * @expectedExceptionMessage Duplicate storage of event "Botilka\Tests\Fixtures\Domain\StubEvent" on aggregate "bar" with playhead 1.
      */
-    public function testAppendBulkWriteException()
+    public function testAppendBulkWriteException(): void
     {
         static::$eventStore->append('bar', 1, StubEvent::class, new StubEvent(42), null, new \DateTimeImmutable());
     }

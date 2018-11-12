@@ -9,7 +9,7 @@ use Symfony\Component\Messenger\MessageBusInterface;
 
 final class MessengerEventBusTest extends TestCase
 {
-    public function testDispatch()
+    public function testDispatch(): void
     {
         $event = new StubEvent(42);
 

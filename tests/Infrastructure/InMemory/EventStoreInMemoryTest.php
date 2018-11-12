@@ -28,17 +28,17 @@ final class EventStoreInMemoryTest extends TestCase
         $this->eventStore = $eventStore;
     }
 
-    public function testLoad()
+    public function testLoad(): void
     {
         $this->assertCount(10, $this->eventStore->load('foo'));
     }
 
-    public function testLoadFromPlayhead()
+    public function testLoadFromPlayhead(): void
     {
         $this->assertCount(5, $this->eventStore->loadFromPlayhead('foo', 5));
     }
 
-    public function testLoadFromPlayheadToPlayhead()
+    public function testLoadFromPlayheadToPlayhead(): void
     {
         $this->assertCount(5, $this->eventStore->loadFromPlayheadToPlayhead('foo', 4, 8));
     }

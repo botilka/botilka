@@ -33,7 +33,7 @@ final class BotilkaCommandResourceMetadataFactoryTest extends TestCase
         $this->factory = new BotilkaCommandResourceMetadataFactory($this->decorated, $this->descriptionContainer, $this->payloadNormalizer);
     }
 
-    public function testCreateResourceClassNotFoundException()
+    public function testCreateResourceClassNotFoundException(): void
     {
         $this->decorated->expects($this->once())
             ->method('create')
@@ -43,7 +43,7 @@ final class BotilkaCommandResourceMetadataFactoryTest extends TestCase
         $this->assertNull($metadata->getShortName());
     }
 
-    public function testCreateNotExtending()
+    public function testCreateNotExtending(): void
     {
         $metadata = new ResourceMetadata('NotCommand');
         $this->decorated->expects($this->once())
@@ -57,7 +57,7 @@ final class BotilkaCommandResourceMetadataFactoryTest extends TestCase
         $this->assertSame($metadata, $this->factory->create('Foo\\Bar'));
     }
 
-    public function testCreate()
+    public function testCreate(): void
     {
         $this->decorated->expects($this->once())
             ->method('create')

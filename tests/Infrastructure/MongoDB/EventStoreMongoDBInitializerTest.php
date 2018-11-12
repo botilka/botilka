@@ -32,7 +32,7 @@ final class EventStoreMongoDBInitializerTest extends AbstractKernelTestCase
     /**
      * @expectedException \RuntimeException
      */
-    public function testInitialize()
+    public function testInitialize(): void
     {
         $this->initializer->initialize();
         $this->assertTrue(true);
@@ -41,7 +41,7 @@ final class EventStoreMongoDBInitializerTest extends AbstractKernelTestCase
         $this->initializer->initialize();
     }
 
-    public function testInitializeForce()
+    public function testInitializeForce(): void
     {
         $this->initializer->initialize();
         $this->initializer->initialize(true);
@@ -53,7 +53,7 @@ final class EventStoreMongoDBInitializerTest extends AbstractKernelTestCase
      * @expectedException \Exception
      * @expectedExceptionMessageReg Foo message.
      */
-    public function testInitializeUnknowException()
+    public function testInitializeUnknowException(): void
     {
         $database = \getenv('MONGODB_DB').'_test';
         $collection = $this->collection = \getenv('MONGODB_COLLECTION').'_test';

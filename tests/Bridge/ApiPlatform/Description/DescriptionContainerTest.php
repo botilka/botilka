@@ -19,7 +19,7 @@ final class DescriptionContainerTest extends TestCase
     }
 
     public function testGetFound()
-    {
+:void    {
         $this->assertSame(['class' => 'Foo\\Bar', 'payload' => ['some' => 'string']], $this->descriptionContainer->get('foo'));
     }
 
@@ -28,13 +28,13 @@ final class DescriptionContainerTest extends TestCase
      * @expectedExceptionMessage Description "bar" was not found. Possible values: "foo".
      */
     public function testGetNotFound()
-    {
+:void    {
         $this->descriptionContainer->get('bar');
     }
 
     /** @dataProvider hasProvider */
     public function testHas(bool $expected, string $name)
-    {
+:void    {
         $this->assertSame($expected, $this->descriptionContainer->has($name));
     }
 

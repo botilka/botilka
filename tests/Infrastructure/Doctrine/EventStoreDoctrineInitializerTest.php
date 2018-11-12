@@ -38,7 +38,7 @@ final class EventStoreDoctrineInitializerTest extends AbstractKernelTestCase
      * @expectedException \RuntimeException
      * @expectedExceptionMessageRegExp /Duplicate table:.*relation "event_store_test" already exists/
      */
-    public function testInitialize()
+    public function testInitialize(): void
     {
         $this->initializer->initialize();
         $this->assertTrue(true);
@@ -46,7 +46,7 @@ final class EventStoreDoctrineInitializerTest extends AbstractKernelTestCase
         $this->initializer->initialize();
     }
 
-    public function testInitializeForce()
+    public function testInitializeForce(): void
     {
         $this->initializer->initialize();
         $this->initializer->initialize(true);

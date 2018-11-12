@@ -23,7 +23,7 @@ final class ConfigurationTest extends TestCase
         $this->processor = new Processor();
     }
 
-    public function testGetConfigTreeBuilder()
+    public function testGetConfigTreeBuilder(): void
     {
         $treeBuilder = $this->configuration->getConfigTreeBuilder();
         $config = $this->processor->processConfiguration($this->configuration, []);

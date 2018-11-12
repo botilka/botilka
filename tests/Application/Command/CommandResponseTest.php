@@ -17,24 +17,24 @@ final class CommandResponseTest extends TestCase
         $this->commandResponse = new CommandResponse('foo', 456, $event);
     }
 
-    public function testGetPlayhead()
+    public function testGetPlayhead(): void
     {
         $this->assertSame(456, $this->commandResponse->getPlayhead());
     }
 
-    public function testGetEvent()
+    public function testGetEvent(): void
     {
         $event = new StubEvent(123);
         $commandResponse = new CommandResponse('foo', 456, $event);
         $this->assertSame($event, $commandResponse->getEvent());
     }
 
-    public function testGetId()
+    public function testGetId(): void
     {
         $this->assertSame('foo', $this->commandResponse->getId());
     }
 
-    public function testWithValue()
+    public function testWithValue(): void
     {
         $event = new StubEvent(123);
         $commandResponse = CommandResponse::withValue('bar', 654, $event);

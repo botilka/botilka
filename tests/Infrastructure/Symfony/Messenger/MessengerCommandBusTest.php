@@ -11,7 +11,7 @@ use Symfony\Component\Messenger\MessageBusInterface;
 
 final class MessengerCommandBusTest extends TestCase
 {
-    public function testDispatch()
+    public function testDispatch(): void
     {
         $command = new SimpleCommand('foo', 132);
         $commandResponse = new CommandResponse('bar', 123, new StubEvent(123));

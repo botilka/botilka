@@ -53,7 +53,7 @@ final class EventStoreDoctrineTest extends TestCase
             ->willReturn('baz');
     }
 
-    public function testLoad()
+    public function testLoad(): void
     {
         $stmt = $this->createMock(Statement::class);
 
@@ -71,7 +71,7 @@ final class EventStoreDoctrineTest extends TestCase
         $this->assertSame(['baz'], $this->eventStore->load('foo'));
     }
 
-    public function testLoadFromPlayhead()
+    public function testLoadFromPlayhead(): void
     {
         $stmt = $this->createMock(Statement::class);
 
@@ -89,7 +89,7 @@ final class EventStoreDoctrineTest extends TestCase
         $this->assertSame(['baz'], $this->eventStore->loadFromPlayhead('foo', 2));
     }
 
-    public function testLoadFromPlayheadToPlayhead()
+    public function testLoadFromPlayheadToPlayhead(): void
     {
         $stmt = $this->createMock(Statement::class);
 
@@ -107,7 +107,7 @@ final class EventStoreDoctrineTest extends TestCase
         $this->assertSame(['baz'], $this->eventStore->loadFromPlayheadToPlayhead('foo', 2, 4));
     }
 
-    public function testAppend()
+    public function testAppend(): void
     {
         $stmt = $this->createMock(Statement::class);
 
@@ -142,7 +142,7 @@ final class EventStoreDoctrineTest extends TestCase
      * @expectedException \Botilka\EventStore\EventStoreConcurrencyException
      * @expectedExceptionMessage Duplicate storage of event "Foo\Bar" on aggregate "foo" with playhead 123.
      */
-    public function testAppendUniqueConstraintViolationException()
+    public function testAppendUniqueConstraintViolationException(): void
     {
         $stmt = $this->createMock(Statement::class);
 

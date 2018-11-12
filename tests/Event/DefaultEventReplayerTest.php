@@ -27,7 +27,7 @@ final class DefaultEventReplayerTest extends TestCase
     }
 
     /** @dataProvider replayProvider */
-    public function testReplay(string $id, ?int $fromPlayhead, ?int $toPlayhead, array $expectedArguments, string $expectedMethod, array $events)
+    public function testReplay(string $id, ?int $fromPlayhead, ?int $toPlayhead, array $expectedArguments, string $expectedMethod, array $events): void
     {
         $this->eventStore->expects($this->once())
             ->method($expectedMethod)
@@ -49,7 +49,7 @@ final class DefaultEventReplayerTest extends TestCase
         ];
     }
 
-    public function testReplayEvents()
+    public function testReplayEvents(): void
     {
         $events = [new StubEvent(1), new StubEvent(2)];
         $this->addEventsDispatchedExpectation($events);

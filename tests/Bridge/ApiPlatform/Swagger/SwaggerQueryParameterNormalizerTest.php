@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 final class SwaggerQueryParameterNormalizerTest extends TestCase
 {
     /** @dataProvider normalizeProvider */
-    public function testNormalize(array $payload, array $expected)
+    public function testNormalize(array $payload, array $expected): void
     {
         $normalizer = new SwaggerQueryParameterNormalizer();
 

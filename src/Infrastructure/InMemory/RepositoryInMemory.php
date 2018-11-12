@@ -14,12 +14,12 @@ final class RepositoryInMemory implements Repository
         return $this->data[$id] ?? null;
     }
 
-    public function add(AggregateRoot $aggregate)
+    public function add(AggregateRoot $aggregate): void
     {
         $this->data[$aggregate->getAggregateRootId()] = $aggregate;
     }
 
-    public function save(AggregateRoot $aggregate)
+    public function save(AggregateRoot $aggregate): void
     {
         $this->data[$aggregate->getAggregateRootId()] = $aggregate;
     }

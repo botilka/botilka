@@ -39,7 +39,7 @@ final class QueryResourceClassEventListenerTest extends TestCase
         $this->listener = new QueryResourceClassEventListener($this->queryBus, $this->descriptionContainer, $this->hydrator);
     }
 
-    public function testOnKernelRequestIncorrectApiResourceClass()
+    public function testOnKernelRequestIncorrectApiResourceClass(): void
     {
         $event = $this->getEvent(['_api_resource_class' => \stdClass::class]);
 
@@ -51,7 +51,7 @@ final class QueryResourceClassEventListenerTest extends TestCase
     }
 
     /** @dataProvider onKernelRequestQueryNotExistingProvider */
-    public function testOnKernelRequestQueryNotExisting(?string $queryName)
+    public function testOnKernelRequestQueryNotExisting(?string $queryName): void
     {
         $event = $this->getEvent(['_api_resource_class' => Query::class, '_api_item_operation_name' => $queryName]);
 
@@ -77,7 +77,7 @@ final class QueryResourceClassEventListenerTest extends TestCase
         ];
     }
 
-    public function testOnKernelRequest()
+    public function testOnKernelRequest(): void
     {
         $event = $this->getEvent(['_api_resource_class' => Query::class, '_api_item_operation_name' => 'foo'], ['foo' => 'bar']);
 
@@ -105,7 +105,7 @@ final class QueryResourceClassEventListenerTest extends TestCase
         $this->assertFalse($event->getRequest()->attributes->get('_api_receive'));
     }
 
-    public function testOnKernelRequestValidationException()
+    public function testOnKernelRequestValidationException(): void
     {
         $event = $this->getEvent(['_api_resource_class' => Query::class, '_api_item_operation_name' => 'foo'], ['foo' => 'bar']);
 
@@ -130,7 +130,7 @@ final class QueryResourceClassEventListenerTest extends TestCase
         $this->assertFalse($event->getRequest()->attributes->get('_api_receive'));
     }
 
-    public function testGetSubscribedEvents()
+    public function testGetSubscribedEvents(): void
     {
         $this->assertSame([
             KernelEvents::REQUEST => [

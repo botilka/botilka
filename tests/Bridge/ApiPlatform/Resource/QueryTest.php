@@ -15,12 +15,12 @@ final class QueryTest extends TestCase
         $this->query = new Query('foo_bar', ['foo' => 'baz']);
     }
 
-    public function testGetName()
+    public function testGetName(): void
     {
         $this->assertSame('foo_bar', $this->query->getName());
     }
 
-    public function testGetPayload()
+    public function testGetPayload(): void
     {
         $this->assertSame(['foo' => 'baz'], $this->query->getPayload());
     }

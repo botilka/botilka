@@ -18,7 +18,7 @@ final class CommandResourceClassEventListener implements EventSubscriberInterfac
         $this->descriptionContainer = $descriptionContainer;
     }
 
-    public function onKernelRequest(GetResponseEvent $event)
+    public function onKernelRequest(GetResponseEvent $event): void
     {
         $request = $event->getRequest();
         $attributes = $request->attributes;

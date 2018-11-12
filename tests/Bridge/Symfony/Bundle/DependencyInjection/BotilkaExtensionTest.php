@@ -54,7 +54,7 @@ final class BotilkaExtensionTest extends TestCase
     }
 
     /** @dataProvider prependWithDefaultMessengerProvider */
-    public function testPrependWithDefaultMessenger(string $eventStore, bool $withDoctrineTranslationMiddleware)
+    public function testPrependWithDefaultMessenger(string $eventStore, bool $withDoctrineTranslationMiddleware): void
     {
         $containerBuilderProphecy = $this->prophesize(ContainerBuilder::class);
         $this->addDefaultCalls($containerBuilderProphecy);
@@ -107,7 +107,7 @@ final class BotilkaExtensionTest extends TestCase
         ];
     }
 
-    public function testPrependWithoutDefaultMessenger()
+    public function testPrependWithoutDefaultMessenger(): void
     {
         $containerBuilderProphecy = $this->prophesize(ContainerBuilder::class);
         $this->addDefaultCalls($containerBuilderProphecy);
@@ -127,7 +127,7 @@ final class BotilkaExtensionTest extends TestCase
         $this->extension->prepend($containerBuilderProphecy->reveal());
     }
 
-    public function testPrependApiPlatform()
+    public function testPrependApiPlatform(): void
     {
         $containerBuilderProphecy = $this->prophesize(ContainerBuilder::class);
         $this->addDefaultCalls($containerBuilderProphecy);
@@ -150,7 +150,7 @@ final class BotilkaExtensionTest extends TestCase
     }
 
     /** @dataProvider loadProvider */
-    public function testLoad(string $eventStore, bool $hasApiPlatformBridge, bool $defaultMessengerConfig)
+    public function testLoad(string $eventStore, bool $hasApiPlatformBridge, bool $defaultMessengerConfig): void
     {
         $container = new ContainerBuilder();
         $container->setParameter('botilka.bridge.api_platform', $hasApiPlatformBridge);
@@ -194,7 +194,7 @@ final class BotilkaExtensionTest extends TestCase
         ];
     }
 
-    public function testAddTagIfDefaultMessengerConfig()
+    public function testAddTagIfDefaultMessengerConfig(): void
     {
         $container = $this->createMock(ContainerBuilder::class);
         $tags = [
@@ -228,7 +228,7 @@ final class BotilkaExtensionTest extends TestCase
         $this->extension->load($configs, $container);
     }
 
-    public function testDontAddTagIfNotDefaultMessengerConfig()
+    public function testDontAddTagIfNotDefaultMessengerConfig(): void
     {
         $container = $this->createMock(ContainerBuilder::class);
 

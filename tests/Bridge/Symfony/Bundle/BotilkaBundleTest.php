@@ -12,7 +12,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 final class BotilkaBundleTest extends TestCase
 {
     /** @dataProvider buildProvider */
-    public function testBuild(bool $hasExtension)
+    public function testBuild(bool $hasExtension): void
     {
         $container = $this->createMock(ContainerBuilder::class);
 

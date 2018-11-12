@@ -22,7 +22,7 @@ final class QueryDataProviderTest extends TestCase
         $this->dataProvider = new QueryDataProvider($descriptionContainer);
     }
 
-    public function testGetItem()
+    public function testGetItem(): void
     {
         $item = $this->dataProvider->getItem('whatever', 'foo');
 
@@ -35,12 +35,12 @@ final class QueryDataProviderTest extends TestCase
      * @expectedException \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      * @expectedExceptionMessage Query "non-existent" not found.
      */
-    public function testGetItemNotFoundException()
+    public function testGetItemNotFoundException(): void
     {
         $this->dataProvider->getItem('whatever', 'non-existent');
     }
 
-    public function testGetCollection()
+    public function testGetCollection(): void
     {
         $collection = $this->dataProvider->getCollection('whatever');
         $this->assertCount(1, $collection);
@@ -48,7 +48,7 @@ final class QueryDataProviderTest extends TestCase
     }
 
     /** @dataProvider supportsDataProvider */
-    public function testSupports(bool $expected, string $resourceClass)
+    public function testSupports(bool $expected, string $resourceClass): void
     {
         $this->assertSame($expected, $this->dataProvider->supports($resourceClass));
     }
