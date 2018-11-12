@@ -14,7 +14,7 @@ use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\HttpKernel\KernelInterface;
 
-class CommandResourceClassEventListenerTest extends TestCase
+final class CommandResourceClassEventListenerTest extends TestCase
 {
     /** @var CommandResourceClassEventListener */
     private $listener;

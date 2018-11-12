@@ -6,7 +6,7 @@ use Botilka\Infrastructure\MongoDB\EventStoreMongoDBInitializer;
 use Botilka\Tests\AbstractKernelTestCase;
 use MongoDB\Client;
 
-class EventStoreMongoDBInitializerTest extends AbstractKernelTestCase
+final class EventStoreMongoDBInitializerTest extends AbstractKernelTestCase
 {
     /** @var EventStoreMongoDBInitializer */
     private $initializer;

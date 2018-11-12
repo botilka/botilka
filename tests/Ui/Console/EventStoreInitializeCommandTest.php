@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 
-class EventStoreInitializeCommandTest extends TestCase
+final class EventStoreInitializeCommandTest extends TestCase
 {
     public function testExecuteNoInitializer()
     {

@@ -7,7 +7,7 @@ use Botilka\Tests\AbstractKernelTestCase;
 use Doctrine\DBAL\Connection;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
-class EventStoreDoctrineInitializerTest extends AbstractKernelTestCase
+final class EventStoreDoctrineInitializerTest extends AbstractKernelTestCase
 {
     /** @var EventStoreDoctrineInitializer */
     private $initializer;

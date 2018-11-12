@@ -5,7 +5,7 @@ namespace Botilka\Tests\Bridge\ApiPlatform\Swagger;
 use Botilka\Bridge\ApiPlatform\Swagger\SwaggerQueryParameterNormalizer;
 use PHPUnit\Framework\TestCase;
 
-class SwaggerQueryParameterNormalizerTest extends TestCase
+final class SwaggerQueryParameterNormalizerTest extends TestCase
 {
     /** @dataProvider normalizeProvider */
     public function testNormalize(array $payload, array $expected)

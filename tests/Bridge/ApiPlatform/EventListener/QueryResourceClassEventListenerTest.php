@@ -20,7 +20,7 @@ use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 
-class QueryResourceClassEventListenerTest extends TestCase
+final class QueryResourceClassEventListenerTest extends TestCase
 {
     /** @var QueryResourceClassEventListener */
     private $listener;

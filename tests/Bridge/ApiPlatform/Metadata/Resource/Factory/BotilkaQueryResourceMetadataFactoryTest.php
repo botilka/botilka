@@ -13,7 +13,7 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class BotilkaQueryResourceMetadataFactoryTest extends TestCase
+final class BotilkaQueryResourceMetadataFactoryTest extends TestCase
 {
     /** @var BotilkaQueryResourceMetadataFactory */
     private $factory;

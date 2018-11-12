@@ -11,7 +11,7 @@ use MongoDB\Client;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
-class EventStoreMongoDBTest extends AbstractKernelTestCase
+final class EventStoreMongoDBTest extends AbstractKernelTestCase
 {
     /** @var EventStoreMongoDB */
     private static $eventStore;
