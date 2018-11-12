@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Botilka\Bridge\Symfony\Bundle\DependencyInjection;
 
 use Botilka\Infrastructure\InMemory\EventStoreInMemory;

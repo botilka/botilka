@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Botilka\Infrastructure\Doctrine;
 
 use Botilka\Application\EventStore\EventStoreInitializer;

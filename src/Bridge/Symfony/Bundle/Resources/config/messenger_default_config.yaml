@@ -3,7 +3,7 @@ services:
         autowire: true
         public: false
 
-    Botilka\Infrastructure\Symfony\Messenger\Middleware\EventDispatcherBusMiddleware: ~
+    Botilka\Infrastructure\Symfony\Messenger\Middleware\EventDispatcherMiddleware: ~
 
     Botilka\Event\EventDispatcher:
         class: Botilka\Event\DefaultEventDispatcher

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Botilka\Tests\Bridge\ApiPlatform\Identifier;
 
 use Botilka\Bridge\ApiPlatform\Identifier\IdentifierGenerator;

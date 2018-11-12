@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Botilka\Tests\Bridge\Symfony\Bundle\DependencyInjection;
 
 use Botilka\Application\Command\Command;
@@ -16,7 +18,7 @@ use Botilka\Event\EventHandler;
 use Botilka\EventStore\EventStore;
 use Botilka\Infrastructure\Doctrine\EventStoreDoctrine;
 use Botilka\Infrastructure\MongoDB\EventStoreMongoDB;
-use Botilka\Infrastructure\Symfony\Messenger\Middleware\EventDispatcherBusMiddleware;
+use Botilka\Infrastructure\Symfony\Messenger\Middleware\EventDispatcherMiddleware;
 use Botilka\Infrastructure\InMemory\EventStoreInMemory;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Prophecy\ObjectProphecy;
@@ -70,7 +72,7 @@ final class BotilkaExtensionTest extends TestCase
             ],
         ]))->shouldBeCalled();
 
-        $middleware = [EventDispatcherBusMiddleware::class];
+        $middleware = [EventDispatcherMiddleware::class];
 
         if ('Botilka\\Infrastructure\\Doctrine\\EventStoreDoctrine' === $eventStore) {
             $containerBuilderProphecy->setParameter('botilka.messenger.doctrine_transaction_middleware', true)->shouldBeCalledTimes((int) $withDoctrineTranslationMiddleware);
@@ -167,7 +169,7 @@ final class BotilkaExtensionTest extends TestCase
 
         $this->assertSame($eventStore, (string) $container->getAlias(EventStore::class));
         $this->assertSame((bool) $container->getParameter('botilka.messenger.doctrine_transaction_middleware'), $container->hasDefinition('messenger.middleware.doctrine_transaction_middleware'));
-        $this->assertSame($defaultMessengerConfig, $container->hasDefinition(EventDispatcherBusMiddleware::class));
+        $this->assertSame($defaultMessengerConfig, $container->hasDefinition(EventDispatcherMiddleware::class));
         $this->assertSame($hasApiPlatformBridge, $container->hasDefinition(DescriptionContainer::class));
         $this->assertSame($hasApiPlatformBridge, $container->hasDefinition(CommandDataProvider::class));
         $this->assertSame($hasApiPlatformBridge, $container->hasDefinition(QueryDataProvider::class));

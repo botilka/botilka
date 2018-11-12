@@ -1,18 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Botilka\Tests\Infrastructure\Symfony\Messenger\Middleware;
 
 use Botilka\Application\Command\CommandResponse;
 use Botilka\Event\EventDispatcher;
 use Botilka\EventStore\EventStore;
 use Botilka\EventStore\EventStoreConcurrencyException;
-use Botilka\Infrastructure\Symfony\Messenger\Middleware\EventDispatcherBusMiddleware;
+use Botilka\Infrastructure\Symfony\Messenger\Middleware\EventDispatcherMiddleware;
 use Botilka\Tests\Fixtures\Domain\StubEvent;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
-final class EventDispatcherBusMiddlewareTest extends TestCase
+final class EventDispatcherMiddlewareTest extends TestCase
 {
     /** @var EventStore|MockObject */
     private $eventStore;
@@ -49,7 +51,7 @@ final class EventDispatcherBusMiddlewareTest extends TestCase
             return $commandResponse;
         };
 
-        $middleware = new EventDispatcherBusMiddleware($this->eventStore, $this->eventDispatcher, $this->logger);
+        $middleware = new EventDispatcherMiddleware($this->eventStore, $this->eventDispatcher, $this->logger);
 
         $result = $middleware->handle('foofoo', $callable);
         $this->assertSame($commandResponse, $result);
@@ -76,7 +78,7 @@ final class EventDispatcherBusMiddlewareTest extends TestCase
             return $commandResponse;
         };
 
-        $middleware = new EventDispatcherBusMiddleware($this->eventStore, $this->eventDispatcher, $this->logger);
+        $middleware = new EventDispatcherMiddleware($this->eventStore, $this->eventDispatcher, $this->logger);
 
         $this->assertNull($middleware->handle('foofoo', $callable));
     }
@@ -94,7 +96,7 @@ final class EventDispatcherBusMiddlewareTest extends TestCase
         $this->eventDispatcher->expects($this->never())
             ->method('dispatch');
 
-        $middleware = new EventDispatcherBusMiddleware($this->eventStore, $this->eventDispatcher, $this->logger);
+        $middleware = new EventDispatcherMiddleware($this->eventStore, $this->eventDispatcher, $this->logger);
         $this->assertSame($result, $middleware->handle('foofoo', $callable));
     }
 }

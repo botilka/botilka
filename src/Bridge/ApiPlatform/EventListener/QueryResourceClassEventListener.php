@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Botilka\Bridge\ApiPlatform\EventListener;
 
 use ApiPlatform\Core\Bridge\Symfony\Validator\Exception\ValidationException;

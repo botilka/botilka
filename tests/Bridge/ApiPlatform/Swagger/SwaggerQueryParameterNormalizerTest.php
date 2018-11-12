@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Botilka\Tests\Bridge\ApiPlatform\Swagger;
 
 use Botilka\Bridge\ApiPlatform\Swagger\SwaggerQueryParameterNormalizer;

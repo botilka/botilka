@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Botilka\Bridge\ApiPlatform\Description;
 
 interface DescriptionContainerInterface extends \IteratorAggregate

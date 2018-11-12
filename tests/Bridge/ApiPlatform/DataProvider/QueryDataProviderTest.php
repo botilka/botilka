@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Botilka\Tests\Bridge\ApiPlatform\DataProvider;
 
 use Botilka\Bridge\ApiPlatform\DataProvider\QueryDataProvider;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Botilka\Tests\Bridge\Symfony\Bundle;
 
 use Botilka\Bridge\Symfony\Bundle\BotilkaBundle;

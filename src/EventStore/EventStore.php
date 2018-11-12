@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Botilka\EventStore;
 
 use Botilka\Event\Event;

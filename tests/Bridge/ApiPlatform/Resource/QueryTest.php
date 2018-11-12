@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Botilka\Tests\Bridge\ApiPlatform\Resource;
 
 use Botilka\Bridge\ApiPlatform\Resource\Query;

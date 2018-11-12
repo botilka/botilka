@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Botilka\Tests\Bridge\ApiPlatform\Command;
 
 use Botilka\Bridge\ApiPlatform\Command\CommandResponseAdapter;
