@@ -23,13 +23,6 @@ It can leverage [API Platform](https://api-platform.com) to expose the `Commands
 - *(optionnal)* Read-only projections managed with Doctrine, easy to migrate.
 - Tested, 100% code coverage. 
 
-### todo
-
-- Snapshots.
-- Projectors.
-- Process manager.
-- (maybe) Smart command retry on concurrency exception.
-
 ## Configuration
 
 An event store should be peristed and the default implementation is not!
@@ -38,16 +31,20 @@ Choose between `Botilka\Infrastructure\Doctrine\EventStoreDoctrine` & `Botilka\I
 # config/packages/botilka.yaml
 botilka:
     
-    # default implementation is Botilka\Infrastructure\InMemory\EventStoreInMemory
-    event_store: 'Botilka\Infrastructure\MongoDB\EventStoreMongoDB' # or 'Botilka\Infrastructure\Doctrine\EventStoreDoctrine'
+    # default implementation is 'Botilka\Infrastructure\InMemory\EventStoreInMemory'
+    event_store: Botilka\Infrastructure\Doctrine\EventStoreDoctrine # or 'Botilka\Infrastructure\MongoDB\EventStoreMongoDB'
     
 
 ```
 
-Botilka provide a command to create add unique index to the event_store:
+Botilka provide a command to create add unique index to the event store:
 
 ```sh
-bin/console
+bin/console botilka:event_store:initialize doctrine # or 'mongodb'
+```
+you can force recreate:
+```sh
+bin/console botilka:event_store:initialize doctrine -f # or 'mongodb'
 ```
 
 ## Usage
@@ -186,7 +183,16 @@ using auto-configuration.
 The matching between a message and it(s) handler(s) is done by the Messenger component.
 > The handler has an `__invoke` method with the type hinted message as the sole argument.
 
-### See
+
+### todo
+
+- Snapshots.
+- Projectors.
+- (maybe) Process manager.
+- (maybe) Smart command retry on concurrency exception.
+
+
+### Resources
 
 - https://github.com/dddinphp/blog-cqrs
 - https://github.com/broadway/broadway

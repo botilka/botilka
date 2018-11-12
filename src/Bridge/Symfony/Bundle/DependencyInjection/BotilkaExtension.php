@@ -11,6 +11,7 @@ use Botilka\Infrastructure\Symfony\Messenger\Middleware\EventDispatcherBusMiddle
 use Botilka\Application\Query\Query;
 use Botilka\Application\Query\QueryHandler;
 use Symfony\Component\Config\FileLocator;
+use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
@@ -127,12 +128,18 @@ final class BotilkaExtension extends Extension implements PrependExtensionInterf
             }
         }
 
-        if ('Botilka\\Infrastructure\\Doctrine\\EventStoreDoctrine' === $config['event_store']) {
-            $loader->load('event_store_doctrine.yaml');
-        }
+        $this->loadEventStoreConfig($loader, $config['event_store']);
+    }
 
-        if ('Botilka\\Infrastructure\\MongoDB\\EventStoreMongoDB' === $config['event_store']) {
-            $loader->load('event_store_mongodb.yaml');
+    private function loadEventStoreConfig(LoaderInterface $loader, string $eventStore): void
+    {
+        switch ($eventStore) {
+            case 'Botilka\\Infrastructure\\Doctrine\\EventStoreDoctrine':
+                $loader->load('event_store_doctrine.yaml');
+                break;
+            case 'Botilka\\Infrastructure\\MongoDB\\EventStoreMongoDB':
+                $loader->load('event_store_mongodb.yaml');
+                break;
         }
     }
 }
