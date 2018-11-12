@@ -7,21 +7,18 @@
 
 An modern & easy-to-use Event Sourcing & CQRS library framework. It's shipped with implementations built on top of Symfony components.
 
-
 It can leverage [API Platform](https://api-platform.com) to expose the `Commands` and `Queries` via REST.
 
 ## Features
 
-- Fully immutable, not a single setter, and fully typed.
-- [Doctrine](https://www.doctrine-project.org/) & [MongoDB](https://www.mongodb.com) supported.
+- EventStore implementation with [Doctrine](https://www.doctrine-project.org/) or [MongoDB](https://www.mongodb.com).
+- Commands/queries handling & description on API Platform UI.
 - Sync or async event handling is a matter of configuration.
 - Replay all or some events.
 - Safe commands concurrency.
-- EventSourced aggregates not mandatory.
-- *(optionnal)* EventStore persisted with Doctrine or MongoDB.
-- *(optionnal)* Commands/queries handling & description on API Platform UI.
-- *(optionnal)* Read-only projections managed with Doctrine, easy to migrate.
+- Fully immutable, not a single setter, and fully typed.
 - Tested, 100% code coverage. 
+- EventSourced or CQRS repositories available.
 
 ## Configuration
 
@@ -173,10 +170,10 @@ use Botilka\Application\Command\CommandBus;
 $command = new CreateBankAccountCommand('account in $', 'DOL');
 
 /** @var CommandBus $bus */
-$bus = $container->get(CommandBus::class);
+$bus = $container->get(CommandBus::class); // retrieve it by injection
 $response = $bus->dispatch($command);
 
-echo $response->getId();
+echo $response->getId(); // aggregate root id
 ```
 
 ### How it works
