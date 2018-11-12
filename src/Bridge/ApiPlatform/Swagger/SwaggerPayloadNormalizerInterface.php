@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Botilka\Bridge\ApiPlatform\Swagger;
 
 interface SwaggerPayloadNormalizerInterface

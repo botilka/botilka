@@ -12,6 +12,7 @@ return PhpCsFixer\Config::create()
         'strict_param' => true,
         'strict_comparison' => true,
         'array_syntax' => ['syntax' => 'short'],
+        'declare_strict_types' => true,
     ])
     ->setFinder($finder)
 ;

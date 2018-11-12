@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Botilka\Tests\Fixtures\Domain;
 
 use Botilka\Event\Event;

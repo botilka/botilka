@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Botilka\Ui\Console;
 
 use Botilka\Application\EventStore\EventStoreInitializer;

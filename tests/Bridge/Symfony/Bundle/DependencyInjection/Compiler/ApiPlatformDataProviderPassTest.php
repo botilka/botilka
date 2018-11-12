@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Botilka\Tests\Bridge\Symfony\Bundle\DependencyInjection\Compiler;
 
 use Botilka\Bridge\ApiPlatform\DataProvider\CommandDataProvider;

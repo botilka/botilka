@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Botilka\Infrastructure\Symfony\Messenger\Middleware;
 
 use Botilka\Application\Command\CommandResponse;
@@ -9,7 +11,7 @@ use Botilka\EventStore\EventStoreConcurrencyException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Middleware\MiddlewareInterface;
 
-final class EventDispatcherBusMiddleware implements MiddlewareInterface
+final class EventDispatcherMiddleware implements MiddlewareInterface
 {
     private $eventStore;
     private $eventDispatcher;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Botilka\Tests\Application\Command;
 
 use Botilka\Application\Command\CommandResponse;

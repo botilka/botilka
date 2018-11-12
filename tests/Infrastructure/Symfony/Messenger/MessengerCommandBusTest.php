@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Botilka\Tests\Infrastructure\Symfony\Messenger;
 
 use Botilka\Application\Command\CommandResponse;

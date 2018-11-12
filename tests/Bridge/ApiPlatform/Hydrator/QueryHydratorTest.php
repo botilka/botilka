@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Botilka\Tests\Bridge\ApiPlatform\Hydrator;
 
 use Botilka\Bridge\ApiPlatform\Hydrator\QueryHydrator;

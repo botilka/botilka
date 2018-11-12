@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Botilka\Bridge\Symfony\Bundle\DependencyInjection;
 
 use Botilka\Application\Command\Command;
@@ -7,7 +9,7 @@ use Botilka\Application\Command\CommandHandler;
 use Botilka\Application\EventStore\EventStoreInitializer;
 use Botilka\Event\EventHandler;
 use Botilka\Infrastructure\Doctrine\EventStoreDoctrine;
-use Botilka\Infrastructure\Symfony\Messenger\Middleware\EventDispatcherBusMiddleware;
+use Botilka\Infrastructure\Symfony\Messenger\Middleware\EventDispatcherMiddleware;
 use Botilka\Application\Query\Query;
 use Botilka\Application\Query\QueryHandler;
 use Symfony\Component\Config\FileLocator;
@@ -44,12 +46,12 @@ final class BotilkaExtension extends Extension implements PrependExtensionInterf
 
     private function prependDefaultMessengerConfig(ContainerBuilder $container, array $config): void
     {
-        $commandBusMiddleware = [EventDispatcherBusMiddleware::class];
+        $commandBusMiddlewares = [EventDispatcherMiddleware::class];
 
         // if EventStoreDoctrine is used, add doctrine_transaction_middleware by default
         if ('Botilka\\Infrastructure\\Doctrine\\EventStoreDoctrine' === ($config['event_store'] ?? '') && ($config['doctrine_transaction_middleware'] ?? true)) {
             $container->setParameter('botilka.messenger.doctrine_transaction_middleware', true);
-            \array_unshift($commandBusMiddleware, 'doctrine_transaction_middleware');
+            \array_unshift($commandBusMiddlewares, 'doctrine_transaction_middleware');
         }
 
         $container->prependExtensionConfig('framework', [
@@ -57,7 +59,7 @@ final class BotilkaExtension extends Extension implements PrependExtensionInterf
                 'default_bus' => 'messenger.bus.commands',
                 'buses' => [
                     'messenger.bus.commands' => [
-                        'middleware' => $commandBusMiddleware,
+                        'middleware' => $commandBusMiddlewares,
                     ],
                     'messenger.bus.queries' => [],
                     'messenger.bus.events' => [],

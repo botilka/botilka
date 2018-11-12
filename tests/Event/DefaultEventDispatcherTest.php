@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Botilka\Tests\Event;
 
 use Botilka\Event\DefaultEventDispatcher;
