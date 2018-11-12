@@ -21,7 +21,7 @@ final class EventStoreDoctrineInitializerTest extends AbstractKernelTestCase
         $container = self::$container;
 
         /** @var string $table */
-        $table = \getenv('POSTGRES_TABLE');
+        $table = \getenv('POSTGRES_TABLE').'_test';
 
         /** @var RegistryInterface $registry */
         $registry = self::$container->get('doctrine');

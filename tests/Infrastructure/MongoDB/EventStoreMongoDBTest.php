@@ -30,9 +30,9 @@ final class EventStoreMongoDBTest extends AbstractKernelTestCase
         /** @var Client $client */
         $client = $container->get(Client::class);
         /** @var string $database */
-        $database = \getenv('MONGODB_DB');
+        $database = \getenv('MONGODB_DB').'_test';
         /** @var string $collection */
-        $collection = \getenv('MONGODB_COLLECTION');
+        $collection = \getenv('MONGODB_COLLECTION').'_test';
 
         $initializer = new EventStoreMongoDBInitializer($client, $database, $collection);
         $initializer->initialize(true);
