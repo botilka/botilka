@@ -44,7 +44,7 @@ after_script:
   - php ocular.phar code-coverage:upload --format=php-clover coverage.clover
 
 install:
-  - echo $$TRAVIS_PHP_VERSION
+  - echo $TRAVIS_PHP_VERSION
   - pecl -q install mongodb || true
   - if [[ $deps = 'low' ]]; then
       composer update --prefer-dist --no-progress --no-suggest --ansi --prefer-stable --prefer-lowest;
