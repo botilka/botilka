@@ -19,7 +19,7 @@ final class AppKernel extends Kernel
     public function __construct(string $environment, bool $debug)
     {
         parent::__construct($environment, $debug);
-        $this->volatileDir = sys_get_temp_dir().'/botilka_test';
+        $this->volatileDir = \sys_get_temp_dir().'/botilka_test';
     }
 
     public function getCacheDir()

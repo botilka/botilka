@@ -13,7 +13,7 @@
         "symfony/monolog-bundle": "^3.3",
         "symfony/serializer": "^4.1",
         "symfony/validator": "^4.1",
-        "doctrine/doctrine-cache-bundle": "^1.3"
+        "doctrine/doctrine-cache-bundle": ">=1.3.5"
     },
     "require-dev": {
         "api-platform/core": "^2.3",
