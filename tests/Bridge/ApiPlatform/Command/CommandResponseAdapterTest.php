@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 
 final class CommandResponseAdapterTest extends TestCase
 {
-    public function testGetId()
+    public function testGetId(): void
     {
         $event = new StubEvent(123);
         $commandResponse = new CommandResponse('foo', 123, $event);

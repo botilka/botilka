@@ -15,32 +15,32 @@ final class EventTest extends TestCase
         $this->event = new Event('12345678-abcd-1337-affa-f00baababaf0', 123, 'Bar\\Baz', ['foo' => 'bar'], ['baz' => 456]);
     }
 
-    public function testGetPlayhead()
+    public function testGetPlayhead(): void
     {
         $this->assertSame(123, $this->event->getPlayhead());
     }
 
-    public function testGetRecordedOn()
+    public function testGetRecordedOn(): void
     {
         $this->assertInstanceOf(\DateTimeImmutable::class, $this->event->getRecordedOn());
     }
 
-    public function testGetType()
+    public function testGetType(): void
     {
         $this->assertSame('Bar\\Baz', $this->event->getType());
     }
 
-    public function testGetId()
+    public function testGetId(): void
     {
         $this->assertSame('12345678-abcd-1337-affa-f00baababaf0', $this->event->getId());
     }
 
-    public function testGetPayload()
+    public function testGetPayload(): void
     {
         $this->assertSame(['foo' => 'bar'], $this->event->getPayload());
     }
 
-    public function testGetMetadata()
+    public function testGetMetadata(): void
     {
         $this->assertSame(['baz' => 456], $this->event->getMetadata());
     }

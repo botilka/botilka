@@ -14,7 +14,7 @@ use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\HttpKernel\KernelInterface;
 
-class CommandResourceClassEventListenerTest extends TestCase
+final class CommandResourceClassEventListenerTest extends TestCase
 {
     /** @var CommandResourceClassEventListener */
     private $listener;
@@ -27,7 +27,7 @@ class CommandResourceClassEventListenerTest extends TestCase
         $this->listener = new CommandResourceClassEventListener($this->descriptionContainer);
     }
 
-    public function testGetSubscribedEvents()
+    public function testGetSubscribedEvents(): void
     {
         $this->assertSame([
             KernelEvents::REQUEST => [
@@ -36,7 +36,7 @@ class CommandResourceClassEventListenerTest extends TestCase
         ], CommandResourceClassEventListener::getSubscribedEvents());
     }
 
-    public function testOnKernelRequestNotPost()
+    public function testOnKernelRequestNotPost(): void
     {
         $event = $this->getEvent();
 
@@ -48,7 +48,7 @@ class CommandResourceClassEventListenerTest extends TestCase
     }
 
     /** @dataProvider onKernelRequestCommandNotExistingProvider */
-    public function testOnKernelRequestCommandNotExisting(?string $collectionOperationName)
+    public function testOnKernelRequestCommandNotExisting(?string $collectionOperationName): void
     {
         $event = $this->getEvent(['_api_collection_operation_name' => $collectionOperationName]);
 
@@ -71,7 +71,7 @@ class CommandResourceClassEventListenerTest extends TestCase
         ];
     }
 
-    public function testOnKernelRequest()
+    public function testOnKernelRequest(): void
     {
         $event = $this->getEvent(['_api_collection_operation_name' => 'foo']);
 

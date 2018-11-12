@@ -5,10 +5,10 @@ namespace Botilka\Tests\Bridge\ApiPlatform\Swagger;
 use Botilka\Bridge\ApiPlatform\Swagger\SwaggerCommandBodyNormalizer;
 use PHPUnit\Framework\TestCase;
 
-class SwaggerCommandBodyNormalizerTest extends TestCase
+final class SwaggerCommandBodyNormalizerTest extends TestCase
 {
     /** @dataProvider normalizeProvider */
-    public function testNormalize(array $payload, array $expected)
+    public function testNormalize(array $payload, array $expected): void
     {
         $normalizer = new SwaggerCommandBodyNormalizer();
 

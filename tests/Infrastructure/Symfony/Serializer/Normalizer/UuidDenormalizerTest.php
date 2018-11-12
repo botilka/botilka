@@ -18,7 +18,7 @@ final class UuidDenormalizerTest extends TestCase
     }
 
     /** @dataProvider supportsDenormalizationProvider */
-    public function testSupportsDenormalization(bool $expected, string $type)
+    public function testSupportsDenormalization(bool $expected, string $type): void
     {
         $this->assertSame($expected, $this->denormalizer->supportsDenormalization('foo', $type));
     }
@@ -31,12 +31,12 @@ final class UuidDenormalizerTest extends TestCase
         ];
     }
 
-    public function testHasCacheableSupportsMethod()
+    public function testHasCacheableSupportsMethod(): void
     {
         $this->assertTrue($this->denormalizer->hasCacheableSupportsMethod());
     }
 
-    public function testDenormalizeValid()
+    public function testDenormalizeValid(): void
     {
         $uuid = Uuid::uuid4();
         $this->assertTrue($uuid->equals($this->denormalizer->denormalize($uuid->toString(), UuidInterface::class)));
@@ -46,7 +46,7 @@ final class UuidDenormalizerTest extends TestCase
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Can not denormalize "foo" as an Uuid.
      */
-    public function testDenormalizeInvalid()
+    public function testDenormalizeInvalid(): void
     {
         $this->denormalizer->denormalize('foo', UuidInterface::class);
     }

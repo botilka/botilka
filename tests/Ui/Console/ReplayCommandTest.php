@@ -11,7 +11,7 @@ use Symfony\Component\Console\Output\BufferedOutput;
 final class ReplayCommandTest extends KernelTestCase
 {
     /** @dataProvider executeProvider */
-    public function testExecute(string $id, ?int $from, ?int $to)
+    public function testExecute(string $id, ?int $from, ?int $to): void
     {
         $replayer = $this->createMock(EventReplayer::class);
         $command = new ReplayCommand($replayer);

@@ -7,6 +7,7 @@
         "php": ">=7.1",
         "doctrine/common": "^2.9",
         "ramsey/uuid": "^3.8",
+        "symfony/dependency-injection": "^4.1",
         "symfony/console": "^4.1",
         "symfony/messenger": "^4.1",
         "symfony/monolog-bundle": "^3.3",
@@ -15,17 +16,25 @@
     },
     "require-dev": {
         "api-platform/core": "^2.3",
-        "doctrine/doctrine-bundle": "^1.9",
+        "doctrine/doctrine-bundle": "^1.9.1",
         "doctrine/orm": "^2.6",
         "jangregor/phpstan-prophecy": "^0.2.0",
+        "mongodb/mongodb": "^1.4",
         "phpstan/phpstan": "^0.10.3",
         "phpstan/phpstan-phpunit": "^0.10.0",
-        "phpunit/phpunit": "^7.4",
+        "phpunit/phpunit": "7.3.*",
+        "ramsey/uuid-doctrine": "^1.5",
         "symfony/framework-bundle": "^4.1",
         "symfony/yaml": "^4.1"
     },
+    "scripts": {
+        "analyze": "phpstan analyze",
+        "test": "phpunit",
+        "testcov": "phpunit --coverage-text --coverage-html=coverage"
+    },
     "suggest": {
         "doctrine/orm": "To use Doctrine as an EventStore",
+        "mongodb/mongodb": "To use MongDB as an EventStore",
         "api-platform/core": "To expose your commands & queries via REST"
     },
     "config": {
@@ -48,5 +57,10 @@
             "name": "azzra",
             "email": "azzra@users.noreply.github.com"
         }
-    ]
+    ],
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0.x-dev"
+        }
+    }
 }

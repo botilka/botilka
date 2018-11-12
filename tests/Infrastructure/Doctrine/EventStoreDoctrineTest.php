@@ -2,6 +2,7 @@
 
 namespace Botilka\Tests\Infrastructure\Doctrine;
 
+use Botilka\EventStore\EventStore;
 use Botilka\Infrastructure\Doctrine\EventStoreDoctrine;
 use Botilka\Tests\Fixtures\Domain\StubEvent;
 use Doctrine\DBAL\Driver\Connection;
@@ -10,15 +11,15 @@ use Doctrine\DBAL\Driver\Statement;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
-use Symfony\Component\Serializer\SerializerInterface;
 
 final class EventStoreDoctrineTest extends TestCase
 {
     /** @var Connection|MockObject */
     private $connection;
-    /** @var SerializerInterface|MockObject */
-    private $serializer;
+    /** @var DenormalizerInterface|MockObject */
+    private $denormalizer;
     /** @var NormalizerInterface|MockObject */
     private $normalizer;
     /** @var EventStoreDoctrine|MockObject */
@@ -27,31 +28,32 @@ final class EventStoreDoctrineTest extends TestCase
     public function setUp()
     {
         $this->connection = $this->createMock(Connection::class);
-        $this->serializer = $this->createMock(SerializerInterface::class);
         $this->normalizer = $this->createMock(NormalizerInterface::class);
-        $this->eventStore = new EventStoreDoctrine($this->connection, $this->serializer, $this->normalizer);
+        $this->denormalizer = $this->createMock(DenormalizerInterface::class);
+        $this->eventStore = new EventStoreDoctrine($this->connection, $this->normalizer, $this->denormalizer, 'event_store');
+        $this->assertInstanceOf(EventStore::class, $this->eventStore);
     }
 
     /**
      * @param MockObject|Statement $stmt
      */
-    private function addSerializerExpectation(MockObject $stmt): void
+    private function addDenormalizerExpectation(MockObject $stmt): void
     {
         $result = [
-            ['type' => 'Foo\\Bar', 'payload' => ['foo' => 'bar']],
+            ['type' => 'Foo\\Bar', 'payload' => \json_encode(['foo' => 'bar'])],
         ];
 
         $stmt->expects($this->once())
             ->method('fetchAll')
             ->willReturn($result);
 
-        $this->serializer->expects($this->once())
-            ->method('deserialize')
-            ->with(['foo' => 'bar'], 'Foo\\Bar', 'json')
+        $this->denormalizer->expects($this->once())
+            ->method('denormalize')
+            ->with(['foo' => 'bar'], 'Foo\\Bar')
             ->willReturn('baz');
     }
 
-    public function testLoad()
+    public function testLoad(): void
     {
         $stmt = $this->createMock(Statement::class);
 
@@ -64,12 +66,12 @@ final class EventStoreDoctrineTest extends TestCase
             ->method('execute')
             ->with(['id' => 'foo']);
 
-        $this->addSerializerExpectation($stmt);
+        $this->addDenormalizerExpectation($stmt);
 
         $this->assertSame(['baz'], $this->eventStore->load('foo'));
     }
 
-    public function testLoadFromPlayhead()
+    public function testLoadFromPlayhead(): void
     {
         $stmt = $this->createMock(Statement::class);
 
@@ -82,12 +84,12 @@ final class EventStoreDoctrineTest extends TestCase
             ->method('execute')
             ->with(['id' => 'foo', 'playhead' => 2]);
 
-        $this->addSerializerExpectation($stmt);
+        $this->addDenormalizerExpectation($stmt);
 
         $this->assertSame(['baz'], $this->eventStore->loadFromPlayhead('foo', 2));
     }
 
-    public function testLoadFromPlayheadToPlayhead()
+    public function testLoadFromPlayheadToPlayhead(): void
     {
         $stmt = $this->createMock(Statement::class);
 
@@ -100,12 +102,12 @@ final class EventStoreDoctrineTest extends TestCase
             ->method('execute')
             ->with(['id' => 'foo', 'from' => 2, 'to' => 4]);
 
-        $this->addSerializerExpectation($stmt);
+        $this->addDenormalizerExpectation($stmt);
 
         $this->assertSame(['baz'], $this->eventStore->loadFromPlayheadToPlayhead('foo', 2, 4));
     }
 
-    public function testAppend()
+    public function testAppend(): void
     {
         $stmt = $this->createMock(Statement::class);
 
@@ -140,7 +142,7 @@ final class EventStoreDoctrineTest extends TestCase
      * @expectedException \Botilka\EventStore\EventStoreConcurrencyException
      * @expectedExceptionMessage Duplicate storage of event "Foo\Bar" on aggregate "foo" with playhead 123.
      */
-    public function testAppendUniqueConstraintViolationException()
+    public function testAppendUniqueConstraintViolationException(): void
     {
         $stmt = $this->createMock(Statement::class);
 

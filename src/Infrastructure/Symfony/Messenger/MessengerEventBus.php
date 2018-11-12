@@ -15,8 +15,8 @@ final class MessengerEventBus implements EventBus
         $this->bus = $bus;
     }
 
-    public function dispatch(Event $message)
+    public function dispatch(Event $message): void
     {
-        return $this->bus->dispatch($message);
+        $this->bus->dispatch($message);
     }
 }

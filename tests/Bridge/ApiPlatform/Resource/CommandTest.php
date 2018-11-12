@@ -15,12 +15,12 @@ final class CommandTest extends TestCase
         $this->command = new Command('foo_bar', ['foo' => 'baz']);
     }
 
-    public function testGetName()
+    public function testGetName(): void
     {
         $this->assertSame('foo_bar', $this->command->getName());
     }
 
-    public function testGetPayload()
+    public function testGetPayload(): void
     {
         $this->assertSame(['foo' => 'baz'], $this->command->getPayload());
     }

@@ -1,13 +1,30 @@
 sudo: false
 language: php
 
+services:
+  - mongodb
+  - postgresql
+
 php:
   - '7.1'
   - '7.2'
 
 env:
-  - deps=low
-  - deps=high
+  global:
+    - POSTGRES_HOST=localhost
+    - POSTGRES_PORT=5432
+    - POSTGRES_PASSWORD=password
+    - POSTGRES_USER=user
+    - POSTGRES_DB=database
+    - POSTGRES_TABLE=event_store
+    - DATABASE_URL=pgsql://postgres@localhost:5432/database
+    - MONGODB_HOST=localhost
+    - MONGODB_PORT=27017
+    - MONGODB_DB=botilka_test
+    - MONGODB_COLLECTION=event_store_test
+  matrix:
+    - deps=low
+    - deps=high
 
 matrix:
   allow_failures:
@@ -27,6 +44,8 @@ after_script:
   - php ocular.phar code-coverage:upload --format=php-clover coverage.clover
 
 install:
+  - pecl -q install mongodb || true
+  - if [ $TRAVIS_PHP_VERSION = "7.2" ]; then echo "extension=mongodb.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini; fi
   - if [[ $deps = 'low' ]]; then
       composer update --prefer-dist --no-progress --no-suggest --ansi --prefer-stable --prefer-lowest;
     else

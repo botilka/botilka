@@ -1,8 +1,12 @@
 services:
     _defaults:
         autowire: true
+        autoconfigure: true
         public: false
+        bind:
+            $table: '%env(POSTGRES_TABLE)%'
 
-    # activate Doctrine as EventStore
     Botilka\Infrastructure\Doctrine\EventStoreDoctrine: ~
     Botilka\EventStore\EventStore: '@Botilka\Infrastructure\Doctrine\EventStoreDoctrine'
+
+    Botilka\Infrastructure\Doctrine\EventStoreDoctrineInitializer: ~

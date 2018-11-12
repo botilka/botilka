@@ -27,7 +27,7 @@ final class CommandHydratorTest extends TestCase
         $this->hydrator = new CommandHydrator($this->denormalizer, $this->validator);
     }
 
-    public function testHydrate()
+    public function testHydrate(): void
     {
         $command = new SimpleCommand('foo', null);
 
@@ -45,7 +45,7 @@ final class CommandHydratorTest extends TestCase
     }
 
     /** @expectedException \ApiPlatform\Core\Bridge\Symfony\Validator\Exception\ValidationException */
-    public function testHydrateViolation()
+    public function testHydrateViolation(): void
     {
         $command = new SimpleCommand('foo', null);
 

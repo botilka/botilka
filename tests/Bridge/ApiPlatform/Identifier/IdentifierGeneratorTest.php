@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
 final class IdentifierGeneratorTest extends TestCase
 {
     /** @dataProvider generateProvider */
-    public function testGenerate(string $expected, string $type, string $className)
+    public function testGenerate(string $expected, string $type, string $className): void
     {
         $this->assertSame($expected, IdentifierGenerator::generate($type, $className));
     }

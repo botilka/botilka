@@ -7,28 +7,27 @@ use Botilka\EventStore\EventStore;
 use Botilka\EventStore\EventStoreConcurrencyException;
 use Doctrine\DBAL\Driver\Connection;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
+use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
-use Symfony\Component\Serializer\SerializerInterface;
 
 final class EventStoreDoctrine implements EventStore
 {
     private $connection;
-    private $serializer;
     private $normalizer;
+    private $denormalizer;
+    private $table;
 
-    public function __construct(Connection $connection, SerializerInterface $serializer, NormalizerInterface $normalizer)
+    public function __construct(Connection $connection, NormalizerInterface $normalizer, DenormalizerInterface $denormalizer, string $table)
     {
         $this->connection = $connection;
-        $this->serializer = $serializer;
         $this->normalizer = $normalizer;
+        $this->denormalizer = $denormalizer;
+        $this->table = $table;
     }
 
-    /**
-     * Does not call loadFromPlayhead with playhead "0" to avoid a function call.
-     */
     public function load(string $id): array
     {
-        $stmt = $this->connection->prepare('SELECT type, payload FROM event_store WHERE id = :id ORDER BY playhead');
+        $stmt = $this->connection->prepare("SELECT type, payload FROM {$this->table} WHERE id = :id ORDER BY playhead");
         $stmt->execute(['id' => $id]);
 
         return $this->deserialize($stmt->fetchAll());
@@ -36,7 +35,7 @@ final class EventStoreDoctrine implements EventStore
 
     public function loadFromPlayhead(string $id, int $fromPlayhead): array
     {
-        $stmt = $this->connection->prepare('SELECT type, payload FROM event_store WHERE id = :id AND playhead > :playhead ORDER BY playhead');
+        $stmt = $this->connection->prepare("SELECT type, payload FROM {$this->table} WHERE id = :id AND playhead > :playhead ORDER BY playhead");
         $stmt->execute(['id' => $id, 'playhead' => $fromPlayhead]);
 
         return $this->deserialize($stmt->fetchAll());
@@ -44,15 +43,15 @@ final class EventStoreDoctrine implements EventStore
 
     public function loadFromPlayheadToPlayhead(string $id, int $fromPlayhead, int $toPlayhead): array
     {
-        $stmt = $this->connection->prepare('SELECT type, payload FROM event_store WHERE id = :id AND playhead BETWEEN :from AND :to ORDER BY playhead');
+        $stmt = $this->connection->prepare("SELECT type, payload FROM {$this->table} WHERE id = :id AND playhead BETWEEN :from AND :to ORDER BY playhead");
         $stmt->execute(['id' => $id, 'from' => $fromPlayhead, 'to' => $toPlayhead]);
 
         return $this->deserialize($stmt->fetchAll());
     }
 
-    public function append(string $id, int $playhead, string $type, DomainEvent $payload, ?array $metadata, \DateTimeImmutable $recordedOn)
+    public function append(string $id, int $playhead, string $type, DomainEvent $payload, ?array $metadata, \DateTimeImmutable $recordedOn): void
     {
-        $stmt = $this->connection->prepare('INSERT INTO event_store VALUES (:id, :playhead, :type, :payload, :metadata, :recordedOn)');
+        $stmt = $this->connection->prepare("INSERT INTO {$this->table} VALUES (:id, :playhead, :type, :payload, :metadata, :recordedOn)");
 
         $values = [
             'id' => $id,
@@ -70,10 +69,17 @@ final class EventStoreDoctrine implements EventStore
         }
     }
 
-    private function deserialize(array $events)
+    /**
+     * @return Event[]
+     */
+    private function deserialize(array $storedEvents): array
     {
-        return \array_map(function ($event) {
-            return $this->serializer->deserialize($event['payload'], $event['type'], 'json');
-        }, $events);
+        $events = [];
+        /** @var array $event */
+        foreach ($storedEvents as $event) {
+            $events[] = $this->denormalizer->denormalize(\json_decode($event['payload'], true), $event['type']);
+        }
+
+        return $events;
     }
 }

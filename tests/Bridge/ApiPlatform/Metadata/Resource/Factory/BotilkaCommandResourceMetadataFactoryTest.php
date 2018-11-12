@@ -14,7 +14,7 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class BotilkaCommandResourceMetadataFactoryTest extends TestCase
+final class BotilkaCommandResourceMetadataFactoryTest extends TestCase
 {
     /** @var BotilkaCommandResourceMetadataFactory */
     private $factory;
@@ -33,7 +33,7 @@ class BotilkaCommandResourceMetadataFactoryTest extends TestCase
         $this->factory = new BotilkaCommandResourceMetadataFactory($this->decorated, $this->descriptionContainer, $this->payloadNormalizer);
     }
 
-    public function testCreateResourceClassNotFoundException()
+    public function testCreateResourceClassNotFoundException(): void
     {
         $this->decorated->expects($this->once())
             ->method('create')
@@ -43,7 +43,7 @@ class BotilkaCommandResourceMetadataFactoryTest extends TestCase
         $this->assertNull($metadata->getShortName());
     }
 
-    public function testCreateNotExtending()
+    public function testCreateNotExtending(): void
     {
         $metadata = new ResourceMetadata('NotCommand');
         $this->decorated->expects($this->once())
@@ -57,7 +57,7 @@ class BotilkaCommandResourceMetadataFactoryTest extends TestCase
         $this->assertSame($metadata, $this->factory->create('Foo\\Bar'));
     }
 
-    public function testCreate()
+    public function testCreate(): void
     {
         $this->decorated->expects($this->once())
             ->method('create')

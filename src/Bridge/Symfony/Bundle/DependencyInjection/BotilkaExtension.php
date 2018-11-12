@@ -4,12 +4,14 @@ namespace Botilka\Bridge\Symfony\Bundle\DependencyInjection;
 
 use Botilka\Application\Command\Command;
 use Botilka\Application\Command\CommandHandler;
+use Botilka\Application\EventStore\EventStoreInitializer;
 use Botilka\Event\EventHandler;
 use Botilka\Infrastructure\Doctrine\EventStoreDoctrine;
 use Botilka\Infrastructure\Symfony\Messenger\Middleware\EventDispatcherBusMiddleware;
 use Botilka\Application\Query\Query;
 use Botilka\Application\Query\QueryHandler;
 use Symfony\Component\Config\FileLocator;
+use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
@@ -23,6 +25,7 @@ final class BotilkaExtension extends Extension implements PrependExtensionInterf
         EventHandler::class => ['messenger.message_handler', ['bus' => 'messenger.bus.events']],
         Command::class => ['cqrs.command'],
         Query::class => ['cqrs.query'],
+        EventStoreInitializer::class => ['botilka.event_store.initializable'],
     ];
 
     public function prepend(ContainerBuilder $container)
@@ -31,18 +34,20 @@ final class BotilkaExtension extends Extension implements PrependExtensionInterf
         $container->setParameter('botilka.bridge.api_platform', false);
         $container->setParameter('botilka.messenger.doctrine_transaction_middleware', false);
 
+        // default is to use Messenger
         if ($botilkaConfig['default_messenger_config'] ?? true) {
-            $this->prependDefaultMessengerConfig($container, $botilkaConfig['doctrine_transaction_middleware'] ?? true);
+            $this->prependDefaultMessengerConfig($container, $botilkaConfig);
         }
 
         $this->prependApliPlatformConfig($container, $botilkaConfig['api_platform'] ?? []);
     }
 
-    private function prependDefaultMessengerConfig(ContainerBuilder $container, bool $addDoctrineTransactionMiddleware): void
+    private function prependDefaultMessengerConfig(ContainerBuilder $container, array $config): void
     {
         $commandBusMiddleware = [EventDispatcherBusMiddleware::class];
-        // depends on Doctrine availability too
-        if (true === $addDoctrineTransactionMiddleware && $container->hasExtension('doctrine')) {
+
+        // if EventStoreDoctrine is used, add doctrine_transaction_middleware by default
+        if ('Botilka\\Infrastructure\\Doctrine\\EventStoreDoctrine' === ($config['event_store'] ?? '') && ($config['doctrine_transaction_middleware'] ?? true)) {
             $container->setParameter('botilka.messenger.doctrine_transaction_middleware', true);
             \array_unshift($commandBusMiddleware, 'doctrine_transaction_middleware');
         }
@@ -123,8 +128,18 @@ final class BotilkaExtension extends Extension implements PrependExtensionInterf
             }
         }
 
-        if (EventStoreDoctrine::class === $config['event_store']) {
-            $loader->load('doctrine_event_store.yaml');
+        $this->loadEventStoreConfig($loader, $config['event_store']);
+    }
+
+    private function loadEventStoreConfig(LoaderInterface $loader, string $eventStore): void
+    {
+        switch ($eventStore) {
+            case 'Botilka\\Infrastructure\\Doctrine\\EventStoreDoctrine':
+                $loader->load('event_store_doctrine.yaml');
+                break;
+            case 'Botilka\\Infrastructure\\MongoDB\\EventStoreMongoDB':
+                $loader->load('event_store_mongodb.yaml');
+                break;
         }
     }
 }

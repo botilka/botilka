@@ -9,7 +9,7 @@ use Symfony\Component\Messenger\MessageBusInterface;
 
 final class MessengerQueryBusTest extends TestCase
 {
-    public function testDispatch()
+    public function testDispatch(): void
     {
         $query = new SimpleQuery('bar', 321);
 

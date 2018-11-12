@@ -4,5 +4,5 @@ namespace Botilka\Event;
 
 interface EventBus
 {
-    public function dispatch(Event $event);
+    public function dispatch(Event $event): void;
 }

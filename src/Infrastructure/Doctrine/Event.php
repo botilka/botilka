@@ -46,7 +46,7 @@ class Event
 
     /**
      * @var ?array
-     * @ORM\Column(type="json", nullable=true)
+     * @ORM\Column(type="json")
      */
     private $metadata;
 

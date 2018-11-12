@@ -32,7 +32,7 @@ final class CommandResponse
         return $this->event;
     }
 
-    public static function withValue(string $id, int $playhead, Event $event)
+    public static function withValue(string $id, int $playhead, Event $event): self
     {
         return new self($id, $playhead, $event);
     }

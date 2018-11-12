@@ -22,7 +22,7 @@ final class ApiPlatformDataProviderPassTest extends TestCase
         $this->compilerPass = new ApiPlatformDataProviderPass();
     }
 
-    public function testProcess()
+    public function testProcess(): void
     {
         $container = $this->createMock(ContainerBuilder::class);
 
@@ -69,7 +69,7 @@ final class ApiPlatformDataProviderPassTest extends TestCase
         $this->compilerPass->process($container);
     }
 
-    public function testNoProcess()
+    public function testNoProcess(): void
     {
         $container = $this->createMock(ContainerBuilder::class);
 

@@ -11,7 +11,7 @@ use Symfony\Component\Messenger\Exception\NoHandlerForMessageException;
 
 final class DefaultEventDispatcherTest extends TestCase
 {
-    public function testDispatchWithHandler()
+    public function testDispatchWithHandler(): void
     {
         $eventBus = $this->createMock(EventBus::class);
         $logger = $this->createMock(LoggerInterface::class);
@@ -26,7 +26,7 @@ final class DefaultEventDispatcherTest extends TestCase
         $eventDispatcher->dispatch($event);
     }
 
-    public function testDispatchWithouHandler()
+    public function testDispatchWithouHandler(): void
     {
         $eventBus = $this->createMock(EventBus::class);
         $logger = $this->createMock(LoggerInterface::class);

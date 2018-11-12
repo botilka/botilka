@@ -9,17 +9,16 @@ use Symfony\Component\Messenger\MessageBusInterface;
 
 final class MessengerEventBusTest extends TestCase
 {
-    public function testDispatch()
+    public function testDispatch(): void
     {
         $event = new StubEvent(42);
 
         $messengerBus = $this->createMock(MessageBusInterface::class);
         $messengerBus->expects($this->once())
             ->method('dispatch')
-            ->with($event)
-            ->willReturn('bar');
+            ->with($event);
 
         $bus = new MessengerEventBus($messengerBus);
-        $this->assertSame('bar', $bus->dispatch($event));
+        $bus->dispatch($event);
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+namespace Botilka\Tests\app;
+
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\Loader\LoaderInterface;
@@ -34,14 +36,16 @@ final class AppKernel extends Kernel
 
     protected function configureContainer(ContainerBuilder $c, LoaderInterface $loader)
     {
+        $c->setParameter('kernel.project_dir', __DIR__);
         $loader->load($this->getRootDir().'/config/config.yaml');
+        $loader->load("{$this->getRootDir()}/config/services_test.yaml");
     }
 
     public function registerBundles()
     {
         return [
             new \Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
-//            new \Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
+            new \Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
 //            new \ApiPlatform\Core\Bridge\Symfony\Bundle\ApiPlatformBundle(),
             new \Botilka\Bridge\Symfony\Bundle\BotilkaBundle(),
         ];

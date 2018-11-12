@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 
 final class CommandHandlerActionTest extends TestCase
 {
-    public function testInvoke()
+    public function testInvoke(): void
     {
         $command = new SimpleCommand('foo', null);
         $commandResponse = new CommandResponse('bar', 123, new StubEvent(123));
