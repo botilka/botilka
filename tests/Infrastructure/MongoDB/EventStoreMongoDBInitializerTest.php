@@ -10,9 +10,6 @@ use MongoDB\Client;
 use MongoDB\Collection;
 use MongoDB\Database;
 
-if (!\class_exists('MongoDB\\Driver\\Exception\\CommandException')) {
-}
-
 final class EventStoreMongoDBInitializerTest extends AbstractKernelTestCase
 {
     /** @var EventStoreMongoDBInitializer */
@@ -26,9 +23,6 @@ final class EventStoreMongoDBInitializerTest extends AbstractKernelTestCase
 
     public function setUp()
     {
-        static::bootKernel();
-        $container = static::$container;
-
         /** @var string $database */
         $database = \getenv('MONGODB_DB').'_test';
         /** @var string $collection */
@@ -73,6 +67,7 @@ final class EventStoreMongoDBInitializerTest extends AbstractKernelTestCase
      */
     public function testInitializeFunctionnal(): void
     {
+        static::bootKernel();
         /** @var Client $client */
         $client = static::$container->get(Client::class);
         $client->selectDatabase($this->database)->dropCollection($this->collection);
@@ -87,6 +82,7 @@ final class EventStoreMongoDBInitializerTest extends AbstractKernelTestCase
     /** @group functionnal */
     public function testInitializeForceFunctionnal(): void
     {
+        static::bootKernel();
         /** @var Client $client */
         $client = static::$container->get(Client::class);
         $client->selectDatabase($this->database)->dropCollection($this->collection);

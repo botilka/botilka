@@ -14,7 +14,7 @@ final class EventStoreDoctrineInitializerTest extends AbstractKernelTestCase
     /** @var EventStoreDoctrineInitializer */
     private $initializer;
 
-    public function setUp()
+    private function resetEventStore()
     {
         $kernel = static::bootKernel();
         static::setUpDoctrine($kernel);
@@ -35,19 +35,23 @@ final class EventStoreDoctrineInitializerTest extends AbstractKernelTestCase
     }
 
     /**
+     * @group functionnal
      * @expectedException \RuntimeException
      * @expectedExceptionMessageRegExp /Duplicate table:.*relation "event_store_test" already exists/
      */
     public function testInitialize(): void
     {
+        $this->resetEventStore();
         $this->initializer->initialize();
         $this->assertTrue(true);
 
         $this->initializer->initialize();
     }
 
+    /** @group functionnal */
     public function testInitializeForce(): void
     {
+        $this->resetEventStore();
         $this->initializer->initialize();
         $this->initializer->initialize(true);
         $this->initializer->initialize(true);
