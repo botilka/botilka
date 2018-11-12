@@ -4,7 +4,6 @@ namespace Botilka\Infrastructure\MongoDB;
 
 use Botilka\Application\EventStore\EventStoreInitializer;
 use MongoDB\Client;
-use MongoDB\Driver\Exception\CommandException;
 
 final class EventStoreMongoDBInitializer implements EventStoreInitializer
 {
@@ -29,8 +28,11 @@ final class EventStoreMongoDBInitializer implements EventStoreInitializer
 
         try {
             $database->createCollection($this->collection);
-        } catch (CommandException $e) {
-            throw new \RuntimeException("Collection '{$this->collection}' already exists.");
+        } catch (\Exception $e) {
+            if ('MongoDB\\Driver\\Exception\\CommandException' === \get_class($e)) {
+                throw new \RuntimeException("Collection '{$this->collection}' already exists.");
+            }
+            throw $e;
         }
 
         $database->selectCollection($this->collection)->createIndexes([['key' => ['id' => 1, 'playhead' => 1], 'unique' => true]]);

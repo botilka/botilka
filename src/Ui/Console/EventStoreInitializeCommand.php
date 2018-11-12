@@ -13,7 +13,6 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 final class EventStoreInitializeCommand extends Command
 {
     private $initializers;
-    private $projectDir;
 
     public function __construct(iterable $initializers = [])
     {
