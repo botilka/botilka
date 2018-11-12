@@ -15,13 +15,13 @@ final class EventSourcedAggregateRootApplierTest extends TestCase
         $this->eventSourcedAggregateRoot = new StubEventSourcedAggregateRoot();
     }
 
-    public function testGetPlayhead()
-:void    {
+    public function testGetPlayhead(): void
+    {
         $this->assertSame(-1, $this->eventSourcedAggregateRoot->getPlayhead());
     }
 
-    public function testApply()
-:void    {
+    public function testApply(): void
+    {
         $aggregateRoot = new StubEventSourcedAggregateRoot();
 
         $result = $aggregateRoot->apply(new StubEvent(321));
