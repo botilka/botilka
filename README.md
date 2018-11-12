@@ -18,7 +18,7 @@ It can leverage [API Platform](https://api-platform.com) to expose the `Commands
 - Replay all or some events.
 - Safe commands concurrency.
 - EventSourced aggregates not mandatory.
-- *(optionnal)* EventStore persisted with Doctrine.
+- *(optionnal)* EventStore persisted with Doctrine or MongoDB.
 - *(optionnal)* Commands/queries handling & description on API Platform UI.
 - *(optionnal)* Read-only projections managed with Doctrine, easy to migrate.
 - Tested, 100% code coverage. 
@@ -32,8 +32,23 @@ It can leverage [API Platform](https://api-platform.com) to expose the `Commands
 
 ## Configuration
 
+An event store should be peristed and the default implementation is not!
+Choose between `Botilka\Infrastructure\Doctrine\EventStoreDoctrine` & `Botilka\Infrastructure\MongoDB\EventStoreMongoDB`.
+```yaml
+# config/packages/botilka.yaml
+botilka:
+    
+    # default implementation is Botilka\Infrastructure\InMemory\EventStoreInMemory
+    event_store: 'Botilka\Infrastructure\MongoDB\EventStoreMongoDB' # or 'Botilka\Infrastructure\Doctrine\EventStoreDoctrine'
+    
 
+```
 
+Botilka provide a command to create add unique index to the event_store:
+
+```sh
+bin/console
+```
 
 ## Usage
 

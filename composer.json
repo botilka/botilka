@@ -7,7 +7,7 @@
         "php": ">=7.1",
         "doctrine/common": "^2.9",
         "ramsey/uuid": "^3.8",
-        "symfony/dependency-injection": ">=4.1.7",
+        "symfony/dependency-injection": "^4.1",
         "symfony/console": "^4.1",
         "symfony/messenger": "^4.1",
         "symfony/monolog-bundle": "^3.3",
@@ -16,7 +16,7 @@
     },
     "require-dev": {
         "api-platform/core": "^2.3",
-        "doctrine/doctrine-bundle": "^1.9",
+        "doctrine/doctrine-bundle": "^1.9.1",
         "doctrine/orm": "^2.6",
         "jangregor/phpstan-prophecy": "^0.2.0",
         "mongodb/mongodb": "^1.4",
