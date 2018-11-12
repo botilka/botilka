@@ -19,7 +19,7 @@ abstract class AbstractKernelTestCase extends KernelTestCase
         return parent::bootKernel($options + ['environment' => 'test']);
     }
 
-    public static function setUpDoctrine(KernelInterface $kernel)
+    public static function setUpDoctrine(KernelInterface $kernel): void
     {
         $application = new DropDatabaseDoctrineCommand();
         $application->setContainer(self::$container);

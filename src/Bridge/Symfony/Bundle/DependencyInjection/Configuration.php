@@ -15,7 +15,7 @@ final class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
-                ->scalarNode('event_store')->defaultValue(EventStoreInMemory::class)->info('Event store to use')->end()
+                ->scalarNode('event_store')->defaultValue(EventStoreInMemory::class)->info('Event store implementation. Default: EventStoreInMemory')->end()
                 ->scalarNode('default_messenger_config')->defaultTrue()->info('Auto-configure Messenger buses')->end()
                 ->booleanNode('doctrine_transaction_middleware')->defaultTrue()->info('Add Doctrine transaction middleware')->end()
                 ->arrayNode('api_platform')

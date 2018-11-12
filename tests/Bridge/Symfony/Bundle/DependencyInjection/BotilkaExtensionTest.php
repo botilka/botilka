@@ -59,9 +59,6 @@ final class BotilkaExtensionTest extends TestCase
         $containerBuilderProphecy = $this->prophesize(ContainerBuilder::class);
         $this->addDefaultCalls($containerBuilderProphecy);
         $containerBuilderProphecy->hasExtension('api_platform')->shouldBeCalled();
-//        if ($withDoctrineTranslationMiddleware) {
-//            $containerBuilderProphecy->hasExtension('doctrine')->willReturn(true)->shouldBeCalled();
-//        }
         $containerBuilderProphecy->getExtensionConfig('botilka')->willReturn(\array_merge_recursive(self::DEFAULT_CONFIG, [
             [
                 'event_store' => $eventStore,

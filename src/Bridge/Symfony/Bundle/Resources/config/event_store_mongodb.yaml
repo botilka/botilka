@@ -22,6 +22,3 @@ services:
             $client: '@MongoDB\Client'
             $database: '%env(MONGODB_DB)%'
             $collection: '%env(MONGODB_COLLECTION)%'
-#    Botilka\Infrastructure\Doctrine\EventStoreDoctrineInitializer:
-#        arguments:
-#            $table: '%env(MONGODB_DB)%'
