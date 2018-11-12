@@ -14,16 +14,14 @@ final class EventStoreDoctrineInitializerTest extends AbstractKernelTestCase
     /** @var EventStoreDoctrineInitializer */
     private $initializer;
 
-    /** @var string */
-    private $table;
-
     public function setUp()
     {
         $kernel = static::bootKernel();
         static::setUpDoctrine($kernel);
         $container = self::$container;
 
-        $table = $this->table = \getenv('POSTGRES_TABLE').'_test';
+        /** @var string $table */
+        $table = \getenv('POSTGRES_TABLE');
 
         /** @var RegistryInterface $registry */
         $registry = self::$container->get('doctrine');
@@ -31,7 +29,7 @@ final class EventStoreDoctrineInitializerTest extends AbstractKernelTestCase
         /** @var Connection $connection */
         $connection = $registry->getConnection();
         $connection->getConfiguration()->setSQLLogger(null);
-        $connection->exec("DROP TABLE IF EXISTS $table;");
+        $connection->exec("DROP TABLE IF EXISTS {$table};");
 
         $this->initializer = new EventStoreDoctrineInitializer($connection, $table);
     }
