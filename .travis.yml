@@ -20,10 +20,6 @@ env:
     - deps=low
     - deps=high
 
-matrix:
-  allow_failures:
-    - env: deps=low
-
 before_script:
   - composer global require friendsofphp/php-cs-fixer
   - export PATH="$PATH:$HOME/.composer/vendor/bin"
