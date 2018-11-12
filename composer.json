@@ -56,5 +56,11 @@
             "name": "azzra",
             "email": "azzra@users.noreply.github.com"
         }
-    ]
+    ],
+    "minimum-stability": "dev",
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0.x-dev"
+        }
+    }
 }
