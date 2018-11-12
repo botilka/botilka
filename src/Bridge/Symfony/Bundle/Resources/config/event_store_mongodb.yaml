@@ -5,7 +5,7 @@ services:
         public: false
 
     MongoDB\Client:
-       arguments: ['mongodb://%env(MONGODB_HOST)%:%env(MONGODB_PORT)%']
+       arguments: ['%env(MONGODB_URL)%']
 
     MongoDB\Collection:
         factory: ['@MongoDB\Client', selectCollection]
