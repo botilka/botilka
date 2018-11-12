@@ -4,6 +4,7 @@ tools:
 build:
     services:
         mongo: 4
+        postgres: 10
     dependencies:
         before:
             - pecl install mongodb
