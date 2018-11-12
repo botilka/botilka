@@ -1,2 +1,9 @@
 tools:
     external_code_coverage: true
+
+build:
+    node:
+        my-node:
+            services:
+                mongo: 4
+                postgres: 10
