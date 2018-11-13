@@ -9,12 +9,12 @@ use Botilka\EventStore\EventStore;
 final class DefaultEventReplayer implements EventReplayer
 {
     private $eventStore;
-    private $eventDispatcher;
+    private $eventBus;
 
-    public function __construct(EventStore $eventStore, EventDispatcher $eventDispatcher)
+    public function __construct(EventStore $eventStore, EventBus $eventBus)
     {
         $this->eventStore = $eventStore;
-        $this->eventDispatcher = $eventDispatcher;
+        $this->eventBus = $eventBus;
     }
 
     public function replay(string $id, ?int $from = null, ?int $to = null): void
@@ -33,7 +33,7 @@ final class DefaultEventReplayer implements EventReplayer
     public function replayEvents(array $events): void
     {
         foreach ($events as $event) {
-            $this->eventDispatcher->dispatch($event);
+            $this->eventBus->dispatch($event);
         }
     }
 }

@@ -11,13 +11,13 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-final class ReplayCommand extends Command
+final class EventReplayCommand extends Command
 {
     private $replayer;
 
     public function __construct(EventReplayer $replayer)
     {
-        parent::__construct('botilka:replay');
+        parent::__construct('botilka:event_store:replay');
         $this->replayer = $replayer;
     }
 
