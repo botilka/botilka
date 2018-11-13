@@ -5,22 +5,23 @@ declare(strict_types=1);
 namespace Botilka\Infrastructure\Symfony\Messenger\Middleware;
 
 use Botilka\Application\Command\CommandResponse;
-use Botilka\Event\EventDispatcher;
+use Botilka\Event\EventBus;
 use Botilka\EventStore\EventStore;
 use Botilka\EventStore\EventStoreConcurrencyException;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Messenger\Exception\NoHandlerForMessageException;
 use Symfony\Component\Messenger\Middleware\MiddlewareInterface;
 
 final class EventDispatcherMiddleware implements MiddlewareInterface
 {
     private $eventStore;
-    private $eventDispatcher;
+    private $eventBus;
     private $logger;
 
-    public function __construct(EventStore $eventStore, EventDispatcher $eventDispatcher, LoggerInterface $logger)
+    public function __construct(EventStore $eventStore, EventBus $eventBus, LoggerInterface $logger)
     {
         $this->eventStore = $eventStore;
-        $this->eventDispatcher = $eventDispatcher;
+        $this->eventBus = $eventBus;
         $this->logger = $logger;
     }
 
@@ -45,7 +46,11 @@ final class EventDispatcherMiddleware implements MiddlewareInterface
             return;
         }
 
-        $this->eventDispatcher->dispatch($event);
+        try {
+            $this->eventBus->dispatch($event);
+        } catch (NoHandlerForMessageException $e) {
+            $this->logger->notice(\sprintf('No handler for "%s".', \get_class($event)));
+        }
 
         return $result;
     }

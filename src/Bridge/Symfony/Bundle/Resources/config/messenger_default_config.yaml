@@ -5,9 +5,6 @@ services:
 
     Botilka\Infrastructure\Symfony\Messenger\Middleware\EventDispatcherMiddleware: ~
 
-    Botilka\Event\EventDispatcher:
-        class: Botilka\Event\DefaultEventDispatcher
-
     Botilka\Event\EventBus: '@Botilka\Infrastructure\Symfony\Messenger\MessengerEventBus'
     Botilka\Application\Command\CommandBus: '@Botilka\Infrastructure\Symfony\Messenger\MessengerCommandBus'
     Botilka\Application\Query\QueryBus: '@Botilka\Infrastructure\Symfony\Messenger\MessengerQueryBus'

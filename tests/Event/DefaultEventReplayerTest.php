@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Botilka\Tests\Event;
 
 use Botilka\Event\DefaultEventReplayer;
+use Botilka\Event\EventBus;
 use Botilka\Event\EventDispatcher;
 use Botilka\Event\EventReplayer;
 use Botilka\EventStore\EventStore;
@@ -16,16 +17,16 @@ final class DefaultEventReplayerTest extends TestCase
 {
     /** @var EventStore|MockObject */
     private $eventStore;
-    /** @var EventDispatcher|MockObject */
-    private $eventDispatcher;
+    /** @var EventBus|MockObject */
+    private $eventBus;
     /** @var EventReplayer */
     private $eventReplayer;
 
     public function setUp()
     {
-        $this->eventDispatcher = $this->createMock(EventDispatcher::class);
+        $this->eventBus = $this->createMock(EventBus::class);
         $this->eventStore = $this->createMock(EventStore::class);
-        $this->eventReplayer = new DefaultEventReplayer($this->eventStore, $this->eventDispatcher);
+        $this->eventReplayer = new DefaultEventReplayer($this->eventStore, $this->eventBus);
     }
 
     /** @dataProvider replayProvider */
@@ -60,7 +61,7 @@ final class DefaultEventReplayerTest extends TestCase
 
     private function addEventsDispatchedExpectation(array $events): void
     {
-        $this->eventDispatcher->expects($this->exactly(\count($events)))
+        $this->eventBus->expects($this->exactly(\count($events)))
             ->method('dispatch')
             ->withConsecutive(...$events);
     }
