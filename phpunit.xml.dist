@@ -26,4 +26,10 @@
             <directory>src/</directory>
         </whitelist>
     </filter>
+
+    <groups>
+        <exclude>
+            <group>functionnal</group>
+        </exclude>
+    </groups>
 </phpunit>

@@ -30,11 +30,8 @@ final class EventStoreMongoDBInitializer implements EventStoreInitializer
 
         try {
             $database->createCollection($this->collection);
-        } catch (\Exception $e) {
-            if ('MongoDB\\Driver\\Exception\\CommandException' === \get_class($e)) {
-                throw new \RuntimeException("Collection '{$this->collection}' already exists.");
-            }
-            throw $e;
+        } catch (\MongoDB\Driver\Exception\CommandException $e) {
+            throw new \RuntimeException("Collection '{$this->collection}' already exists.");
         }
 
         $database->selectCollection($this->collection)->createIndexes([['key' => ['id' => 1, 'playhead' => 1], 'unique' => true]]);

@@ -14,16 +14,14 @@ final class EventStoreDoctrineInitializerTest extends AbstractKernelTestCase
     /** @var EventStoreDoctrineInitializer */
     private $initializer;
 
-    /** @var string */
-    private $table;
-
-    public function setUp()
+    private function resetEventStore()
     {
         $kernel = static::bootKernel();
         static::setUpDoctrine($kernel);
         $container = self::$container;
 
-        $table = $this->table = \getenv('POSTGRES_TABLE').'_test';
+        /** @var string $table */
+        $table = \getenv('POSTGRES_TABLE').'_test';
 
         /** @var RegistryInterface $registry */
         $registry = self::$container->get('doctrine');
@@ -31,25 +29,29 @@ final class EventStoreDoctrineInitializerTest extends AbstractKernelTestCase
         /** @var Connection $connection */
         $connection = $registry->getConnection();
         $connection->getConfiguration()->setSQLLogger(null);
-        $connection->exec("DROP TABLE IF EXISTS $table;");
+        $connection->exec("DROP TABLE IF EXISTS {$table};");
 
         $this->initializer = new EventStoreDoctrineInitializer($connection, $table);
     }
 
     /**
+     * @group functionnal
      * @expectedException \RuntimeException
      * @expectedExceptionMessageRegExp /Duplicate table:.*relation "event_store_test" already exists/
      */
     public function testInitialize(): void
     {
+        $this->resetEventStore();
         $this->initializer->initialize();
         $this->assertTrue(true);
 
         $this->initializer->initialize();
     }
 
+    /** @group functionnal */
     public function testInitializeForce(): void
     {
+        $this->resetEventStore();
         $this->initializer->initialize();
         $this->initializer->initialize(true);
         $this->initializer->initialize(true);
