@@ -16,9 +16,9 @@ It can leverage [API Platform](https://api-platform.com) to expose the `Commands
 - Sync or async event handling is a matter of configuration.
 - Replay all or some events.
 - Safe commands concurrency.
-- Fully immutable, not a single setter, and fully typed.
-- Tested, 100% code coverage. 
-- EventSourced or CQRS repositories available.
+- Fully immutable, not a single setter.
+- Tested, good code coverage. 
+- EventSourced and CQRS repositories available.
 
 ## Configuration
 
@@ -35,7 +35,7 @@ botilka:
     event_store: Botilka\Infrastructure\Doctrine\EventStoreDoctrine # or 'Botilka\Infrastructure\MongoDB\EventStoreMongoDB'
 ```
 
-Botilka provide a command to create add unique index to the event store:
+Botilka provide a command to create the event store:
 
 ```sh
 bin/console botilka:event_store:initialize doctrine # or 'mongodb'
@@ -47,11 +47,12 @@ bin/console botilka:event_store:initialize doctrine -f # or 'mongodb'
 
 ## Usage
 
-**CQRS & EventSourcing** \
-You can find how to use this framework 
+### CQRS & EventSourcing
+
+You'll need to create Commands, Queries, and so on. [Read the documentation](/documentation/cqrs.md).
 
 
-**Api Platform bridge** \
+### API Platform bridge
 See the [API Platform bridge](/documentation/api_platform_bridge.md) documentation.
 
 ### How it works
