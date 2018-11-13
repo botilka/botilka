@@ -34,7 +34,7 @@ after_script:
   - php ocular.phar code-coverage:upload --format=php-clover coverage.clover
 
 install:
-  - pecl --soft install mongodb
+  - pecl install --soft mongodb
   - echo "extension=mongodb.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
   - if [[ $deps = 'low' ]]; then
       composer update --prefer-dist --no-progress --no-suggest --ansi --prefer-stable --prefer-lowest;
