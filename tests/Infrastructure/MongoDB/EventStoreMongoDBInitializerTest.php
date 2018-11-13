@@ -36,8 +36,8 @@ final class EventStoreMongoDBInitializerTest extends AbstractKernelTestCase
     {
         $collection = $this->createMock(Collection::class);
         $collection->expects($this->once())
-            ->method('createIndexes')
-            ->with([['key' => ['id' => 1, 'playhead' => 1], 'unique' => true]]);
+            ->method('createIndex')
+            ->with(['id' => 1, 'playhead' => 1], ['unique' => true]);
 
         $database = $this->createMock(Database::class);
         $database->expects($this->once())->method('selectCollection')

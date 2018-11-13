@@ -17,6 +17,8 @@ final class EventStoreInitializeCommandTest extends TestCase
     {
         $command = new EventStoreInitializeCommand();
 
+        $this->assertSame('botilka:event_store:initialize', $command->getName());
+
         $input = new ArrayInput(['implementation' => 'foo']);
 
         $output = new BufferedOutput();

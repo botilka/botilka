@@ -34,6 +34,6 @@ final class EventStoreMongoDBInitializer implements EventStoreInitializer
             throw new \RuntimeException("Collection '{$this->collection}' already exists.");
         }
 
-        $database->selectCollection($this->collection)->createIndexes([['key' => ['id' => 1, 'playhead' => 1], 'unique' => true]]);
+        $database->selectCollection($this->collection)->createIndex(['id' => 1, 'playhead' => 1], ['unique' => true]);
     }
 }
