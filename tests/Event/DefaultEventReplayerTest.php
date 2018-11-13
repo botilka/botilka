@@ -6,7 +6,6 @@ namespace Botilka\Tests\Event;
 
 use Botilka\Event\DefaultEventReplayer;
 use Botilka\Event\EventBus;
-use Botilka\Event\EventDispatcher;
 use Botilka\Event\EventReplayer;
 use Botilka\EventStore\EventStore;
 use Botilka\Tests\Fixtures\Domain\StubEvent;

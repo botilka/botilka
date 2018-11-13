@@ -6,7 +6,6 @@ namespace Botilka\Tests\Infrastructure\Symfony\Messenger\Middleware;
 
 use Botilka\Application\Command\CommandResponse;
 use Botilka\Event\EventBus;
-use Botilka\Event\EventDispatcher;
 use Botilka\EventStore\EventStore;
 use Botilka\EventStore\EventStoreConcurrencyException;
 use Botilka\Infrastructure\Symfony\Messenger\Middleware\EventDispatcherMiddleware;
@@ -14,6 +13,7 @@ use Botilka\Tests\Fixtures\Domain\StubEvent;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Messenger\Exception\NoHandlerForMessageException;
 
 final class EventDispatcherMiddlewareTest extends TestCase
 {
@@ -45,6 +45,35 @@ final class EventDispatcherMiddlewareTest extends TestCase
 
         $this->logger->expects($this->never())
             ->method('error');
+
+        $commandResponse = new CommandResponse('foo', 42, $event);
+
+        $callable = function ($message) use ($commandResponse) {
+            return $commandResponse;
+        };
+
+        $middleware = new EventDispatcherMiddleware($this->eventStore, $this->eventBus, $this->logger);
+
+        $result = $middleware->handle('foofoo', $callable);
+        $this->assertSame($commandResponse, $result);
+    }
+
+    public function testHandleNoHandlerForMessageException(): void
+    {
+        $event = new StubEvent(1337);
+
+        $this->eventStore->expects($this->once())
+            ->method('append')
+            ->with('foo', 42, StubEvent::class, $event, null, $this->isInstanceOf(\DateTimeImmutable::class));
+
+        $this->eventBus->expects($this->once())
+            ->method('dispatch')
+            ->with($event)
+            ->willThrowException(new NoHandlerForMessageException());
+
+        $this->logger->expects($this->once())
+            ->method('notice')
+            ->with(\sprintf('No handler for "%s".', \get_class($event)));
 
         $commandResponse = new CommandResponse('foo', 42, $event);
 
