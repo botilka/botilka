@@ -10,8 +10,15 @@ services:
     Botilka\Event\EventReplayer:
         class: Botilka\Event\DefaultEventReplayer
 
-    Botilka\Ui\Console\ReplayCommand: ~
+    Botilka\Ui\Console\EventReplayCommand: ~
+    Botilka\Ui\Console\ProjectorReplayCommand: ~
 
     Botilka\Ui\Console\EventStoreInitializeCommand:
         arguments:
-            $initializers: !tagged botilka.event_store.initializable
+            $initializers: !tagged botilka.event_store.initializer
+
+    Botilka\Projector\DefaultProjectorLocator: ~
+    Botilka\Projector\ProjectorLocator: '@Botilka\Projector\DefaultProjectorLocator'
+
+    Botilka\Projector\Projectionist:
+        class: Botilka\Projector\DefaultProjectionist

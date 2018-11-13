@@ -51,13 +51,6 @@ final class DefaultEventReplayerTest extends TestCase
         ];
     }
 
-    public function testReplayEvents(): void
-    {
-        $events = [new StubEvent(1), new StubEvent(2)];
-        $this->addEventsDispatchedExpectation($events);
-        $this->eventReplayer->replayEvents($events);
-    }
-
     private function addEventsDispatchedExpectation(array $events): void
     {
         $this->eventBus->expects($this->exactly(\count($events)))
