@@ -6,6 +6,8 @@ namespace Botilka\Ui\Console;
 
 use Botilka\Event\Event;
 use Botilka\EventStore\EventStore;
+use Botilka\EventStore\EventStoreManager;
+use Botilka\EventStore\ManagedEvent;
 use Botilka\Projector\DefaultProjection;
 use Botilka\Projector\Projectionist;
 use Psr\Log\LoggerInterface;
@@ -18,14 +20,14 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 final class ProjectorReplayCommand extends Command
 {
-    private $eventStore;
+    private $eventStoreManager;
     private $projectionist;
     private $logger;
 
-    public function __construct(EventStore $eventStore, Projectionist $projectionist, LoggerInterface $logger)
+    public function __construct(EventStoreManager $eventStoreManager, Projectionist $projectionist, LoggerInterface $logger)
     {
         parent::__construct('botilka:projector:replay');
-        $this->eventStore = $eventStore;
+        $this->eventStoreManager = $eventStoreManager;
         $this->projectionist = $projectionist;
         $this->logger = $logger;
     }
@@ -49,20 +51,16 @@ final class ProjectorReplayCommand extends Command
         $to = $input->getOption('to');
         $matching = $input->getOption('matching');
 
-        if (null !== $from && null !== $to) {
-            $events = $this->eventStore->loadFromPlayheadToPlayhead($id, $from, $to);
-        } elseif (null !== $from && null === $to) {
-            $events = $this->eventStore->loadFromPlayhead($id, $from);
-        } else {
-            $events = $this->eventStore->load($id);
-        }
+        $events = $this->eventStoreManager->load($id, $from, $to);
 
         $io->note(\sprintf('%d events found for %s', \count($events), $id));
 
-        /** @var Event $event */
+        /** @var ManagedEvent $event */
         foreach ($events as $event) {
-            $io->writeln('Projecting: '.\get_class($event));
-            $projection = new DefaultProjection($event);
+            $domainEvent = $event->getDomainEvent();
+
+            $io->text(sprintf('%s (%6d): %s (%s)', $event->getRecordedOn()->format('Y-m-d H:i:s'), $event->getPlayhead(), \get_class($domainEvent), json_encode($event->getMetadata())));
+            $projection = new DefaultProjection($domainEvent);
 
             $this->projectionist->replay($projection);
         }
