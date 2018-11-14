@@ -13,12 +13,16 @@ final class EventStoreInMemory implements EventStore
 
     public function load(string $id): array
     {
-        return $this->store[$id];
+        return \array_map(function ($event) {
+            return $event['payload'];
+        }, $this->store[$id]);
     }
 
     public function loadFromPlayhead(string $id, int $fromPlayhead): array
     {
-        return \array_slice($this->store[$id], $fromPlayhead, null, true);
+        return \array_map(function ($event) {
+            return $event['payload'];
+        }, \array_slice($this->store[$id], $fromPlayhead, null, true));
     }
 
     public function loadFromPlayheadToPlayhead(string $id, int $fromPlayhead, int $toPlayhead): array
@@ -27,10 +31,22 @@ final class EventStoreInMemory implements EventStore
     }
 
     /**
-     * We can't have a concurrency here as memory is not shared.
+     * We can't have a write concurrency here as memory is not shared AND it's a single thread.
      */
     public function append(string $id, int $playhead, string $type, Event $payload, ?array $metadata, \DateTimeImmutable $recordedOn): void
     {
-        $this->store[$id][$playhead] = $payload;
+        $this->store[$id][$playhead] = [
+            'id' => $id,
+            'playhead' => $playhead,
+            'type' => $type,
+            'payload' => $payload,
+            'metadata' => $metadata,
+            'recordedOn' => $recordedOn,
+        ];
+    }
+
+    public function getStore(): array
+    {
+        return $this->store;
     }
 }

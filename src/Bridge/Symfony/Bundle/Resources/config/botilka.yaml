@@ -10,6 +10,9 @@ services:
     Botilka\Event\EventReplayer:
         class: Botilka\Event\DefaultEventReplayer
 
+    Botilka\Infrastructure\InMemory\EventStoreManagerInMemory: ~
+    Botilka\EventStore\EventStoreManager: '@Botilka\Infrastructure\InMemory\EventStoreManagerInMemory'
+
     Botilka\Ui\Console\EventReplayCommand: ~
     Botilka\Ui\Console\ProjectorReplayCommand: ~
 

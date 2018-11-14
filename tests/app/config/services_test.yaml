@@ -1,9 +1,14 @@
+
 services:
 
     _defaults:
         autoconfigure: true
         autowire: true
         public: true
+
+    Botilka\:
+        resource: '../../../src/*'
+        exclude: '../../../src/{Application/Command/CommandResponse.php,Bridge,EventStore/DefaultManagedEvent.php,Infrastructure,Projector/DefaultProjection.php,Ui}'
 
     MongoDB\Client:
         arguments: ['%env(MONGODB_URL)%']
