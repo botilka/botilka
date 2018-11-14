@@ -6,5 +6,5 @@ namespace Botilka\Projector;
 
 interface Projectionist
 {
-    public function dispatch(Projection $projection): void;
+    public function replay(Projection $projection): void;
 }

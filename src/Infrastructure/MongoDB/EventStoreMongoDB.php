@@ -54,20 +54,6 @@ final class EventStoreMongoDB implements EventStore
         );
     }
 
-    /**
-     * @return Event[]
-     */
-    private function deserialize(Cursor $cursor): array
-    {
-        $events = [];
-        /** @var BSONDocument $event */
-        foreach ($cursor as $event) {
-            $events[] = $this->denormalizer->denormalize($event->offsetGet('payload'), $event->offsetGet('type'));
-        }
-
-        return $events;
-    }
-
     public function append(string $id, int $playhead, string $type, Event $payload, ?array $metadata, \DateTimeImmutable $recordedOn): void
     {
         $values = [
@@ -84,5 +70,19 @@ final class EventStoreMongoDB implements EventStore
         } catch (BulkWriteException $e) {
             throw new EventStoreConcurrencyException(\sprintf('Duplicate storage of event "%s" on aggregate "%s" with playhead %d.', $values['type'], $values['id'], $values['playhead']));
         }
+    }
+
+    /**
+     * @return Event[]
+     */
+    private function deserialize(Cursor $cursor): array
+    {
+        $events = [];
+        /** @var BSONDocument $event */
+        foreach ($cursor as $event) {
+            $events[] = $this->denormalizer->denormalize($event->offsetGet('payload'), $event->offsetGet('type'));
+        }
+
+        return $events;
     }
 }

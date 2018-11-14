@@ -18,6 +18,6 @@ services:
             $initializers: !tagged botilka.event_store.initializer
 
     Botilka\Projector\Projectionist:
-        class: Botilka\Infrastructure\Symfony\EventDispatcher\DefaultProjectionist
+        class: Botilka\Infrastructure\Symfony\EventDispatcher\EventDispatcherProjectionist
         arguments:
             $projectors: !tagged botilka.projector
