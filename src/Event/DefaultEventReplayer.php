@@ -27,11 +27,6 @@ final class DefaultEventReplayer implements EventReplayer
             $events = $this->eventStore->load($id);
         }
 
-        $this->dispatchEvents($events);
-    }
-
-    private function dispatchEvents(array $events): void
-    {
         foreach ($events as $event) {
             $this->eventBus->dispatch($event);
         }

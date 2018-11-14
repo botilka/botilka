@@ -49,7 +49,7 @@ final class EventDispatcherMiddleware implements MiddlewareInterface
         try {
             $this->eventBus->dispatch($event);
         } catch (NoHandlerForMessageException $e) {
-            $this->logger->notice(\sprintf('No handler for "%s".', \get_class($event)));
+            $this->logger->notice(\sprintf('No event handler for %s.', \get_class($event)));
         }
 
         return $result;

@@ -73,7 +73,7 @@ final class EventDispatcherMiddlewareTest extends TestCase
 
         $this->logger->expects($this->once())
             ->method('notice')
-            ->with(\sprintf('No handler for "%s".', \get_class($event)));
+            ->with(\sprintf('No event handler for %s.', \get_class($event)));
 
         $commandResponse = new CommandResponse('foo', 42, $event);
 

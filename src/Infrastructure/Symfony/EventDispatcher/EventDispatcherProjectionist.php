@@ -27,17 +27,23 @@ final class EventDispatcherProjectionist implements Projectionist, EventSubscrib
     public function replay(Projection $projection): void
     {
         $event = $projection->getEvent();
+        $eventClass = \get_class($event);
 
         /** @var Projector $projector */
+        $found = false;
         foreach ($this->projectors as $projector) {
             $eventMap = $projector::getSubscribedEvents();
 
-            if (null === $method = $eventMap[$eventClass = \get_class($event)] ?? null) {
-                $this->logger->notice(\sprintf('No matched handler for %s.', $eventClass));
+            if (null === $method = $eventMap[$eventClass] ?? null) {
                 continue;
             }
 
             $projector->$method($event);
+            $found = true;
+        }
+
+        if (false === $found) {
+            $this->logger->notice(\sprintf('No projector handler for %s.', $eventClass));
         }
     }
 

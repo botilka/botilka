@@ -11,7 +11,7 @@ services:
 
     Botilka\:
         resource: '../../../src/*'
-        exclude: '../../../src/{Application/Command/CommandResponse.php,Bridge,Infrastructure,Projector/DefaultProjection.php,Ui}'
+        exclude: '../../../src/{Application/Command/CommandResponse.php,Bridge,EventStore/DefaultManagedEvent.php,Infrastructure,Projector/DefaultProjection.php,Ui}'
 
 
 doctrine:
