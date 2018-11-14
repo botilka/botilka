@@ -17,8 +17,7 @@ services:
         arguments:
             $initializers: !tagged botilka.event_store.initializer
 
-    Botilka\Projector\DefaultProjectorLocator: ~
-    Botilka\Projector\ProjectorLocator: '@Botilka\Projector\DefaultProjectorLocator'
-
     Botilka\Projector\Projectionist:
-        class: Botilka\Projector\DefaultProjectionist
+        class: Botilka\Infrastructure\Symfony\EventDispatcher\DefaultProjectionist
+        arguments:
+            $projectors: !tagged botilka.projector

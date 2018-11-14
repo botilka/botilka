@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace Botilka\Ui\Console;
 
+use Botilka\Event\Event;
 use Botilka\EventStore\EventStore;
-use Botilka\Infrastructure\Doctrine\Event;
+use Botilka\Infrastructure\Symfony\EventDispatcher\DefaultProjection;
 use Botilka\Projector\Projectionist;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -52,7 +53,8 @@ final class ProjectorReplayCommand extends Command
 
         /** @var Event $event */
         foreach ($events as $event) {
-            $this->projectionist->replay($event, $regex);
+            $projection = new DefaultProjection($event);
+            $this->projectionist->dispatch($projection);
         }
     }
 }

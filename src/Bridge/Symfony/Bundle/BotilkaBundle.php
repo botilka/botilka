@@ -7,7 +7,6 @@ namespace Botilka\Bridge\Symfony\Bundle;
 use Botilka\Bridge\Symfony\Bundle\DependencyInjection\Compiler\ApiPlatformCommandEntrypointActionPass;
 use Botilka\Bridge\Symfony\Bundle\DependencyInjection\Compiler\ApiPlatformDataProviderPass;
 use Botilka\Bridge\Symfony\Bundle\DependencyInjection\Compiler\ApiPlatformDescriptionContainerPass;
-use Botilka\Bridge\Symfony\Bundle\DependencyInjection\Compiler\ProjectorLocatorPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
@@ -19,7 +18,6 @@ class BotilkaBundle extends Bundle
             $container->addCompilerPass(new ApiPlatformDescriptionContainerPass());
             $container->addCompilerPass(new ApiPlatformDataProviderPass());
             $container->addCompilerPass(new ApiPlatformCommandEntrypointActionPass());
-            $container->addCompilerPass(new ProjectorLocatorPass());
         }
     }
 }
