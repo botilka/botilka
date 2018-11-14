@@ -21,13 +21,7 @@ final class EventStoreManagerInMemory implements EventStoreManager
         $store = $this->eventStore->getStore();
         $storedEvents = $store[$id];
 
-        if (null !== $from) {
-            $storedEvents = \array_slice($storedEvents, $from);
-        }
-
-        if (null !== $to) {
-            $storedEvents = \array_slice($storedEvents, $to - $from + 1);
-        }
+        $storedEvents = \array_slice($store[$id], null !== $from ? $from : 0, null !== $to ? $to - $from : null);
 
         $events = [];
         foreach ($storedEvents as $storedEvent) {

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Botilka\Tests\Infrastructure\InMemory;
 
 use Botilka\Infrastructure\InMemory\EventStoreInMemory;
-use Botilka\Tests\Fixtures\Domain\StubEvent;
+use Botilka\Tests\Fixtures\Domain\EventStoreInMemoryFactory;
 use PHPUnit\Framework\TestCase;
 
 final class EventStoreInMemoryTest extends TestCase
@@ -15,19 +15,7 @@ final class EventStoreInMemoryTest extends TestCase
 
     public function setUp()
     {
-        $eventStore = new EventStoreInMemory();
-
-        for ($i = 0; $i < 10; ++$i) {
-            $event = new StubEvent($i * 100);
-            $eventStore->append('foo', $i, StubEvent::class, $event, null, new \DateTimeImmutable());
-        }
-
-        for ($i = 0; $i < 10; ++$i) {
-            $event = new StubEvent($i + 100);
-            $eventStore->append('bar', $i, StubEvent::class, $event, null, new \DateTimeImmutable());
-        }
-
-        $this->eventStore = $eventStore;
+        $this->eventStore = EventStoreInMemoryFactory::create();
     }
 
     public function testLoad(): void
