@@ -61,7 +61,7 @@ final class ProjectorReplayCommand extends Command
             $io->text(\sprintf('%s (%6d): %s (%s)', $event->getRecordedOn()->format('Y-m-d H:i:s'), $event->getPlayhead(), \get_class($domainEvent), \json_encode($event->getMetadata())));
             $projection = new Projection($domainEvent);
 
-            $this->projectionist->replay($projection);
+            $this->projectionist->play($projection);
         }
     }
 }

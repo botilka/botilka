@@ -39,7 +39,7 @@ final class DefaultProjectionistTest extends TestCase
 
         $projection = new Projection($event);
 
-        $projectionist->replay($projection);
+        $projectionist->play($projection);
         $this->assertTrue($projector->onStubEventPlayed);
     }
 
@@ -55,6 +55,6 @@ final class DefaultProjectionistTest extends TestCase
 
         $projection = new Projection($event);
 
-        $projectionist->replay($projection);
+        $projectionist->play($projection);
     }
 }

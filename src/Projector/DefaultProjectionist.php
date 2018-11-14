@@ -14,13 +14,13 @@ final class DefaultProjectionist implements Projectionist
     private $projectors;
     private $logger;
 
-    public function __construct(iterable $projectors = [], LoggerInterface $logger)
+    public function __construct(iterable $projectors, LoggerInterface $logger)
     {
         $this->projectors = $projectors;
         $this->logger = $logger;
     }
 
-    public function replay(Projection $projection): void
+    public function play(Projection $projection): void
     {
         $event = $projection->getEvent();
         $eventClass = \get_class($event);
