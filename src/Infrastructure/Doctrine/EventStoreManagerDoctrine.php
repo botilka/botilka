@@ -33,7 +33,7 @@ final class EventStoreManagerDoctrine implements EventStoreManager
         }
 
         if (null !== $to) {
-            $query .= ' AND playhead <= :from';
+            $query .= ' AND playhead <= :to';
             $parameters['to'] = $to;
         }
 
@@ -60,6 +60,7 @@ final class EventStoreManagerDoctrine implements EventStoreManager
     private function deserialize(array $storedEvents): array
     {
         $events = [];
+
         /* @var array $event */
         foreach ($storedEvents as $storedEvent) {
             $events[] = new ManagedEvent(

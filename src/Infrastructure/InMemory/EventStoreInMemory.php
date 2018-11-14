@@ -27,7 +27,9 @@ final class EventStoreInMemory implements EventStore
 
     public function loadFromPlayheadToPlayhead(string $id, int $fromPlayhead, int $toPlayhead): array
     {
-        return \array_slice($this->loadFromPlayhead($id, $fromPlayhead), 0, $toPlayhead - $fromPlayhead + 1, true);
+        return \array_map(function ($event) {
+            return $event['payload'];
+        }, \array_slice($this->store[$id], $fromPlayhead, $toPlayhead - $fromPlayhead, true));
     }
 
     /**
