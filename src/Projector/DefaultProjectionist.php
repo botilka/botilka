@@ -2,24 +2,20 @@
 
 declare(strict_types=1);
 
-namespace Botilka\Infrastructure\Symfony\EventDispatcher;
+namespace Botilka\Projector;
 
-use Botilka\Projector\Projection;
-use Botilka\Projector\Projectionist;
-use Botilka\Projector\Projector;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-final class EventDispatcherProjectionist implements Projectionist, EventSubscriberInterface
+/**
+ * @internal
+ */
+final class DefaultProjectionist implements Projectionist
 {
-    private $eventDispatcher;
     private $projectors;
     private $logger;
 
-    public function __construct(EventDispatcherInterface $eventDispatcher, iterable $projectors, LoggerInterface $logger)
+    public function __construct(iterable $projectors = [], LoggerInterface $logger)
     {
-        $this->eventDispatcher = $eventDispatcher;
         $this->projectors = $projectors;
         $this->logger = $logger;
     }
@@ -45,12 +41,5 @@ final class EventDispatcherProjectionist implements Projectionist, EventSubscrib
         if (false === $found) {
             $this->logger->notice(\sprintf('No projector handler for %s.', $eventClass));
         }
-    }
-
-    public static function getSubscribedEvents()
-    {
-        return [
-            Projection::class => 'replay',
-        ];
     }
 }

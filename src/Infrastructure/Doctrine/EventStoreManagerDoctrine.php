@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace Botilka\Infrastructure\Doctrine;
 
-use Botilka\EventStore\DefaultManagedEvent;
-use Botilka\EventStore\EventStoreManager;
 use Botilka\EventStore\ManagedEvent;
+use Botilka\EventStore\EventStoreManager;
 use Doctrine\DBAL\Driver\Connection;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
@@ -63,7 +62,7 @@ final class EventStoreManagerDoctrine implements EventStoreManager
         $events = [];
         /* @var array $event */
         foreach ($storedEvents as $storedEvent) {
-            $events[] = new DefaultManagedEvent(
+            $events[] = new ManagedEvent(
                 $this->denormalizer->denormalize(\json_decode($storedEvent['payload'], true), $storedEvent['type']),
                 $storedEvent['playhead'],
                 \json_decode($storedEvent['metadata'], true),

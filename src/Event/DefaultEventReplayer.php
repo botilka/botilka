@@ -6,6 +6,9 @@ namespace Botilka\Event;
 
 use Botilka\EventStore\EventStore;
 
+/**
+ * @internal
+ */
 final class DefaultEventReplayer implements EventReplayer
 {
     private $eventStore;

@@ -8,7 +8,7 @@ services:
 
     Botilka\:
         resource: '../../../src/*'
-        exclude: '../../../src/{Application/Command/CommandResponse.php,Bridge,EventStore/DefaultManagedEvent.php,Infrastructure,Projector/DefaultProjection.php,Ui}'
+        exclude: '../../../src/{Application/Command/CommandResponse.php,Bridge,EventStore/ManagedEvent.php,Infrastructure,Projector/Projection.php,Ui}'
 
     MongoDB\Client:
         arguments: ['%env(MONGODB_URL)%']

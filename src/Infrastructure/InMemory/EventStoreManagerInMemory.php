@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Botilka\Infrastructure\InMemory;
 
-use Botilka\EventStore\DefaultManagedEvent;
+use Botilka\EventStore\ManagedEvent;
 use Botilka\EventStore\EventStoreManager;
 
 final class EventStoreManagerInMemory implements EventStoreManager
@@ -31,7 +31,7 @@ final class EventStoreManagerInMemory implements EventStoreManager
 
         $events = [];
         foreach ($storedEvents as $storedEvent) {
-            $events[] = new DefaultManagedEvent(
+            $events[] = new ManagedEvent(
                 $storedEvent['payload'],
                 $storedEvent['playhead'],
                 $storedEvent['metadata'],

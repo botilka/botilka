@@ -6,7 +6,27 @@ namespace Botilka\Projector;
 
 use Botilka\Event\Event;
 
-interface Projection
+/**
+ * @internal
+ */
+final class Projection
 {
-    public function getEvent(): Event;
+    private $event;
+    private $context;
+
+    public function __construct(Event $event, ?array $context = null)
+    {
+        $this->event = $event;
+        $this->context = $context;
+    }
+
+    public function getEvent(): Event
+    {
+        return $this->event;
+    }
+
+    public function getContext(): ?array
+    {
+        return $this->context;
+    }
 }

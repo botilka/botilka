@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace Botilka\Infrastructure\MongoDB;
 
-use Botilka\EventStore\DefaultManagedEvent;
-use Botilka\EventStore\EventStoreManager;
 use Botilka\EventStore\ManagedEvent;
+use Botilka\EventStore\EventStoreManager;
 use MongoDB\Collection;
 use MongoDB\Driver\Cursor;
 use MongoDB\Model\BSONDocument;
@@ -58,7 +57,7 @@ final class EventStoreManagerMongoDB implements EventStoreManager
         $events = [];
         /* @var BSONDocument $event */
         foreach ($storedEvents as $storedEvent) {
-            $events[] = new DefaultManagedEvent(
+            $events[] = new ManagedEvent(
                 $this->denormalizer->denormalize($storedEvent->offsetGet('payload'), $storedEvent->offsetGet('type')),
                 $storedEvent->offsetGet('playhead'),
                 $storedEvent->offsetGet('metadata'),
