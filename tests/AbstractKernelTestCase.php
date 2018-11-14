@@ -42,7 +42,7 @@ abstract class AbstractKernelTestCase extends KernelTestCase
         $application->run(new ArrayInput([]), new NullOutput());
     }
 
-    public function setUpMongoDb()
+    protected function setUpMongoDb(): void
     {
         if (null !== static::$eventStore) {
             return;

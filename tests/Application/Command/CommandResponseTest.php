@@ -13,7 +13,7 @@ final class CommandResponseTest extends TestCase
     /** @var CommandResponse */
     private $commandResponse;
 
-    public function setUp()
+    protected function setUp()
     {
         $event = new StubEvent(123);
         $this->commandResponse = new CommandResponse('foo', 456, $event);

@@ -14,7 +14,7 @@ final class QueryDataProviderTest extends TestCase
     /** @var QueryDataProvider */
     private $dataProvider;
 
-    public function setUp()
+    protected function setUp()
     {
         $descriptionContainer = new DescriptionContainer(['foo' => [
             'class' => 'Foo\\Bar',

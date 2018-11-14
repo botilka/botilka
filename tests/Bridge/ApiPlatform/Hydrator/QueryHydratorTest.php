@@ -22,7 +22,7 @@ final class QueryHydratorTest extends TestCase
     /** @var DenormalizerInterface|MockObject */
     private $denormalizer;
 
-    public function setUp()
+    protected function setUp()
     {
         $this->denormalizer = $this->createMock(DenormalizerInterface::class);
         $this->validator = $this->createMock(ValidatorInterface::class);

@@ -13,7 +13,7 @@ final class EventStoreInMemoryTest extends TestCase
     /** @var EventStoreInMemory */
     private $eventStore;
 
-    public function setUp()
+    protected function setUp()
     {
         $this->eventStore = EventStoreInMemoryFactory::create();
     }

@@ -21,7 +21,7 @@ final class DefaultEventReplayerTest extends TestCase
     /** @var EventReplayer */
     private $eventReplayer;
 
-    public function setUp()
+    protected function setUp()
     {
         $this->eventBus = $this->createMock(EventBus::class);
         $this->eventStore = $this->createMock(EventStore::class);

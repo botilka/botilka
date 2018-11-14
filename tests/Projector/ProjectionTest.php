@@ -8,9 +8,9 @@ use Botilka\Projector\Projection;
 use Botilka\Tests\Fixtures\Domain\StubEvent;
 use PHPUnit\Framework\TestCase;
 
-class ProjectionTest extends TestCase
+final class ProjectionTest extends TestCase
 {
-    public function testGetEvent()
+    public function testGetEvent(): void
     {
         $event = new StubEvent(42);
         $projection = new Projection($event, ['foo' => 'bar']);

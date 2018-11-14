@@ -13,7 +13,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
-class EventStoreManagerDoctrineTest extends TestCase
+final class EventStoreManagerDoctrineTest extends TestCase
 {
     /** @var DenormalizerInterface|MockObject */
     private $denormarlizer;
@@ -33,7 +33,7 @@ class EventStoreManagerDoctrineTest extends TestCase
     }
 
     /** @dataProvider loadProvider */
-    public function testLoad(string $id, ?int $from = null, ?int $to = null, int $shouldBeCount, string $queryPart, array $parameters)
+    public function testLoad(string $id, ?int $from = null, ?int $to = null, int $shouldBeCount, string $queryPart, array $parameters): void
     {
         $rows = ['foo' => [], 'bar' => []];
         foreach ($rows as $rowId => $subRows) {
@@ -83,7 +83,7 @@ class EventStoreManagerDoctrineTest extends TestCase
         ];
     }
 
-    public function testGetAggregateRootIds()
+    public function testGetAggregateRootIds(): void
     {
         $rows = [
             ['id' => 'foo'],

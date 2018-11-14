@@ -8,7 +8,7 @@ use Botilka\EventStore\ManagedEvent;
 use Botilka\Tests\Fixtures\Domain\StubEvent;
 use PHPUnit\Framework\TestCase;
 
-class ManagedEventTest extends TestCase
+final class ManagedEventTest extends TestCase
 {
     /** @var ManagedEvent */
     private $managedEvent;
@@ -17,29 +17,29 @@ class ManagedEventTest extends TestCase
     /** @var \DateTimeImmutable */
     private $recordedOn;
 
-    public function setUp()
+    protected function setUp()
     {
         $this->domainEvent = new StubEvent(42);
         $this->recordedOn = new \DateTimeImmutable();
         $this->managedEvent = new ManagedEvent($this->domainEvent, 1337, ['foo' => 'bar'], $this->recordedOn);
     }
 
-    public function testGetRecordedOn()
+    public function testGetRecordedOn(): void
     {
         $this->assertSame($this->recordedOn, $this->managedEvent->getRecordedOn());
     }
 
-    public function testGetMetadata()
+    public function testGetMetadata(): void
     {
         $this->assertSame(['foo' => 'bar'], $this->managedEvent->getMetadata());
     }
 
-    public function testGetPlayhead()
+    public function testGetPlayhead(): void
     {
         $this->assertSame(1337, $this->managedEvent->getPlayhead());
     }
 
-    public function testGetDomainEvent()
+    public function testGetDomainEvent(): void
     {
         $this->assertSame($this->domainEvent, $this->managedEvent->getDomainEvent());
     }

@@ -24,7 +24,7 @@ final class EventDispatcherMiddlewareTest extends TestCase
     /** @var LoggerInterface|MockObject */
     private $logger;
 
-    public function setUp()
+    protected function setUp()
     {
         $this->eventStore = $this->createMock(EventStore::class);
         $this->eventBus = $this->createMock(EventBus::class);

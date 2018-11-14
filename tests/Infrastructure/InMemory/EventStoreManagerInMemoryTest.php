@@ -8,10 +8,10 @@ use Botilka\Infrastructure\InMemory\EventStoreManagerInMemory;
 use Botilka\Tests\Fixtures\Domain\EventStoreInMemoryFactory;
 use PHPUnit\Framework\TestCase;
 
-class EventStoreManagerInMemoryTest extends TestCase
+final class EventStoreManagerInMemoryTest extends TestCase
 {
     /** @dataProvider loadProvider */
-    public function testLoad(string $id, ?int $from = null, ?int $to = null, int $shouldBeCount)
+    public function testLoad(string $id, ?int $from = null, ?int $to = null, int $shouldBeCount): void
     {
         $eventStore = EventStoreInMemoryFactory::create();
         $manager = new EventStoreManagerInMemory($eventStore);
@@ -31,7 +31,7 @@ class EventStoreManagerInMemoryTest extends TestCase
         ];
     }
 
-    public function testGetAggregateRootIds()
+    public function testGetAggregateRootIds(): void
     {
         $eventStore = EventStoreInMemoryFactory::create();
         $manager = new EventStoreManagerInMemory($eventStore);

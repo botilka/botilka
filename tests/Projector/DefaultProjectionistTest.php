@@ -14,17 +14,17 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
-class DefaultProjectionistTest extends TestCase
+final class DefaultProjectionistTest extends TestCase
 {
     /** @var LoggerInterface|MockObject */
     private $logger;
 
-    public function setUp()
+    protected function setUp()
     {
         $this->logger = $this->createMock(LoggerInterface::class);
     }
 
-    public function testReplay()
+    public function testReplay(): void
     {
         $event = new StubEvent(42);
 
@@ -43,7 +43,7 @@ class DefaultProjectionistTest extends TestCase
         $this->assertTrue($projector->onStubEventPlayed);
     }
 
-    public function testReplayNoHandler()
+    public function testReplayNoHandler(): void
     {
         $event = $this->createMock(Event::class);
 

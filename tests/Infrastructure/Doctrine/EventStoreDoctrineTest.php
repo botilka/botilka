@@ -27,7 +27,7 @@ final class EventStoreDoctrineTest extends TestCase
     /** @var EventStoreDoctrine|MockObject */
     private $eventStore;
 
-    public function setUp()
+    protected function setUp()
     {
         $this->connection = $this->createMock(Connection::class);
         $this->normalizer = $this->createMock(NormalizerInterface::class);

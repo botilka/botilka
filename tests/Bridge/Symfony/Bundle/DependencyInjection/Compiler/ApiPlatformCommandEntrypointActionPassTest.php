@@ -17,7 +17,7 @@ final class ApiPlatformCommandEntrypointActionPassTest extends TestCase
     /** @var ApiPlatformCommandEntrypointActionPass */
     private $compilerPass;
 
-    public function setUp()
+    protected function setUp()
     {
         $this->compilerPass = new ApiPlatformCommandEntrypointActionPass();
     }

@@ -19,7 +19,7 @@ final class ConfigurationTest extends TestCase
     /** @var Processor */
     private $processor;
 
-    public function setUp()
+    protected function setUp()
     {
         $this->configuration = new Configuration();
         $this->processor = new Processor();

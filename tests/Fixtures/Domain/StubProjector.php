@@ -10,7 +10,7 @@ final class StubProjector implements Projector
 {
     public $onStubEventPlayed = false;
 
-    public function onStubEvent(StubEvent $event)
+    public function onStubEvent(StubEvent $event): void
     {
         $this->onStubEventPlayed = true;
     }
