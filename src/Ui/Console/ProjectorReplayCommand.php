@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Botilka\Ui\Console;
 
 use Botilka\Event\Event;
-use Botilka\EventStore\EventStore;
 use Botilka\EventStore\EventStoreManager;
 use Botilka\EventStore\ManagedEvent;
 use Botilka\Projector\DefaultProjection;
@@ -59,7 +58,7 @@ final class ProjectorReplayCommand extends Command
         foreach ($events as $event) {
             $domainEvent = $event->getDomainEvent();
 
-            $io->text(sprintf('%s (%6d): %s (%s)', $event->getRecordedOn()->format('Y-m-d H:i:s'), $event->getPlayhead(), \get_class($domainEvent), json_encode($event->getMetadata())));
+            $io->text(\sprintf('%s (%6d): %s (%s)', $event->getRecordedOn()->format('Y-m-d H:i:s'), $event->getPlayhead(), \get_class($domainEvent), \json_encode($event->getMetadata())));
             $projection = new DefaultProjection($domainEvent);
 
             $this->projectionist->replay($projection);

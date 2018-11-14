@@ -30,7 +30,7 @@ final class EventStoreMongoDB implements EventStore
     public function load(string $id): array
     {
         return $this->deserialize(
-            $this->collection->find(['id' => $id], ['sort' => ['payload' => -1]])
+            $this->collection->find(['id' => $id], ['sort' => ['playhead' => 1]])
         );
     }
 
@@ -40,7 +40,7 @@ final class EventStoreMongoDB implements EventStore
             $this->collection->find([
                 'id' => $id,
                 'playhead' => ['$gte' => $fromPlayhead],
-            ], ['sort' => ['payload' => -1]])
+            ], ['sort' => ['playhead' => 1]])
         );
     }
 
@@ -50,7 +50,7 @@ final class EventStoreMongoDB implements EventStore
             $this->collection->find([
                 'id' => $id,
                 'playhead' => ['$gte' => $fromPlayhead, '$lte' => $fromPlayhead],
-            ], ['sort' => ['payload' => -1]])
+            ], ['sort' => ['playhead' => 1]])
         );
     }
 

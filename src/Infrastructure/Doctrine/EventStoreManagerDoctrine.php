@@ -4,28 +4,21 @@ declare(strict_types=1);
 
 namespace Botilka\Infrastructure\Doctrine;
 
-use Botilka\Event\Event as DomainEvent;
 use Botilka\EventStore\DefaultManagedEvent;
-use Botilka\EventStore\EventStore;
-use Botilka\EventStore\EventStoreConcurrencyException;
 use Botilka\EventStore\EventStoreManager;
 use Botilka\EventStore\ManagedEvent;
 use Doctrine\DBAL\Driver\Connection;
-use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
-use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 final class EventStoreManagerDoctrine implements EventStoreManager
 {
     private $connection;
-    private $normalizer;
     private $denormalizer;
     private $table;
 
-    public function __construct(Connection $connection, NormalizerInterface $normalizer, DenormalizerInterface $denormalizer, string $table)
+    public function __construct(Connection $connection, DenormalizerInterface $denormalizer, string $table)
     {
         $this->connection = $connection;
-        $this->normalizer = $normalizer;
         $this->denormalizer = $denormalizer;
         $this->table = $table;
     }
@@ -63,18 +56,18 @@ final class EventStoreManagerDoctrine implements EventStoreManager
     }
 
     /**
-     * @return Event[]
+     * @return ManagedEvent[]
      */
     private function deserialize(array $storedEvents): array
     {
         $events = [];
-        /** @var array $event */
-        foreach ($storedEvents as $event) {
+        /* @var array $event */
+        foreach ($storedEvents as $storedEvent) {
             $events[] = new DefaultManagedEvent(
-                $this->denormalizer->denormalize(\json_decode($event['payload'], true), $event['type']),
-                $event['playhead'],
-                json_decode($event['metadata'], true),
-                new \DateTimeImmutable($event['recorded_on'])
+                $this->denormalizer->denormalize(\json_decode($storedEvent['payload'], true), $storedEvent['type']),
+                $storedEvent['playhead'],
+                \json_decode($storedEvent['metadata'], true),
+                new \DateTimeImmutable($storedEvent['recorded_on'])
             );
         }
 
