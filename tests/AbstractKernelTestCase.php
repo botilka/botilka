@@ -12,11 +12,9 @@ use Botilka\Tests\Fixtures\Domain\StubEvent;
 use Doctrine\Bundle\DoctrineBundle\Command\CreateDatabaseDoctrineCommand;
 use Doctrine\Bundle\DoctrineBundle\Command\DropDatabaseDoctrineCommand;
 use MongoDB\Client;
-use MongoDB\Collection;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
@@ -44,12 +42,8 @@ abstract class AbstractKernelTestCase extends KernelTestCase
         $application->run(new ArrayInput([]), new NullOutput());
     }
 
-    protected static function setUpMongoDb(): void
+    protected static function setUpMongoDb(): array
     {
-        if (null !== static::$container) {
-            return;
-        }
-
         static::bootKernel();
         $container = static::$container;
 
@@ -68,7 +62,7 @@ abstract class AbstractKernelTestCase extends KernelTestCase
         /** @var DenormalizerInterface $denormalizer */
         $denormalizer = $container->get('serializer');
 
-        $collection = self::getMongoDBCollection($container);
+        $collection = $client->selectCollection($database, $collectionName);
 
         $eventStore = new EventStoreMongoDB($collection, $normalizer, $denormalizer);
         foreach (['foo', 'bar'] as $id) {
@@ -77,18 +71,7 @@ abstract class AbstractKernelTestCase extends KernelTestCase
             }
         }
         static::assertInstanceOf(EventStore::class, $eventStore);
-        static::$eventStore = $eventStore;
-    }
 
-    protected static function getMongoDBCollection(ContainerInterface $container): Collection
-    {
-        /** @var Client $client */
-        $client = $container->get(Client::class);
-        /** @var string $database */
-        $database = \getenv('MONGODB_DB').'_test';
-        /** @var string $collectionName */
-        $collection = \getenv('MONGODB_COLLECTION').'_test';
-
-        return $client->selectCollection($database, $collection);
+        return [$eventStore, $collection];
     }
 }

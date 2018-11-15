@@ -10,14 +10,13 @@ use Botilka\Tests\Fixtures\Domain\StubEvent;
 
 final class EventStoreMongoDBTest extends AbstractKernelTestCase
 {
+    /** @var EventStore */
+    protected static $eventStore;
+
     public static function setUpBeforeClass()
     {
-        self::setUpMongoDb();
-    }
-
-    public static function tearDownAfterClass()
-    {
-        static::$eventStore = null;
+        [$eventStore, $collection] = self::setUpMongoDb();
+        self::$eventStore = $eventStore;
     }
 
     /**

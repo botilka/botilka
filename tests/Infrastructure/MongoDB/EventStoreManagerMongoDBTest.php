@@ -17,8 +17,7 @@ final class EventStoreManagerMongoDBTest extends AbstractKernelTestCase
      */
     public function testLoadFunctional(int $shouldBeCount, string $id, ?int $from = null, ?int $to = null): void
     {
-        self::setUpMongoDb();
-        $collection = $this->getMongoDBCollection(static::$container);
+        [$eventStore, $collection] = self::setUpMongoDb();
 
         /** @var DenormalizerInterface $denormalizer */
         $denormalizer = self::$container->get('serializer');
