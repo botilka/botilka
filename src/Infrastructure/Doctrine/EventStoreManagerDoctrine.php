@@ -64,6 +64,7 @@ final class EventStoreManagerDoctrine implements EventStoreManager
         /* @var array $event */
         foreach ($storedEvents as $storedEvent) {
             $events[] = new ManagedEvent(
+                $storedEvent['id'],
                 $this->denormalizer->denormalize(\json_decode($storedEvent['payload'], true), $storedEvent['type']),
                 $storedEvent['playhead'],
                 \json_decode($storedEvent['metadata'], true),

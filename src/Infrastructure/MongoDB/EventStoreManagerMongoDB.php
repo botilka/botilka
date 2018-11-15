@@ -58,6 +58,7 @@ final class EventStoreManagerMongoDB implements EventStoreManager
         /* @var BSONDocument $event */
         foreach ($storedEvents as $storedEvent) {
             $events[] = new ManagedEvent(
+                $storedEvent->offsetGet('id'),
                 $this->denormalizer->denormalize($storedEvent->offsetGet('payload'), $storedEvent->offsetGet('type')),
                 $storedEvent->offsetGet('playhead'),
                 $storedEvent->offsetGet('metadata')->getArrayCopy(),

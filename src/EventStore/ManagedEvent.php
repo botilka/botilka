@@ -15,17 +15,24 @@ use Botilka\Event\Event;
  */
 final class ManagedEvent
 {
+    private $id;
     private $domainEvent;
     private $playhead;
     private $metadata;
     private $recordedOn;
 
-    public function __construct(Event $domainEvent, int $playhead, ?array $metadata, \DateTimeImmutable $recordedOn)
+    public function __construct(string $id, Event $domainEvent, int $playhead, ?array $metadata, \DateTimeImmutable $recordedOn)
     {
+        $this->id = $id;
         $this->domainEvent = $domainEvent;
         $this->playhead = $playhead;
         $this->metadata = $metadata;
         $this->recordedOn = $recordedOn;
+    }
+
+    public function getId(): string
+    {
+        return $this->id;
     }
 
     public function getDomainEvent(): Event

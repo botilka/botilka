@@ -26,6 +26,7 @@ final class EventStoreManagerInMemory implements EventStoreManager
         $events = [];
         foreach ($storedEvents as $storedEvent) {
             $events[] = new ManagedEvent(
+                $storedEvent['id'],
                 $storedEvent['payload'],
                 $storedEvent['playhead'],
                 $storedEvent['metadata'],

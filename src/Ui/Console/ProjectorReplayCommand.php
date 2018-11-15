@@ -9,7 +9,6 @@ use Botilka\EventStore\EventStoreManager;
 use Botilka\EventStore\ManagedEvent;
 use Botilka\Projector\Projection;
 use Botilka\Projector\Projectionist;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -21,14 +20,12 @@ final class ProjectorReplayCommand extends Command
 {
     private $eventStoreManager;
     private $projectionist;
-    private $logger;
 
-    public function __construct(EventStoreManager $eventStoreManager, Projectionist $projectionist, LoggerInterface $logger)
+    public function __construct(EventStoreManager $eventStoreManager, Projectionist $projectionist)
     {
         parent::__construct('botilka:projector:replay');
         $this->eventStoreManager = $eventStoreManager;
         $this->projectionist = $projectionist;
-        $this->logger = $logger;
     }
 
     protected function configure()
@@ -52,7 +49,7 @@ final class ProjectorReplayCommand extends Command
 
         $events = $this->eventStoreManager->load($id, $from, $to);
 
-        $io->note(\sprintf('%d events found for %s', \count($events), $id));
+        $io->note(\sprintf('%d events found for %s.', \count($events), $id));
 
         /** @var ManagedEvent $event */
         foreach ($events as $event) {
