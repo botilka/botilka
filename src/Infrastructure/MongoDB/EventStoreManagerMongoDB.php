@@ -60,7 +60,7 @@ final class EventStoreManagerMongoDB implements EventStoreManager
             $events[] = new ManagedEvent(
                 $this->denormalizer->denormalize($storedEvent->offsetGet('payload'), $storedEvent->offsetGet('type')),
                 $storedEvent->offsetGet('playhead'),
-                $storedEvent->offsetGet('metadata'),
+                $storedEvent->offsetGet('metadata')->getArrayCopy(),
                 new \DateTimeImmutable($storedEvent->offsetGet('recordedOn'))
             );
         }

@@ -12,9 +12,11 @@ use Botilka\Tests\Fixtures\Domain\StubEvent;
 use Doctrine\Bundle\DoctrineBundle\Command\CreateDatabaseDoctrineCommand;
 use Doctrine\Bundle\DoctrineBundle\Command\DropDatabaseDoctrineCommand;
 use MongoDB\Client;
+use MongoDB\Collection;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
@@ -23,7 +25,7 @@ abstract class AbstractKernelTestCase extends KernelTestCase
 {
     protected static $class = AppKernel::class;
 
-    /** @var EventStore */
+    /** @var ?EventStore */
     protected static $eventStore;
 
     public static function bootKernel(array $options = [])
@@ -42,9 +44,9 @@ abstract class AbstractKernelTestCase extends KernelTestCase
         $application->run(new ArrayInput([]), new NullOutput());
     }
 
-    protected function setUpMongoDb(): void
+    protected static function setUpMongoDb(): void
     {
-        if (null !== static::$eventStore) {
+        if (null !== static::$container) {
             return;
         }
 
@@ -55,10 +57,10 @@ abstract class AbstractKernelTestCase extends KernelTestCase
         $client = $container->get(Client::class);
         /** @var string $database */
         $database = \getenv('MONGODB_DB').'_test';
-        /** @var string $collection */
-        $collection = \getenv('MONGODB_COLLECTION').'_test';
+        /** @var string $collectionName */
+        $collectionName = \getenv('MONGODB_COLLECTION').'_test';
 
-        $initializer = new EventStoreMongoDBInitializer($client, $database, $collection);
+        $initializer = new EventStoreMongoDBInitializer($client, $database, $collectionName);
         $initializer->initialize(true);
 
         /** @var NormalizerInterface $normalizer */
@@ -66,12 +68,27 @@ abstract class AbstractKernelTestCase extends KernelTestCase
         /** @var DenormalizerInterface $denormalizer */
         $denormalizer = $container->get('serializer');
 
-        $eventStore = new EventStoreMongoDB($client->selectCollection($database, $collection), $normalizer, $denormalizer);
-        $eventStore->append('bar', 1, StubEvent::class, new StubEvent(42), null, new \DateTimeImmutable());
-        for ($i = 0; $i < 5; ++$i) {
-            $eventStore->append('foo', $i, StubEvent::class, new StubEvent($i * 100), null, new \DateTimeImmutable());
+        $collection = self::getMongoDBCollection($container);
+
+        $eventStore = new EventStoreMongoDB($collection, $normalizer, $denormalizer);
+        foreach (['foo', 'bar'] as $id) {
+            for ($i = 0; $i < ('foo' === $id ? 10 : 5); ++$i) {
+                $eventStore->append($id, $i, StubEvent::class, new StubEvent($i * ('foo' === $id ? 2 : 3)), [$id => $i], new \DateTimeImmutable());
+            }
         }
-        $this->assertInstanceOf(EventStore::class, $eventStore);
+        static::assertInstanceOf(EventStore::class, $eventStore);
         static::$eventStore = $eventStore;
+    }
+
+    protected static function getMongoDBCollection(ContainerInterface $container): Collection
+    {
+        /** @var Client $client */
+        $client = $container->get(Client::class);
+        /** @var string $database */
+        $database = \getenv('MONGODB_DB').'_test';
+        /** @var string $collectionName */
+        $collection = \getenv('MONGODB_COLLECTION').'_test';
+
+        return $client->selectCollection($database, $collection);
     }
 }

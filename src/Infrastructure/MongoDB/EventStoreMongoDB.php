@@ -49,7 +49,7 @@ final class EventStoreMongoDB implements EventStore
         return $this->deserialize(
             $this->collection->find([
                 'id' => $id,
-                'playhead' => ['$gte' => $fromPlayhead, '$lte' => $fromPlayhead],
+                'playhead' => ['$gte' => $fromPlayhead, '$lte' => $toPlayhead],
             ], ['sort' => ['playhead' => 1]])
         );
     }

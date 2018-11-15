@@ -62,10 +62,10 @@ final class EventStoreMongoDBInitializerTest extends AbstractKernelTestCase
     }
 
     /**
-     * @group functionnal
+     * @group functional
      * @expectedException \RuntimeException
      */
-    public function testInitializeFunctionnal(): void
+    public function testInitializeFunctional(): void
     {
         static::bootKernel();
         /** @var Client $client */
@@ -79,8 +79,8 @@ final class EventStoreMongoDBInitializerTest extends AbstractKernelTestCase
         $initializer->initialize();
     }
 
-    /** @group functionnal */
-    public function testInitializeForceFunctionnal(): void
+    /** @group functional */
+    public function testInitializeForceFunctional(): void
     {
         static::bootKernel();
         /** @var Client $client */
