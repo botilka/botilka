@@ -83,7 +83,6 @@ Replay:
 bin/console botilka:event_store:replay [aggregate root id] --from 150
 ```
 
-
 ### Projection replay
 
 In the same way than replaying events, you can replay projection. If you've added a projection
@@ -124,6 +123,12 @@ bin/console botilka:projector:replay [aggregate root id] --matching sumOfDeposit
 
 ### API Platform bridge
 See the [API Platform bridge](/documentation/api_platform_bridge.md) documentation.
+
+## Testing
+
+This project uses PHP Unit: `vendor/bin/phpunit`.
+
+Functionals tests are grouped under the tag `functional`: `vendor/bin/phpunit --group functional`. 
 
 ## How it works
 
