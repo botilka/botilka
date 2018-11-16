@@ -17,6 +17,9 @@ services:
 
     Botilka\EventStore\EventStore: '@Botilka\Infrastructure\MongoDB\EventStoreMongoDB'
 
+    Botilka\Infrastructure\MongoDB\EventStoreManagerMongoDB: ~
+    Botilka\EventStore\EventStoreManager: '@Botilka\Infrastructure\MongoDB\EventStoreManagerMongoDB'
+
     Botilka\Infrastructure\MongoDB\EventStoreMongoDBInitializer:
         arguments:
             $client: '@MongoDB\Client'

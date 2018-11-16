@@ -23,7 +23,7 @@ abstract class AbstractKernelTestCase extends KernelTestCase
 {
     protected static $class = AppKernel::class;
 
-    /** @var EventStore */
+    /** @var ?EventStore */
     protected static $eventStore;
 
     public static function bootKernel(array $options = [])
@@ -42,12 +42,8 @@ abstract class AbstractKernelTestCase extends KernelTestCase
         $application->run(new ArrayInput([]), new NullOutput());
     }
 
-    public function setUpMongoDb()
+    protected static function setUpMongoDb(): array
     {
-        if (null !== static::$eventStore) {
-            return;
-        }
-
         static::bootKernel();
         $container = static::$container;
 
@@ -55,10 +51,10 @@ abstract class AbstractKernelTestCase extends KernelTestCase
         $client = $container->get(Client::class);
         /** @var string $database */
         $database = \getenv('MONGODB_DB').'_test';
-        /** @var string $collection */
-        $collection = \getenv('MONGODB_COLLECTION').'_test';
+        /** @var string $collectionName */
+        $collectionName = \getenv('MONGODB_COLLECTION').'_test';
 
-        $initializer = new EventStoreMongoDBInitializer($client, $database, $collection);
+        $initializer = new EventStoreMongoDBInitializer($client, $database, $collectionName);
         $initializer->initialize(true);
 
         /** @var NormalizerInterface $normalizer */
@@ -66,12 +62,16 @@ abstract class AbstractKernelTestCase extends KernelTestCase
         /** @var DenormalizerInterface $denormalizer */
         $denormalizer = $container->get('serializer');
 
-        $eventStore = new EventStoreMongoDB($client->selectCollection($database, $collection), $normalizer, $denormalizer);
-        $eventStore->append('bar', 1, StubEvent::class, new StubEvent(42), null, new \DateTimeImmutable());
-        for ($i = 0; $i < 5; ++$i) {
-            $eventStore->append('foo', $i, StubEvent::class, new StubEvent($i * 100), null, new \DateTimeImmutable());
+        $collection = $client->selectCollection($database, $collectionName);
+
+        $eventStore = new EventStoreMongoDB($collection, $normalizer, $denormalizer);
+        foreach (['foo', 'bar'] as $id) {
+            for ($i = 0; $i < ('foo' === $id ? 10 : 5); ++$i) {
+                $eventStore->append($id, $i, StubEvent::class, new StubEvent($i * ('foo' === $id ? 2 : 3)), [$id => $i], new \DateTimeImmutable());
+            }
         }
-        $this->assertInstanceOf(EventStore::class, $eventStore);
-        static::$eventStore = $eventStore;
+        static::assertInstanceOf(EventStore::class, $eventStore);
+
+        return [$eventStore, $collection];
     }
 }

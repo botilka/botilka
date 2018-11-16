@@ -9,4 +9,7 @@ services:
     Botilka\Infrastructure\Doctrine\EventStoreDoctrine: ~
     Botilka\EventStore\EventStore: '@Botilka\Infrastructure\Doctrine\EventStoreDoctrine'
 
+    Botilka\Infrastructure\Doctrine\EventStoreManagerDoctrine: ~
+    Botilka\EventStore\EventStoreManager: '@Botilka\Infrastructure\Doctrine\EventStoreManagerDoctrine'
+
     Botilka\Infrastructure\Doctrine\EventStoreDoctrineInitializer: ~

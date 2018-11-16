@@ -14,7 +14,7 @@ final class UuidDenormalizerTest extends TestCase
     /** @var UuidDenormalizer */
     private $denormalizer;
 
-    public function setUp()
+    protected function setUp()
     {
         $this->denormalizer = new UuidDenormalizer();
     }

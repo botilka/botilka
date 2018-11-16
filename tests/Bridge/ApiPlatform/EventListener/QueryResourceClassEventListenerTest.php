@@ -33,7 +33,7 @@ final class QueryResourceClassEventListenerTest extends TestCase
     /** @var QueryHydratorInterface|MockObject */
     private $hydrator;
 
-    public function setUp()
+    protected function setUp()
     {
         $this->queryBus = $this->createMock(QueryBus::class);
         $this->descriptionContainer = $this->createMock(DescriptionContainerInterface::class);

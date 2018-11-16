@@ -12,6 +12,7 @@ use Botilka\Infrastructure\Doctrine\EventStoreDoctrine;
 use Botilka\Infrastructure\Symfony\Messenger\Middleware\EventDispatcherMiddleware;
 use Botilka\Application\Query\Query;
 use Botilka\Application\Query\QueryHandler;
+use Botilka\Projector\Projector;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -25,6 +26,7 @@ final class BotilkaExtension extends Extension implements PrependExtensionInterf
         CommandHandler::class => ['messenger.message_handler', ['bus' => 'messenger.bus.commands']],
         QueryHandler::class => ['messenger.message_handler', ['bus' => 'messenger.bus.queries']],
         EventHandler::class => ['messenger.message_handler', ['bus' => 'messenger.bus.events']],
+        Projector::class => ['botilka.projector'],
         Command::class => ['cqrs.command'],
         Query::class => ['cqrs.query'],
         EventStoreInitializer::class => ['botilka.event_store.initializable'],

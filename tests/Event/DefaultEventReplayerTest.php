@@ -21,7 +21,7 @@ final class DefaultEventReplayerTest extends TestCase
     /** @var EventReplayer */
     private $eventReplayer;
 
-    public function setUp()
+    protected function setUp()
     {
         $this->eventBus = $this->createMock(EventBus::class);
         $this->eventStore = $this->createMock(EventStore::class);
@@ -49,13 +49,6 @@ final class DefaultEventReplayerTest extends TestCase
             ['bar', 10, null, ['bar', 10], 'loadFromPlayhead', $events],
             ['baz', 10, 20, ['baz', 10, 20], 'loadFromPlayheadToPlayhead', $events],
         ];
-    }
-
-    public function testReplayEvents(): void
-    {
-        $events = [new StubEvent(1), new StubEvent(2)];
-        $this->addEventsDispatchedExpectation($events);
-        $this->eventReplayer->replayEvents($events);
     }
 
     private function addEventsDispatchedExpectation(array $events): void

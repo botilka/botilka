@@ -9,6 +9,7 @@ use Botilka\Event\EventBus;
 use Botilka\EventStore\EventStore;
 use Botilka\EventStore\EventStoreConcurrencyException;
 use Botilka\Infrastructure\Symfony\Messenger\Middleware\EventDispatcherMiddleware;
+use Botilka\Projector\Projectionist;
 use Botilka\Tests\Fixtures\Domain\StubEvent;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -23,12 +24,15 @@ final class EventDispatcherMiddlewareTest extends TestCase
     private $eventBus;
     /** @var LoggerInterface|MockObject */
     private $logger;
+    /** @var Projectionist|MockObject */
+    private $projectionist;
 
-    public function setUp()
+    protected function setUp()
     {
         $this->eventStore = $this->createMock(EventStore::class);
         $this->eventBus = $this->createMock(EventBus::class);
         $this->logger = $this->createMock(LoggerInterface::class);
+        $this->projectionist = $this->createMock(Projectionist::class);
     }
 
     public function testHandle(): void
@@ -46,13 +50,16 @@ final class EventDispatcherMiddlewareTest extends TestCase
         $this->logger->expects($this->never())
             ->method('error');
 
+        $this->projectionist->expects($this->once())
+            ->method('play');
+
         $commandResponse = new CommandResponse('foo', 42, $event);
 
         $callable = function ($message) use ($commandResponse) {
             return $commandResponse;
         };
 
-        $middleware = new EventDispatcherMiddleware($this->eventStore, $this->eventBus, $this->logger);
+        $middleware = new EventDispatcherMiddleware($this->eventStore, $this->eventBus, $this->logger, $this->projectionist);
 
         $result = $middleware->handle('foofoo', $callable);
         $this->assertSame($commandResponse, $result);
@@ -73,7 +80,10 @@ final class EventDispatcherMiddlewareTest extends TestCase
 
         $this->logger->expects($this->once())
             ->method('notice')
-            ->with(\sprintf('No handler for "%s".', \get_class($event)));
+            ->with(\sprintf('No event handler for %s.', \get_class($event)));
+
+        $this->projectionist->expects($this->once())
+            ->method('play');
 
         $commandResponse = new CommandResponse('foo', 42, $event);
 
@@ -81,7 +91,7 @@ final class EventDispatcherMiddlewareTest extends TestCase
             return $commandResponse;
         };
 
-        $middleware = new EventDispatcherMiddleware($this->eventStore, $this->eventBus, $this->logger);
+        $middleware = new EventDispatcherMiddleware($this->eventStore, $this->eventBus, $this->logger, $this->projectionist);
 
         $result = $middleware->handle('foofoo', $callable);
         $this->assertSame($commandResponse, $result);
@@ -98,6 +108,9 @@ final class EventDispatcherMiddlewareTest extends TestCase
         $this->eventBus->expects($this->never())
             ->method('dispatch');
 
+        $this->projectionist->expects($this->never())
+            ->method('play');
+
         $this->logger->expects($this->once())
             ->method('error')
             ->with('bar');
@@ -108,7 +121,7 @@ final class EventDispatcherMiddlewareTest extends TestCase
             return $commandResponse;
         };
 
-        $middleware = new EventDispatcherMiddleware($this->eventStore, $this->eventBus, $this->logger);
+        $middleware = new EventDispatcherMiddleware($this->eventStore, $this->eventBus, $this->logger, $this->projectionist);
 
         $this->assertNull($middleware->handle('foofoo', $callable));
     }
@@ -126,7 +139,10 @@ final class EventDispatcherMiddlewareTest extends TestCase
         $this->eventBus->expects($this->never())
             ->method('dispatch');
 
-        $middleware = new EventDispatcherMiddleware($this->eventStore, $this->eventBus, $this->logger);
+        $this->projectionist->expects($this->never())
+            ->method('play');
+
+        $middleware = new EventDispatcherMiddleware($this->eventStore, $this->eventBus, $this->logger, $this->projectionist);
         $this->assertSame($result, $middleware->handle('foofoo', $callable));
     }
 }

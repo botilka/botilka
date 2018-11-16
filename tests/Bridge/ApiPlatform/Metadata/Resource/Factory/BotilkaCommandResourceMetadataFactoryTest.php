@@ -27,7 +27,7 @@ final class BotilkaCommandResourceMetadataFactoryTest extends TestCase
     /** @var SwaggerPayloadNormalizerInterface|MockObject */
     private $payloadNormalizer;
 
-    public function setUp()
+    protected function setUp()
     {
         $this->decorated = $this->createMock(ResourceMetadataFactoryInterface::class);
         $this->descriptionContainer = $this->createMock(DescriptionContainerInterface::class);

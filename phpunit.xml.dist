@@ -29,7 +29,7 @@
 
     <groups>
         <exclude>
-            <group>functionnal</group>
+            <group>functional</group>
         </exclude>
     </groups>
 </phpunit>

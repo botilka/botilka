@@ -31,7 +31,7 @@
     "scripts": {
         "analyze": "phpstan analyze",
         "test": "phpunit",
-        "testcov": "phpunit --group default,functionnal --coverage-html=coverage"
+        "testcov": "phpunit --group default,functional --coverage-html=coverage"
     },
     "suggest": {
         "doctrine/orm": "To use Doctrine as an EventStore",

@@ -6,6 +6,9 @@ namespace Botilka\Event;
 
 use Botilka\EventStore\EventStore;
 
+/**
+ * @internal
+ */
 final class DefaultEventReplayer implements EventReplayer
 {
     private $eventStore;
@@ -27,11 +30,6 @@ final class DefaultEventReplayer implements EventReplayer
             $events = $this->eventStore->load($id);
         }
 
-        $this->replayEvents($events);
-    }
-
-    public function replayEvents(array $events): void
-    {
         foreach ($events as $event) {
             $this->eventBus->dispatch($event);
         }

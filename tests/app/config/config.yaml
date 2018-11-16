@@ -1,19 +1,6 @@
 framework:
     secret: footest
 
-services:
-
-    _defaults:
-        autoconfigure: true
-        autowire: true
-        public: true
-        # if we don't bind arguments, default MessageBusInterface implementation is framework.messenger.default_bus (ie. messenger.bus.commands)
-
-    Botilka\:
-        resource: '../../../src/*'
-        exclude: '../../../src/{Application/Command/CommandResponse.php,Bridge,Infrastructure,Ui}'
-
-
 doctrine:
     dbal:
         # configure these for your database server

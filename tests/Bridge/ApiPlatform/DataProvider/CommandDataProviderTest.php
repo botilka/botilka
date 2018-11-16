@@ -14,7 +14,7 @@ final class CommandDataProviderTest extends TestCase
     /** @var CommandDataProvider */
     private $dataProvider;
 
-    public function setUp()
+    protected function setUp()
     {
         $descriptionContainer = new DescriptionContainer(['foo' => [
             'class' => 'Foo\\Bar',

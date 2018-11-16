@@ -7,9 +7,4 @@ namespace Botilka\Event;
 interface EventReplayer
 {
     public function replay(string $id, ?int $from = null, ?int $to = null): void;
-
-    /**
-     * @param Event[] $events
-     */
-    public function replayEvents(array $events): void;
 }

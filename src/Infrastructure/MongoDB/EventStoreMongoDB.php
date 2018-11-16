@@ -30,7 +30,7 @@ final class EventStoreMongoDB implements EventStore
     public function load(string $id): array
     {
         return $this->deserialize(
-            $this->collection->find(['id' => $id], ['sort' => ['payload' => -1]])
+            $this->collection->find(['id' => $id], ['sort' => ['playhead' => 1]])
         );
     }
 
@@ -40,7 +40,7 @@ final class EventStoreMongoDB implements EventStore
             $this->collection->find([
                 'id' => $id,
                 'playhead' => ['$gte' => $fromPlayhead],
-            ], ['sort' => ['payload' => -1]])
+            ], ['sort' => ['playhead' => 1]])
         );
     }
 
@@ -49,23 +49,9 @@ final class EventStoreMongoDB implements EventStore
         return $this->deserialize(
             $this->collection->find([
                 'id' => $id,
-                'playhead' => ['$gte' => $fromPlayhead, '$lte' => $fromPlayhead],
-            ], ['sort' => ['payload' => -1]])
+                'playhead' => ['$gte' => $fromPlayhead, '$lte' => $toPlayhead],
+            ], ['sort' => ['playhead' => 1]])
         );
-    }
-
-    /**
-     * @return Event[]
-     */
-    private function deserialize(Cursor $cursor): array
-    {
-        $events = [];
-        /** @var BSONDocument $event */
-        foreach ($cursor as $event) {
-            $events[] = $this->denormalizer->denormalize($event->offsetGet('payload'), $event->offsetGet('type'));
-        }
-
-        return $events;
     }
 
     public function append(string $id, int $playhead, string $type, Event $payload, ?array $metadata, \DateTimeImmutable $recordedOn): void
@@ -84,5 +70,19 @@ final class EventStoreMongoDB implements EventStore
         } catch (BulkWriteException $e) {
             throw new EventStoreConcurrencyException(\sprintf('Duplicate storage of event "%s" on aggregate "%s" with playhead %d.', $values['type'], $values['id'], $values['playhead']));
         }
+    }
+
+    /**
+     * @return Event[]
+     */
+    private function deserialize(Cursor $cursor): array
+    {
+        $events = [];
+        /** @var BSONDocument $event */
+        foreach ($cursor as $event) {
+            $events[] = $this->denormalizer->denormalize($event->offsetGet('payload'), $event->offsetGet('type'));
+        }
+
+        return $events;
     }
 }

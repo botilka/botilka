@@ -4,43 +4,91 @@ declare(strict_types=1);
 
 namespace Botilka\Tests\Infrastructure\MongoDB;
 
+use Botilka\EventStore\EventStore;
 use Botilka\Tests\AbstractKernelTestCase;
 use Botilka\Tests\Fixtures\Domain\StubEvent;
 
 final class EventStoreMongoDBTest extends AbstractKernelTestCase
 {
-    /** @group functionnal */
-    public function testLoadFunctionnal(): void
-    {
-        self::setUpMongoDb();
-        $this->assertCount(5, static::$eventStore->load('foo'));
-        $this->assertCount(1, static::$eventStore->load('bar'));
-    }
+    /** @var EventStore */
+    protected static $eventStore;
 
-    /** @group functionnal */
-    public function testLoadFromPlayheadToPlayheadFunctionnal(): void
+    public static function setUpBeforeClass()
     {
-        self::setUpMongoDb();
-        $this->assertCount(1, static::$eventStore->loadFromPlayheadToPlayhead('foo', 2, 3));
-        $this->assertCount(1, static::$eventStore->loadFromPlayheadToPlayhead('foo', 4, 10));
-    }
-
-    /** @group functionnal */
-    public function testLoadFromPlayheadFunctionnal(): void
-    {
-        self::setUpMongoDb();
-        $this->assertCount(3, static::$eventStore->loadFromPlayhead('foo', 2));
-        $this->assertCount(1, static::$eventStore->loadFromPlayhead('foo', 4));
+        [$eventStore, $collection] = self::setUpMongoDb();
+        self::$eventStore = $eventStore;
     }
 
     /**
-     * @group functionnal
+     * @dataProvider loadFunctionalProvider
+     * @group functional
+     */
+    public function testLoadFunctional(int $expected, string $id): void
+    {
+        /** @var EventStore $eventStore */
+        $eventStore = static::$eventStore;
+        $this->assertCount($expected, $eventStore->load($id));
+    }
+
+    public function loadFunctionalProvider(): array
+    {
+        return [
+            [10, 'foo'],
+            [5, 'bar'],
+        ];
+    }
+
+    /**
+     * @dataProvider loadFromPlayheadToPlayheadFunctionalProvider
+     * @group functional
+     */
+    public function testLoadFromPlayheadToPlayheadFunctional(int $expected, string $id, int $fromPlayhead, int $toPlayhead): void
+    {
+        /** @var EventStore $eventStore */
+        $eventStore = static::$eventStore;
+        $this->assertCount($expected, $eventStore->loadFromPlayheadToPlayhead($id, $fromPlayhead, $toPlayhead));
+    }
+
+    public function loadFromPlayheadToPlayheadFunctionalProvider(): array
+    {
+        return [
+            [2, 'foo', 2, 3],
+            [6, 'foo', 4, 10],
+            [3, 'bar', 2, 10],
+            [3, 'bar', 2, 4],
+        ];
+    }
+
+    /**
+     * @dataProvider loadFromPlayheadFunctionalProvider
+     * @group functional
+     */
+    public function testLoadFromPlayheadFunctional(int $expected, string $id, int $fromPlayhead): void
+    {
+        /** @var EventStore $eventStore */
+        $eventStore = static::$eventStore;
+        $this->assertCount($expected, $eventStore->loadFromPlayhead($id, $fromPlayhead));
+    }
+
+    public function loadFromPlayheadFunctionalProvider(): array
+    {
+        return [
+            [8, 'foo', 2],
+            [6, 'foo', 4],
+            [3, 'bar', 2],
+            [1, 'bar', 4],
+        ];
+    }
+
+    /**
+     * @group functional
      * @expectedException \Botilka\EventStore\EventStoreConcurrencyException
      * @expectedExceptionMessage Duplicate storage of event "Botilka\Tests\Fixtures\Domain\StubEvent" on aggregate "bar" with playhead 1.
      */
-    public function testAppendBulkWriteExceptionFunctionnal(): void
+    public function testAppendBulkWriteExceptionFunctional(): void
     {
-        self::setUpMongoDb();
-        static::$eventStore->append('bar', 1, StubEvent::class, new StubEvent(42), null, new \DateTimeImmutable());
+        /** @var EventStore $eventStore */
+        $eventStore = static::$eventStore;
+        $eventStore->append('bar', 1, StubEvent::class, new StubEvent(42), null, new \DateTimeImmutable());
     }
 }

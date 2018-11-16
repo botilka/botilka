@@ -20,6 +20,7 @@ use Botilka\Infrastructure\Doctrine\EventStoreDoctrine;
 use Botilka\Infrastructure\MongoDB\EventStoreMongoDB;
 use Botilka\Infrastructure\Symfony\Messenger\Middleware\EventDispatcherMiddleware;
 use Botilka\Infrastructure\InMemory\EventStoreInMemory;
+use Botilka\Projector\Projector;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Prophecy\ObjectProphecy;
 use Symfony\Component\DependencyInjection\ChildDefinition;
@@ -41,7 +42,7 @@ final class BotilkaExtensionTest extends TestCase
     /** @var BotilkaExtension */
     private $extension;
 
-    public function setUp()
+    protected function setUp()
     {
         $this->extension = new BotilkaExtension();
     }
@@ -203,6 +204,7 @@ final class BotilkaExtensionTest extends TestCase
             CommandHandler::class => ['messenger.message_handler', ['bus' => 'messenger.bus.commands']],
             QueryHandler::class => ['messenger.message_handler', ['bus' => 'messenger.bus.queries']],
             EventHandler::class => ['messenger.message_handler', ['bus' => 'messenger.bus.events']],
+            Projector::class => ['botilka.projector'],
             Command::class => ['cqrs.command'],
             Query::class => ['cqrs.query'],
             EventStoreInitializer::class => ['botilka.event_store.initializable'],
