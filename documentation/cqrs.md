@@ -127,7 +127,7 @@ Then dispatch the command
 use Botilka\Application\Command\CommandBus;
 
 /** @var CommandBus $bus */
-$bus = $container->get(CommandBus::class); // retrieve it by injection
+$bus = $container->get(CommandBus::class); // get it by injection
 
 $command = new CreateBankAccountCommand('account in $', 'DOL');
 

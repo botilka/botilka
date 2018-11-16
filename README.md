@@ -14,8 +14,8 @@ It can leverage [API Platform](https://api-platform.com) to expose the `Commands
 - EventStore implementation with [Doctrine](https://www.doctrine-project.org/) or [MongoDB](https://www.mongodb.com).
 - Commands/queries handling & description on API Platform UI.
 - Sync or async event handling is a matter of configuration.
-- Replay all or some events, to tests domain changes.
-- Rebuild a projection, ie. when you add a ReadModel.
+- Replay all or some events (allow to test domain changes).
+- Rebuild a projection on demand (ie. when you add a ReadModel).
 - Safe commands concurrency.
 - Fully immutable, not a single setter.
 - Tested, good code coverage. 
@@ -36,12 +36,12 @@ botilka:
     event_store: Botilka\Infrastructure\Doctrine\EventStoreDoctrine # or 'Botilka\Infrastructure\MongoDB\EventStoreMongoDB'
 ```
 
-Botilka provide a command to create the event store:
+Botilka provide a command to create & configure the event store:
 
 ```sh
 bin/console botilka:event_store:initialize doctrine # or 'mongodb'
 ```
-you can force recreate:
+you can force recreate, but be carefull, you will lost all the previous events:
 ```sh
 bin/console botilka:event_store:initialize doctrine -f # or 'mongodb'
 ```
@@ -52,17 +52,88 @@ bin/console botilka:event_store:initialize doctrine -f # or 'mongodb'
 
 You'll need to create Commands, Queries, Events and so on. [Read the documentation](/documentation/cqrs.md).
 
+### Event replaying
+
+It you've added or changed a business rule, you may want to see how it would have behaved with your event stream,
+this is a use case for event replaying.
+
+Let's say the BI team said they want to send a SMS each time withdrawal is made, so you have to:
+1. create the new event handler
+2. re-play events
+
+The event
+```php
+<?php
+final class SendPostalCardOnBankAccountCreated implements EventHandler
+{
+    public function onWithdrawalPerformed(WithdrawalPerformed $event): void
+    {
+        $user = $this->userRepository->getOwner($event->getgetAccountId());
+        if ($this->isMobilePhone($phoneNumber = $user->getPhoneNumber())) {
+            // record the calls count somewhere, now you know how many SMS would have been sent
+            $this->smsSender->send($phoneNumber);
+        }
+    }
+}
+```
+
+Replay:
+```bash
+# you can limit the scope with --from/-f & --to/-t
+bin/console botilka:event_store:replay [aggregate root id] --from 150
+```
+
+
+### Projection replay
+
+In the same way than replaying events, you can replay projection. If you've added a projection
+and you want to replay only these projection, use the `--matching/-m` options.
+
+> Matching is a regex matched against \[ProjectFQCN\]::\[method\],
+> ie. `App\BankAccount\Projection\Doctrine\BankAccountProjector::sumOfDeposit`
+
+The projection
+```php
+<?php
+namespace App\BankAccount\Projection\Doctrine;
+
+final class BankAccountProjector implements Projector
+{
+    public function sumOfDeposit(DepositPerformed $event): void
+    {
+        $stmt = $this->connection->prepare('UPDATE all_the_sums SET value = value + :amount WHERE type = :type');
+        $stmt->prepare(['amount' => $event->getAmount(), 'type' => 'deposit']);
+        $stmt->execute();
+    }
+
+    public static function getSubscribedEvents()
+    {
+        return [
+            onWithdrawalPerformed::class => 'onWithdrawalPerformed',
+        ];
+    }
+}
+```
+
+Replay projection:
+```bash
+# you can limit the scope with --from/-f & --to/-t
+bin/console botilka:projector:replay [aggregate root id] --matching sumOfDeposit
+```
+
+
 ### API Platform bridge
 See the [API Platform bridge](/documentation/api_platform_bridge.md) documentation.
 
-#### How it works
+## How it works
 
-Have a look [here](/documentation/internals.md) to better understand the technicals choices made and how the magic stuff happens.
+Have a look [here](/documentation/internals.md) to better understand the design choices made and how the magic stuff happens.
 
 ### todo
 
 - Snapshots.
-- Event updating.
+- Raw events iterator & modifiers (for updatating events).
+- Add domain concept to event store.
 - (maybe) Process manager.
 - (maybe) Smart command retry on concurrency exception.
 

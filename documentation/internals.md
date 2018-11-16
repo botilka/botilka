@@ -15,15 +15,14 @@ everything is automatically wired using auto-configuration and the matching betw
 > Botilka recommands to have the `__invoke` method with the type hinted message as the sole argument,
 > but you can use all the features provided by the Messenger component. 
 
-## Event dispatching
+## Domain event
 
-A command generate an event. This event has 2 differents handling: domain event handlers & projections.
+A command generate a domain event. This event has 2 differents handling: domain event handlers & projections.
 
 ### Event handler
 
 Distpatching an event to it's hanlder is done by a [bus middleware](src/Botilka/Infrastructure/Symfony/Messenger/Middleware/EventDispatcherMiddleware.php)
 that dispatch this event on the event bus.
-
 
 ### Projector
 
