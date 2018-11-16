@@ -14,7 +14,7 @@ final class Projection
     private $event;
     private $context;
 
-    public function __construct(Event $event, ?array $context = null)
+    public function __construct(Event $event, ?array $context = [])
     {
         $this->event = $event;
         $this->context = $context;

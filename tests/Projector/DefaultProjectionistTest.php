@@ -24,12 +24,10 @@ final class DefaultProjectionistTest extends TestCase
         $this->logger = $this->createMock(LoggerInterface::class);
     }
 
-    public function testReplay(): void
+    /** @dataProvider playMatchingProvider */
+    public function testPlayMatching(array $context, bool $expectedSkippedNoticeCall, bool $expectedProjectionPlayed): void
     {
         $event = new StubEvent(42);
-
-        $this->logger->expects($this->never())
-            ->method('notice');
 
         $projector = new StubProjector();
         $this->assertFalse($projector->onStubEventPlayed);
@@ -37,13 +35,26 @@ final class DefaultProjectionistTest extends TestCase
         $projectionist = new DefaultProjectionist([$projector], $this->logger);
         $this->assertInstanceOf(Projectionist::class, $projectionist);
 
-        $projection = new Projection($event);
+        $projection = new Projection($event, $context);
+
+        $this->logger->expects($expectedSkippedNoticeCall ? $this->once() : $this->never())
+            ->method('notice')
+            ->with(\sprintf('Projection %s::onStubEvent skipped.', StubProjector::class));
 
         $projectionist->play($projection);
-        $this->assertTrue($projector->onStubEventPlayed);
+        $this->assertSame($expectedProjectionPlayed, $projector->onStubEventPlayed);
     }
 
-    public function testReplayNoHandler(): void
+    public function playMatchingProvider(): array
+    {
+        return [
+            [[], false, true],
+            [['matching' => 'StubProjector'], false, true],
+            [['matching' => 'NonExistent'], true, false],
+        ];
+    }
+
+    public function testPlayNoHandler(): void
     {
         $event = $this->createMock(Event::class);
 

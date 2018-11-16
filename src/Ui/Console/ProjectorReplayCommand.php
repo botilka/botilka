@@ -45,7 +45,10 @@ final class ProjectorReplayCommand extends Command
         $id = $input->getArgument('id');
         $from = $input->getOption('from');
         $to = $input->getOption('to');
-        $matching = $input->getOption('matching');
+
+        $context = [
+            'matching' => $input->getOption('matching'),
+        ];
 
         $events = $this->eventStoreManager->load($id, $from, $to);
 
@@ -56,7 +59,7 @@ final class ProjectorReplayCommand extends Command
             $domainEvent = $event->getDomainEvent();
 
             $io->text(\sprintf('%s (%6d): %s (%s)', $event->getRecordedOn()->format('Y-m-d H:i:s'), $event->getPlayhead(), \get_class($domainEvent), \json_encode($event->getMetadata())));
-            $projection = new Projection($domainEvent);
+            $projection = new Projection($domainEvent, $context);
 
             $this->projectionist->play($projection);
         }
