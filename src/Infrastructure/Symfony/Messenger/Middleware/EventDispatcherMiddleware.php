@@ -8,6 +8,8 @@ use Botilka\Application\Command\CommandResponse;
 use Botilka\Event\EventBus;
 use Botilka\EventStore\EventStore;
 use Botilka\EventStore\EventStoreConcurrencyException;
+use Botilka\Projector\Projection;
+use Botilka\Projector\Projectionist;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Exception\NoHandlerForMessageException;
 use Symfony\Component\Messenger\Middleware\MiddlewareInterface;
@@ -17,12 +19,14 @@ final class EventDispatcherMiddleware implements MiddlewareInterface
     private $eventStore;
     private $eventBus;
     private $logger;
+    private $projectionist;
 
-    public function __construct(EventStore $eventStore, EventBus $eventBus, LoggerInterface $logger)
+    public function __construct(EventStore $eventStore, EventBus $eventBus, LoggerInterface $logger, Projectionist $projectionist)
     {
         $this->eventStore = $eventStore;
         $this->eventBus = $eventBus;
         $this->logger = $logger;
+        $this->projectionist = $projectionist;
     }
 
     /**
@@ -51,6 +55,9 @@ final class EventDispatcherMiddleware implements MiddlewareInterface
         } catch (NoHandlerForMessageException $e) {
             $this->logger->notice(\sprintf('No event handler for %s.', \get_class($event)));
         }
+
+        $projection = new Projection($event);
+        $this->projectionist->play($projection); // make your projector async if necessary
 
         return $result;
     }

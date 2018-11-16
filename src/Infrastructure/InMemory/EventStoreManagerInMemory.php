@@ -19,8 +19,6 @@ final class EventStoreManagerInMemory implements EventStoreManager
     public function load(string $id, ?int $from = null, ?int $to = null): array
     {
         $store = $this->eventStore->getStore();
-        $storedEvents = $store[$id];
-
         $storedEvents = \array_slice($store[$id], null !== $from ? $from : 0, null !== $to ? $to - $from : null);
 
         $events = [];
