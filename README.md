@@ -14,7 +14,8 @@ It can leverage [API Platform](https://api-platform.com) to expose the `Commands
 - EventStore implementation with [Doctrine](https://www.doctrine-project.org/) or [MongoDB](https://www.mongodb.com).
 - Commands/queries handling & description on API Platform UI.
 - Sync or async event handling is a matter of configuration.
-- Replay all or some events.
+- Replay all or some events, to tests domain changes.
+- Rebuild a projection, ie. when you add a ReadModel.
 - Safe commands concurrency.
 - Fully immutable, not a single setter.
 - Tested, good code coverage. 
@@ -49,30 +50,19 @@ bin/console botilka:event_store:initialize doctrine -f # or 'mongodb'
 
 ### CQRS & EventSourcing
 
-You'll need to create Commands, Queries, and so on. [Read the documentation](/documentation/cqrs.md).
-
+You'll need to create Commands, Queries, Events and so on. [Read the documentation](/documentation/cqrs.md).
 
 ### API Platform bridge
 See the [API Platform bridge](/documentation/api_platform_bridge.md) documentation.
 
-### How it works
+#### How it works
 
-Each `Command`, `Query` & `Event` are just POPO seen as messages. For all of them, we use the Bus pattern to dispatch and
-handle these messages. They are all transported on their own bus.
-
-Buses are (by default) managed by [Symfony Messenger Component](https://symfony.com/doc/4.1/messenger.html).
-
-Messages & handlers just have to implement an empty interface and everything is automatically wired
-using auto-configuration.
-
-The matching between a message and it(s) handler(s) is done by the Messenger component.
-> The handler has an `__invoke` method with the type hinted message as the sole argument.
-
+Have a look [here](/documentation/internals.md) to better understand the technicals choices made and how the magic stuff happens.
 
 ### todo
 
 - Snapshots.
-- Projectors.
+- Event updating.
 - (maybe) Process manager.
 - (maybe) Smart command retry on concurrency exception.
 
@@ -81,8 +71,8 @@ The matching between a message and it(s) handler(s) is done by the Messenger com
 
 - https://github.com/dddinphp/blog-cqrs
 - https://github.com/broadway/broadway
+- https://github.com/jorge07/symfony-4-es-cqrs-boilerplate (uses Broadway)
 - https://github.com/CodelyTV/cqrs-ddd-php-example
-- https://github.com/jorge07/symfony-4-es-cqrs-boilerplate
 - https://github.com/mnavarrocarter/ddd
 - https://www.youtube.com/watch?v=qBLtZN3p3FU \[french\]
 - https://www.youtube.com/watch?v=VpzSMz_XbqM \[french\]
