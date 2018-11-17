@@ -19,9 +19,12 @@ final class StubEventSourcedAggregateRoot implements EventSourcedAggregateRoot
 
     public function getAggregateRootId(): string
     {
-        return 'foo';
+        return 'foo-bar-baz';
     }
 
+    /**
+     * Used to tests if onStubHasStubbed has been called.
+     */
     public function getFoo(): int
     {
         return $this->foo;

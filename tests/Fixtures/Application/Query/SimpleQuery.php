@@ -11,7 +11,7 @@ final class SimpleQuery implements Query
     private $foo;
     private $bar;
 
-    public function __construct(string $foo, ?int $bar)
+    public function __construct(string $foo, ?int $bar = null)
     {
         $this->foo = $foo;
         $this->bar = $bar;

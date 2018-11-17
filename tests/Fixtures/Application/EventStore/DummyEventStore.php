@@ -18,7 +18,7 @@ final class DummyEventStore implements EventStoreInitializer
     public function initialize(bool $force = false): void
     {
         if (true === $this->raiseException) {
-            throw new \RuntimeException('Cant\t touch this.');
+            throw new \RuntimeException('Cant\'t touch this.');
         }
     }
 }

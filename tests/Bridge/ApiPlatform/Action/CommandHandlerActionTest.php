@@ -15,7 +15,7 @@ final class CommandHandlerActionTest extends TestCase
 {
     public function testInvoke(): void
     {
-        $command = new SimpleCommand('foo', null);
+        $command = new SimpleCommand('foo');
         $commandResponse = new CommandResponse('bar', 123, new StubEvent(123), 'Foo\\Domain');
 
         $commandBus = $this->createMock(CommandBus::class);
