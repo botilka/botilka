@@ -207,7 +207,7 @@ final class BotilkaExtensionTest extends TestCase
             Projector::class => ['botilka.projector'],
             Command::class => ['cqrs.command'],
             Query::class => ['cqrs.query'],
-            EventStoreInitializer::class => ['botilka.event_store.initializable'],
+            EventStoreInitializer::class => ['botilka.event_store.initializer'],
         ];
         $count = \count($tags);
 

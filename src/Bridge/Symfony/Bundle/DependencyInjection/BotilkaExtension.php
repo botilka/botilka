@@ -29,7 +29,7 @@ final class BotilkaExtension extends Extension implements PrependExtensionInterf
         Projector::class => ['botilka.projector'],
         Command::class => ['cqrs.command'],
         Query::class => ['cqrs.query'],
-        EventStoreInitializer::class => ['botilka.event_store.initializable'],
+        EventStoreInitializer::class => ['botilka.event_store.initializer'],
     ];
 
     public function prepend(ContainerBuilder $container)
