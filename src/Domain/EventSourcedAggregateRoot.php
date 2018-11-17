@@ -9,4 +9,6 @@ use Botilka\Event\Event;
 interface EventSourcedAggregateRoot extends AggregateRoot
 {
     public function apply(Event $event): EventSourcedAggregateRoot;
+
+    public function getPlayhead(): int;
 }

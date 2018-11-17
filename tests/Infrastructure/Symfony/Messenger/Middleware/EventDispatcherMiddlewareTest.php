@@ -41,7 +41,7 @@ final class EventDispatcherMiddlewareTest extends TestCase
 
         $this->eventStore->expects($this->once())
             ->method('append')
-            ->with('foo', 42, StubEvent::class, $event, null, $this->isInstanceOf(\DateTimeImmutable::class));
+            ->with('foo', 42, StubEvent::class, $event, null, $this->isInstanceOf(\DateTimeImmutable::class), 'Foo\\Domain');
 
         $this->eventBus->expects($this->once())
             ->method('dispatch')
@@ -53,7 +53,7 @@ final class EventDispatcherMiddlewareTest extends TestCase
         $this->projectionist->expects($this->once())
             ->method('play');
 
-        $commandResponse = new CommandResponse('foo', 42, $event);
+        $commandResponse = new CommandResponse('foo', 42, $event, 'Foo\\Domain');
 
         $callable = function ($message) use ($commandResponse) {
             return $commandResponse;
@@ -71,7 +71,7 @@ final class EventDispatcherMiddlewareTest extends TestCase
 
         $this->eventStore->expects($this->once())
             ->method('append')
-            ->with('foo', 42, StubEvent::class, $event, null, $this->isInstanceOf(\DateTimeImmutable::class));
+            ->with('foo', 42, StubEvent::class, $event, null, $this->isInstanceOf(\DateTimeImmutable::class), 'Foo\\Domain');
 
         $this->eventBus->expects($this->once())
             ->method('dispatch')
@@ -85,7 +85,7 @@ final class EventDispatcherMiddlewareTest extends TestCase
         $this->projectionist->expects($this->once())
             ->method('play');
 
-        $commandResponse = new CommandResponse('foo', 42, $event);
+        $commandResponse = new CommandResponse('foo', 42, $event, 'Foo\\Domain');
 
         $callable = function ($message) use ($commandResponse) {
             return $commandResponse;
@@ -115,7 +115,7 @@ final class EventDispatcherMiddlewareTest extends TestCase
             ->method('error')
             ->with('bar');
 
-        $commandResponse = new CommandResponse('foo', 42, $event);
+        $commandResponse = new CommandResponse('foo', 42, $event, 'Foo\\Domain');
 
         $callable = function ($message) use ($commandResponse) {
             return $commandResponse;
@@ -126,6 +126,10 @@ final class EventDispatcherMiddlewareTest extends TestCase
         $this->assertNull($middleware->handle('foofoo', $callable));
     }
 
+    /**
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage Result must be an instance of Botilka\Application\Command\CommandResponse, stdClass given.
+     */
     public function testHandleNotCommandResponse(): void
     {
         $result = new \stdClass();
@@ -143,6 +147,6 @@ final class EventDispatcherMiddlewareTest extends TestCase
             ->method('play');
 
         $middleware = new EventDispatcherMiddleware($this->eventStore, $this->eventBus, $this->logger, $this->projectionist);
-        $this->assertSame($result, $middleware->handle('foofoo', $callable));
+        $middleware->handle('foobar', $callable);
     }
 }
