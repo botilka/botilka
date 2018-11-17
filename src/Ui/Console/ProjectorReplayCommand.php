@@ -4,13 +4,10 @@ declare(strict_types=1);
 
 namespace Botilka\Ui\Console;
 
-use Botilka\Event\Event;
 use Botilka\EventStore\EventStoreManager;
-use Botilka\EventStore\ManagedEvent;
 use Botilka\Projector\Projection;
 use Botilka\Projector\Projectionist;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -18,6 +15,8 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 final class ProjectorReplayCommand extends Command
 {
+    use EventsFromEventStoreManagerCommandTrait;
+
     private $eventStoreManager;
     private $projectionist;
 
@@ -31,9 +30,7 @@ final class ProjectorReplayCommand extends Command
     protected function configure()
     {
         $this->setDescription('Re build projections for an aggregate')
-            ->addArgument('id', InputArgument::REQUIRED, 'Aggregate ID')
-            ->addOption('from', 'f', InputOption::VALUE_OPTIONAL, 'From playhead (included)')
-            ->addOption('to', 't', InputOption::VALUE_OPTIONAL, 'To playhead (included)')
+            ->configureDefault($this)
             ->addOption('matching', 'm', InputOption::VALUE_OPTIONAL, 'User projector FQCN that matches (regex)');
     }
 
@@ -41,24 +38,21 @@ final class ProjectorReplayCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        /** @var string $id */
-        $id = $input->getArgument('id');
-        $from = $input->getOption('from');
-        $to = $input->getOption('to');
+        $managedEvents = $this->getManagedEvents($input);
 
         $context = [
             'matching' => $input->getOption('matching'),
         ];
 
-        $events = $this->eventStoreManager->load($id, $from, $to);
+        $io->note(\sprintf('%d events found.', \count($managedEvents)));
 
-        $io->note(\sprintf('%d events found for %s.', \count($events), $id));
+        foreach ($managedEvents as $managedEvent) {
+            $domainEvent = $managedEvent->getDomainEvent();
 
-        /** @var ManagedEvent $event */
-        foreach ($events as $event) {
-            $domainEvent = $event->getDomainEvent();
-
-            $io->text(\sprintf('%s (%6d): %s (%s)', $event->getRecordedOn()->format('Y-m-d H:i:s'), $event->getPlayhead(), \get_class($domainEvent), \json_encode($event->getMetadata())));
+            $io->text(
+                \sprintf('%s (%6d): %s (%s)',
+                    $managedEvent->getRecordedOn()->format('Y-m-d H:i:s'), $managedEvent->getPlayhead(), \get_class($domainEvent), \json_encode($managedEvent->getMetadata()))
+            );
             $projection = new Projection($domainEvent, $context);
 
             $this->projectionist->play($projection);

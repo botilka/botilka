@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Botilka\Tests\Ui\Console;
 
-use Botilka\Event\EventReplayer;
+use Botilka\Event\EventBus;
+use Botilka\EventStore\EventStoreManager;
 use Botilka\Ui\Console\EventReplayCommand;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -13,18 +14,15 @@ use Symfony\Component\Console\Output\BufferedOutput;
 final class EventReplayCommandTest extends KernelTestCase
 {
     /** @dataProvider executeProvider */
-    public function testExecute(string $id, ?int $from, ?int $to): void
+    public function testExecute(string $value, ?int $from, ?int $to): void
     {
-        $replayer = $this->createMock(EventReplayer::class);
-        $command = new EventReplayCommand($replayer);
+        $eventStoreManager = $this->createMock(EventStoreManager::class);
+        $eventBus = $this->createMock(EventBus::class);
+        $command = new EventReplayCommand($eventStoreManager, $eventBus);
 
         $this->assertSame('botilka:event_store:replay', $command->getName());
 
-        $replayer->expects($this->once())
-            ->method('replay')
-            ->with(...[$id, $from, $to]);
-
-        $input = new ArrayInput(['id' => $id, '--from' => $from, '--to' => $to]);
+        $input = new ArrayInput(['target' => 'id', 'value' => $value, '--from' => $from, '--to' => $to]);
         $command->run($input, new BufferedOutput());
     }
 

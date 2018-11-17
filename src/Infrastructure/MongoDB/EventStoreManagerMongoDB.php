@@ -22,10 +22,19 @@ final class EventStoreManagerMongoDB implements EventStoreManager
         $this->denormalizer = $denormalizer;
     }
 
-    public function load(string $id, ?int $from = null, ?int $to = null): array
+    public function loadByDomain(string $domain, ?int $from = null, ?int $to = null): array
     {
-        $filter = [
-            'id' => $id,
+        return $this->load(['domain' => $domain], $from, $to);
+    }
+
+    public function loadByAggregateRootId(string $id, ?int $from = null, ?int $to = null): array
+    {
+        return $this->load(['id' => $id], $from, $to);
+    }
+
+    private function load(array $filter, ?int $from = null, ?int $to = null): array
+    {
+        $filter += [
             'playhead' => [],
         ];
 
@@ -49,6 +58,11 @@ final class EventStoreManagerMongoDB implements EventStoreManager
         return $this->collection->distinct('id');
     }
 
+    public function getDomains(): array
+    {
+        return $this->collection->distinct('domain');
+    }
+
     /**
      * @return ManagedEvent[]
      */
@@ -62,7 +76,8 @@ final class EventStoreManagerMongoDB implements EventStoreManager
                 $this->denormalizer->denormalize($storedEvent->offsetGet('payload'), $storedEvent->offsetGet('type')),
                 $storedEvent->offsetGet('playhead'),
                 $storedEvent->offsetGet('metadata')->getArrayCopy(),
-                new \DateTimeImmutable($storedEvent->offsetGet('recordedOn'))
+                new \DateTimeImmutable($storedEvent->offsetGet('recordedOn')),
+                $storedEvent->offsetGet('domain')
             );
         }
 

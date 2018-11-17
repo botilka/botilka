@@ -10,16 +10,16 @@ use PHPUnit\Framework\TestCase;
 
 final class EventStoreManagerInMemoryTest extends TestCase
 {
-    /** @dataProvider loadProvider */
-    public function testLoad(string $id, ?int $from = null, ?int $to = null, int $shouldBeCount): void
+    /** @dataProvider loadByAggregateRootIdProvider */
+    public function testLoadByAggregateRootIdProvider(string $id, ?int $from = null, ?int $to = null, int $shouldBeCount): void
     {
         $eventStore = EventStoreInMemoryFactory::create();
         $manager = new EventStoreManagerInMemory($eventStore);
 
-        $this->assertCount($shouldBeCount, $manager->load($id, $from, $to));
+        $this->assertCount($shouldBeCount, $manager->loadByAggregateRootId($id, $from, $to));
     }
 
-    public function loadProvider(): array
+    public function loadByAggregateRootIdProvider(): array
     {
         return [
             ['foo', null, null, 10],

@@ -22,10 +22,19 @@ final class EventStoreManagerDoctrine implements EventStoreManager
         $this->table = $table;
     }
 
-    public function load(string $id, ?int $from = null, ?int $to = null): array
+    public function loadByAggregateRootId(string $id, ?int $from = null, ?int $to = null): array
     {
-        $parameters = ['id' => $id];
-        $query = "SELECT * FROM {$this->table} WHERE id = :id";
+        return $this->load('id = :id', ['id' => $id], $from, $to);
+    }
+
+    public function loadByDomain(string $domain, ?int $from = null, ?int $to = null): array
+    {
+        return $this->load('domain = :domain', ['domain' => $domain], $from, $to);
+    }
+
+    private function load(string $where, array $parameters, ?int $from = null, ?int $to = null): array
+    {
+        $query = "SELECT * FROM {$this->table} WHERE $where";
 
         if (null !== $from) {
             $query .= ' AND playhead >= :from';
@@ -54,6 +63,17 @@ final class EventStoreManagerDoctrine implements EventStoreManager
         }, $stmt->fetchAll());
     }
 
+    public function getDomains(): array
+    {
+        $query = "SELECT DISTINCT domain FROM {$this->table}";
+        $stmt = $this->connection->prepare($query);
+        $stmt->execute();
+
+        return \array_map(function ($row) {
+            return $row['domain'];
+        }, $stmt->fetchAll());
+    }
+
     /**
      * @return ManagedEvent[]
      */
@@ -68,7 +88,8 @@ final class EventStoreManagerDoctrine implements EventStoreManager
                 $this->denormalizer->denormalize(\json_decode($storedEvent['payload'], true), $storedEvent['type']),
                 $storedEvent['playhead'],
                 \json_decode($storedEvent['metadata'], true),
-                new \DateTimeImmutable($storedEvent['recorded_on'])
+                new \DateTimeImmutable($storedEvent['recorded_on']),
+                $storedEvent['domain']
             );
         }
 

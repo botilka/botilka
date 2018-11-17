@@ -32,8 +32,8 @@ final class EventStoreManagerDoctrineTest extends TestCase
         $this->manager = new EventStoreManagerDoctrine($this->connection, $this->denormarlizer, $this->table);
     }
 
-    /** @dataProvider loadProvider */
-    public function testLoad(string $id, ?int $from = null, ?int $to = null, int $shouldBeCount, string $queryPart, array $parameters): void
+    /** @dataProvider loadByAggregateRootIdProvider */
+    public function testLoadByAggregateRootId(string $id, ?int $from = null, ?int $to = null, int $shouldBeCount, string $queryPart, array $parameters): void
     {
         $rows = ['foo' => [], 'bar' => []];
         foreach ($rows as $rowId => $subRows) {
@@ -45,6 +45,7 @@ final class EventStoreManagerDoctrineTest extends TestCase
                     'payload' => \json_encode(['foo' => $i]),
                     'metadata' => \json_encode(null),
                     'recorded_on' => (new \DateTimeImmutable('2018-11-14 19:42:'.($i * 2).'.1234'))->format('Y-m-d H:i:s.u'),
+                    'domain' => 'Foo\\Domain',
                 ];
             }
         }
@@ -66,12 +67,12 @@ final class EventStoreManagerDoctrineTest extends TestCase
             ->with($query)
             ->willReturn($stmt);
 
-        $events = $this->manager->load($id, $from, $to);
+        $events = $this->manager->loadByAggregateRootId($id, $from, $to);
 
         $this->assertCount($shouldBeCount, $expected);
     }
 
-    public function loadProvider(): array
+    public function loadByAggregateRootIdProvider(): array
     {
         return [
             ['foo', null, null, 10, '', ['id' => 'foo']],

@@ -12,10 +12,10 @@ use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 final class EventStoreManagerMongoDBTest extends AbstractKernelTestCase
 {
     /**
-     * @dataProvider loadProviderFunctional
+     * @dataProvider loadByAggregateRootIdProviderFunctional
      * @group functional
      */
-    public function testLoadFunctional(int $shouldBeCount, string $id, ?int $from = null, ?int $to = null): void
+    public function testLoadByAggregateRootIdFunctional(int $shouldBeCount, string $id, ?int $from = null, ?int $to = null): void
     {
         [$eventStore, $collection] = self::setUpMongoDb();
 
@@ -23,12 +23,12 @@ final class EventStoreManagerMongoDBTest extends AbstractKernelTestCase
         $denormalizer = self::$container->get('serializer');
         $manager = new EventStoreManagerMongoDB($collection, $denormalizer);
 
-        $events = $manager->load($id, $from, $to);
+        $events = $manager->loadByAggregateRootId($id, $from, $to);
 
         $this->assertCount($shouldBeCount, $events);
     }
 
-    public function loadProviderFunctional(): array
+    public function loadByAggregateRootIdProviderFunctional(): array
     {
         return [
             [10, 'foo', null, null],

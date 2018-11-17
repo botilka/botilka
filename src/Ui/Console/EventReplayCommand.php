@@ -4,38 +4,40 @@ declare(strict_types=1);
 
 namespace Botilka\Ui\Console;
 
-use Botilka\Event\EventReplayer;
+use Botilka\Event\EventBus;
+use Botilka\EventStore\EventStoreManager;
+use Botilka\EventStore\ManagedEvent;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 final class EventReplayCommand extends Command
 {
-    private $replayer;
+    use EventsFromEventStoreManagerCommandTrait;
 
-    public function __construct(EventReplayer $replayer)
+    private $eventStoreManager;
+    private $eventBus;
+
+    public function __construct(EventStoreManager $eventStoreManager, EventBus $eventBus)
     {
         parent::__construct('botilka:event_store:replay');
-        $this->replayer = $replayer;
+        $this->eventStoreManager = $eventStoreManager;
+        $this->eventBus = $eventBus;
     }
 
     protected function configure()
     {
-        $this->setDescription('Replay some/all events for an aggregate')
-            ->addArgument('id', InputArgument::REQUIRED, 'Aggregate ID')
-            ->addOption('from', 'f', InputOption::VALUE_OPTIONAL, 'From playhead (included)')
-            ->addOption('to', 't', InputOption::VALUE_OPTIONAL, 'To playhead (included)');
+        $this->setDescription('Replay some/all events for an aggregate or a domain')
+            ->configureDefault($this);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        /** @var string $id */
-        $id = $input->getArgument('id');
-        $from = $input->getOption('from');
-        $to = $input->getOption('to');
+        $managedEvents = $this->getManagedEvents($input);
 
-        $this->replayer->replay($id, $from, $to);
+        /** @var ManagedEvent $managedEvent */
+        foreach ($managedEvents as $managedEvent) {
+            $this->eventBus->dispatch($managedEvent->getDomainEvent());
+        }
     }
 }
