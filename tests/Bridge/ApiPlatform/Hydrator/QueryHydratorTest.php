@@ -31,7 +31,7 @@ final class QueryHydratorTest extends TestCase
 
     public function testHydrate(): void
     {
-        $Query = new SimpleQuery('foo', null);
+        $Query = new SimpleQuery('foo');
 
         $this->denormalizer->expects($this->once())
             ->method('denormalize')
@@ -49,7 +49,7 @@ final class QueryHydratorTest extends TestCase
     /** @expectedException \ApiPlatform\Core\Bridge\Symfony\Validator\Exception\ValidationException */
     public function testHydrateViolation(): void
     {
-        $query = new SimpleQuery('foo', null);
+        $query = new SimpleQuery('foo');
 
         $this->denormalizer->expects($this->once())
             ->method('denormalize')

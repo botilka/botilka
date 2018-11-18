@@ -14,7 +14,7 @@ final class EventTest extends TestCase
 
     protected function setUp()
     {
-        $this->event = new Event('12345678-abcd-1337-affa-f00baababaf0', 123, 'Bar\\Baz', ['foo' => 'bar'], ['baz' => 456]);
+        $this->event = new Event('12345678-abcd-1337-affa-f00baababaf0', 123, 'Bar\\Baz', ['foo' => 'bar'], ['baz' => 456], 'Foo\\Domain');
     }
 
     public function testGetPlayhead(): void
@@ -45,5 +45,10 @@ final class EventTest extends TestCase
     public function testGetMetadata(): void
     {
         $this->assertSame(['baz' => 456], $this->event->getMetadata());
+    }
+
+    public function testGetDomain(): void
+    {
+        $this->assertSame('Foo\\Domain', $this->event->getDomain());
     }
 }

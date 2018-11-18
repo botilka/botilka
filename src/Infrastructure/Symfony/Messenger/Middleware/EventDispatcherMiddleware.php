@@ -37,13 +37,13 @@ final class EventDispatcherMiddleware implements MiddlewareInterface
         $result = $next($message); // execute the handler first
 
         if (!$result instanceof CommandResponse) {
-            return $result;
+            throw new \InvalidArgumentException(\sprintf('Result must be an instance of %s, %s given.', CommandResponse::class, \is_object($result) ? \get_class($result) : \gettype($result)));
         }
 
         $event = $result->getEvent();
 
         try {
-            $this->eventStore->append($result->getId(), $result->getPlayhead(), \get_class($event), $event, null, new \DateTimeImmutable());
+            $this->eventStore->append($result->getId(), $result->getPlayhead(), \get_class($event), $event, null, new \DateTimeImmutable(), $result->getDomain());
         } catch (EventStoreConcurrencyException $e) {
             $this->logger->error($e->getMessage());
 

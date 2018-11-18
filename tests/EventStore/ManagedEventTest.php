@@ -21,7 +21,7 @@ final class ManagedEventTest extends TestCase
     {
         $this->domainEvent = new StubEvent(42);
         $this->recordedOn = new \DateTimeImmutable();
-        $this->managedEvent = new ManagedEvent('foo', $this->domainEvent, 1337, ['foo' => 'bar'], $this->recordedOn);
+        $this->managedEvent = new ManagedEvent('foo', $this->domainEvent, 1337, ['foo' => 'bar'], $this->recordedOn, 'Foo\\Domain');
     }
 
     public function testGetId()
@@ -47,5 +47,10 @@ final class ManagedEventTest extends TestCase
     public function testGetDomainEvent(): void
     {
         $this->assertSame($this->domainEvent, $this->managedEvent->getDomainEvent());
+    }
+
+    public function testGetDomain(): void
+    {
+        $this->assertSame('Foo\\Domain', $this->managedEvent->getDomain());
     }
 }

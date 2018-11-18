@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Botilka\Application\Command;
 
+use Botilka\Domain\EventSourcedAggregateRoot;
 use Botilka\Event\Event;
 
 final class CommandResponse
@@ -11,12 +12,14 @@ final class CommandResponse
     private $id;
     private $event;
     private $playhead;
+    private $domain;
 
-    public function __construct(string $id, int $playhead, Event $event)
+    public function __construct(string $id, int $playhead, Event $event, string $domain)
     {
         $this->id = $id;
         $this->playhead = $playhead;
         $this->event = $event;
+        $this->domain = $domain;
     }
 
     public function getId(): string
@@ -34,8 +37,13 @@ final class CommandResponse
         return $this->event;
     }
 
-    public static function withValue(string $id, int $playhead, Event $event): self
+    public function getDomain(): string
     {
-        return new self($id, $playhead, $event);
+        return $this->domain;
+    }
+
+    public static function withValue(EventSourcedAggregateRoot $aggregateRoot, Event $event): self
+    {
+        return new self($aggregateRoot->getAggregateRootId(), $aggregateRoot->getPlayhead(), $event, \get_class($aggregateRoot));
     }
 }

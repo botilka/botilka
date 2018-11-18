@@ -32,8 +32,7 @@ final class EventStoreManagerDoctrineTest extends TestCase
         $this->manager = new EventStoreManagerDoctrine($this->connection, $this->denormarlizer, $this->table);
     }
 
-    /** @dataProvider loadProvider */
-    public function testLoad(string $id, ?int $from = null, ?int $to = null, int $shouldBeCount, string $queryPart, array $parameters): void
+    private function getRows(): array
     {
         $rows = ['foo' => [], 'bar' => []];
         foreach ($rows as $rowId => $subRows) {
@@ -45,9 +44,18 @@ final class EventStoreManagerDoctrineTest extends TestCase
                     'payload' => \json_encode(['foo' => $i]),
                     'metadata' => \json_encode(null),
                     'recorded_on' => (new \DateTimeImmutable('2018-11-14 19:42:'.($i * 2).'.1234'))->format('Y-m-d H:i:s.u'),
+                    'domain' => 'Foo\\Domain',
                 ];
             }
         }
+
+        return $rows;
+    }
+
+    /** @dataProvider loadByAggregateRootIdProvider */
+    public function testLoadByAggregateRootId(string $id, ?int $from = null, ?int $to = null, int $shouldBeCount, string $queryPart, array $parameters): void
+    {
+        $rows = $this->getRows();
 
         $expected = \array_slice($rows[$id], null !== $from ? $from : 0, null !== $to ? $to - $from : null);
 
@@ -66,12 +74,12 @@ final class EventStoreManagerDoctrineTest extends TestCase
             ->with($query)
             ->willReturn($stmt);
 
-        $events = $this->manager->load($id, $from, $to);
+        $events = $this->manager->loadByAggregateRootId($id, $from, $to);
 
         $this->assertCount($shouldBeCount, $expected);
     }
 
-    public function loadProvider(): array
+    public function loadByAggregateRootIdProvider(): array
     {
         return [
             ['foo', null, null, 10, '', ['id' => 'foo']],
@@ -83,12 +91,47 @@ final class EventStoreManagerDoctrineTest extends TestCase
         ];
     }
 
-    public function testGetAggregateRootIds(): void
+    public function testLoadByDomain(): void
     {
         $rows = [
-            ['id' => 'foo'],
-            ['id' => 'bar'],
-            ['id' => 'baz'],
+            [
+                'id' => 'foo',
+                'playhead' => 42,
+                'type' => StubEvent::class,
+                'payload' => \json_encode(['foo' => 1337]),
+                'metadata' => \json_encode(null),
+                'recorded_on' => (new \DateTimeImmutable('2018-11-14 19:42:51.1234'))->format('Y-m-d H:i:s.u'),
+                'domain' => 'Foo\\Domain',
+            ],
+        ];
+
+        $stmt = $this->createMock(Statement::class);
+        $stmt->expects($this->once())->method('execute')
+            ->with(['domain' => 'Foo\\Domain']);
+        $stmt->expects($this->once())->method('fetchAll')
+            ->willReturn($rows);
+
+        $this->denormarlizer->expects($this->once())
+            ->method('denormalize')
+            ->willReturn($this->createMock(Event::class));
+
+        $query = "SELECT * FROM {$this->table} WHERE domain = :domain ORDER BY playhead";
+        $this->connection->expects($this->once())->method('prepare')
+            ->with($query)
+            ->willReturn($stmt);
+
+        $events = $this->manager->loadByDomain('Foo\\Domain');
+
+        $this->assertCount(1, $events);
+    }
+
+    /** @dataProvider getProvider */
+    public function testGet(string $key, string $method): void
+    {
+        $rows = [
+            [$key => 'foo'],
+            [$key => 'bar'],
+            [$key => 'baz'],
         ];
 
         $stmt = $this->createMock(Statement::class);
@@ -97,9 +140,17 @@ final class EventStoreManagerDoctrineTest extends TestCase
             ->willReturn($rows);
 
         $this->connection->expects($this->once())->method('prepare')
-            ->with("SELECT DISTINCT id FROM {$this->table}")
+            ->with("SELECT DISTINCT $key FROM {$this->table}")
             ->willReturn($stmt);
 
-        $this->assertSame(['foo', 'bar', 'baz'], $this->manager->getAggregateRootIds());
+        $this->assertSame(['foo', 'bar', 'baz'], $this->manager->$method());
+    }
+
+    public function getProvider(): array
+    {
+        return [
+            ['id', 'getAggregateRootIds'],
+            ['domain', 'getDomains'],
+        ];
     }
 }

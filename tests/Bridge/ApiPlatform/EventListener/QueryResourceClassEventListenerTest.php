@@ -88,7 +88,7 @@ final class QueryResourceClassEventListenerTest extends TestCase
             'payload' => ['some' => 'string'],
         ]]);
 
-        $query = new SimpleQuery('foo', null);
+        $query = new SimpleQuery('foo');
 
         $this->hydrator->expects($this->once())
             ->method('hydrate')

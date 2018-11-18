@@ -54,7 +54,7 @@ final class EventStoreMongoDB implements EventStore
         );
     }
 
-    public function append(string $id, int $playhead, string $type, Event $payload, ?array $metadata, \DateTimeImmutable $recordedOn): void
+    public function append(string $id, int $playhead, string $type, Event $payload, ?array $metadata, \DateTimeImmutable $recordedOn, string $domain): void
     {
         $values = [
             'id' => $id,
@@ -63,6 +63,7 @@ final class EventStoreMongoDB implements EventStore
             'payload' => $this->normalizer->normalize($payload),
             'metadata' => $this->normalizer->normalize($metadata),
             'recordedOn' => $recordedOn->format('Y-m-d H:i:s.u'),
+            'domain' => $domain,
         ];
 
         try {

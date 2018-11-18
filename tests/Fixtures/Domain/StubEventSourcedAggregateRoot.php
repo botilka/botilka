@@ -13,15 +13,18 @@ final class StubEventSourcedAggregateRoot implements EventSourcedAggregateRoot
 
     private $foo = 123;
 
-    private $eventMap = [
+    protected $eventMap = [
         StubEvent::class => 'onStubHasStubbed',
     ];
 
     public function getAggregateRootId(): string
     {
-        return 'foo_stub_aggregate_root';
+        return 'foo-bar-baz';
     }
 
+    /**
+     * Used to tests if onStubHasStubbed has been called.
+     */
     public function getFoo(): int
     {
         return $this->foo;

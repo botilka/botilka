@@ -16,7 +16,7 @@ final class MessengerCommandBusTest extends TestCase
     public function testDispatch(): void
     {
         $command = new SimpleCommand('foo', 132);
-        $commandResponse = new CommandResponse('bar', 123, new StubEvent(123));
+        $commandResponse = new CommandResponse('bar', 123, new StubEvent(123), 'Foo\\Domain');
 
         $messengerBus = $this->createMock(MessageBusInterface::class);
         $messengerBus->expects($this->once())

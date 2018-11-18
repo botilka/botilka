@@ -36,7 +36,7 @@ final class CommandEntrypointActionTest extends TestCase
             ->with($commandResource->getPayload(), 'Foo\\Bar')
             ->willReturn($command);
 
-        $commandResponse = new CommandResponse('plop', 123, new StubEvent(123));
+        $commandResponse = new CommandResponse('foo', 123, new StubEvent(123), 'Foo\\Domain');
 
         $commandBus->expects($this->once())
             ->method('dispatch')
@@ -48,7 +48,7 @@ final class CommandEntrypointActionTest extends TestCase
         $response = $action($commandResource);
 
         $this->assertInstanceOf(CommandResponseAdapter::class, $response);
-        $this->assertSame('plop', $response->getId());
+        $this->assertSame('foo', $response->getId());
     }
 
     /**

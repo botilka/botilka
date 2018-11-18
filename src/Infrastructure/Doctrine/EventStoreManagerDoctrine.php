@@ -22,9 +22,10 @@ final class EventStoreManagerDoctrine implements EventStoreManager
         $this->table = $table;
     }
 
-    public function load(string $id, ?int $from = null, ?int $to = null): array
+    public function loadByAggregateRootId(string $id, ?int $from = null, ?int $to = null): iterable
     {
         $parameters = ['id' => $id];
+
         $query = "SELECT * FROM {$this->table} WHERE id = :id";
 
         if (null !== $from) {
@@ -43,14 +44,34 @@ final class EventStoreManagerDoctrine implements EventStoreManager
         return $this->deserialize($stmt->fetchAll());
     }
 
+    public function loadByDomain(string $domain): iterable
+    {
+        $query = "SELECT * FROM {$this->table} WHERE domain = :domain";
+
+        $stmt = $this->connection->prepare("$query ORDER BY playhead");
+        $stmt->execute(['domain' => $domain]);
+
+        return $this->deserialize($stmt->fetchAll());
+    }
+
     public function getAggregateRootIds(): array
     {
-        $query = "SELECT DISTINCT id FROM {$this->table}";
+        return $this->getDistinct('id');
+    }
+
+    public function getDomains(): array
+    {
+        return $this->getDistinct('domain');
+    }
+
+    private function getDistinct(string $column): array
+    {
+        $query = "SELECT DISTINCT $column FROM {$this->table}";
         $stmt = $this->connection->prepare($query);
         $stmt->execute();
 
-        return \array_map(function ($row) {
-            return $row['id'];
+        return \array_map(function ($row) use ($column) {
+            return $row[$column];
         }, $stmt->fetchAll());
     }
 
@@ -68,7 +89,8 @@ final class EventStoreManagerDoctrine implements EventStoreManager
                 $this->denormalizer->denormalize(\json_decode($storedEvent['payload'], true), $storedEvent['type']),
                 $storedEvent['playhead'],
                 \json_decode($storedEvent['metadata'], true),
-                new \DateTimeImmutable($storedEvent['recorded_on'])
+                new \DateTimeImmutable($storedEvent['recorded_on']),
+                $storedEvent['domain']
             );
         }
 

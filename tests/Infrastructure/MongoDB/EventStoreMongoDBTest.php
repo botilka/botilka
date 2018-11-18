@@ -89,6 +89,6 @@ final class EventStoreMongoDBTest extends AbstractKernelTestCase
     {
         /** @var EventStore $eventStore */
         $eventStore = static::$eventStore;
-        $eventStore->append('bar', 1, StubEvent::class, new StubEvent(42), null, new \DateTimeImmutable());
+        $eventStore->append('bar', 1, StubEvent::class, new StubEvent(42), null, new \DateTimeImmutable(), 'Foo\\Domain');
     }
 }

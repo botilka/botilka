@@ -115,7 +115,7 @@ final class EventStoreDoctrineTest extends TestCase
 
         $this->connection->expects($this->once())
             ->method('prepare')
-            ->with('INSERT INTO event_store VALUES (:id, :playhead, :type, :payload, :metadata, :recordedOn)')
+            ->with('INSERT INTO event_store VALUES (:id, :playhead, :type, :payload, :metadata, :recordedOn, :domain)')
             ->willReturn($stmt);
 
         $event = new StubEvent(123);
@@ -135,9 +135,10 @@ final class EventStoreDoctrineTest extends TestCase
                 'payload' => \json_encode('foo_bar'),
                 'metadata' => \json_encode(['rab' => 'zab']),
                 'recordedOn' => $recordedOn->format('Y-m-d H:i:s.u'),
+                'domain' => 'Foo\\Domain',
             ]);
 
-        $this->eventStore->append('foo', 123, 'Foo\\Bar', $event, ['rab' => 'zab'], $recordedOn);
+        $this->eventStore->append('foo', 123, 'Foo\\Bar', $event, ['rab' => 'zab'], $recordedOn, 'Foo\\Domain');
     }
 
     /**
@@ -156,6 +157,6 @@ final class EventStoreDoctrineTest extends TestCase
             ->method('execute')
             ->willThrowException(new UniqueConstraintViolationException('foo', $this->getMockForAbstractClass(DriverException::class)));
 
-        $this->eventStore->append('foo', 123, 'Foo\\Bar', new StubEvent(123), ['rab' => 'zab'], new \DateTimeImmutable());
+        $this->eventStore->append('foo', 123, 'Foo\\Bar', new StubEvent(123), ['rab' => 'zab'], new \DateTimeImmutable(), 'Foo\\Domain');
     }
 }

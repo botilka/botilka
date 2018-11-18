@@ -31,7 +31,7 @@ final class CommandHydratorTest extends TestCase
 
     public function testHydrate(): void
     {
-        $command = new SimpleCommand('foo', null);
+        $command = new SimpleCommand('foo');
 
         $this->denormalizer->expects($this->once())
             ->method('denormalize')
@@ -49,7 +49,7 @@ final class CommandHydratorTest extends TestCase
     /** @expectedException \ApiPlatform\Core\Bridge\Symfony\Validator\Exception\ValidationException */
     public function testHydrateViolation(): void
     {
-        $command = new SimpleCommand('foo', null);
+        $command = new SimpleCommand('foo');
 
         $this->denormalizer->expects($this->once())
             ->method('denormalize')

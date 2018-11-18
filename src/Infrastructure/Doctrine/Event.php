@@ -11,7 +11,12 @@ use Ramsey\Uuid\UuidInterface;
 
 /**
  * @ORM\Entity(readOnly=true)
- * @ORM\Table(name="event_store")
+ * @ORM\Table(
+ *     name="event_store",
+ *     indexes={
+ *         @ORM\Index(columns={"domain"})
+ *     }
+ * )
  * @ApiResource(
  *     routePrefix="/event_store",
  *     collectionOperations={"get"},
@@ -36,7 +41,7 @@ class Event
 
     /**
      * @var string
-     * @ORM\Column(type="text")
+     * @ORM\Column(type="string", length=255)
      */
     private $type;
 
@@ -58,7 +63,13 @@ class Event
      */
     private $recordedOn;
 
-    public function __construct(string $id, int $playhead, string $type, array $payload, ?array $metadata)
+    /**
+     * @var string
+     * @ORM\Column(type="string", length=255)
+     */
+    private $domain;
+
+    public function __construct(string $id, int $playhead, string $type, array $payload, ?array $metadata, string $domain)
     {
         $this->id = Uuid::fromString($id);
         $this->playhead = $playhead;
@@ -66,6 +77,7 @@ class Event
         $this->payload = $payload;
         $this->metadata = $metadata;
         $this->recordedOn = new \DateTimeImmutable();
+        $this->domain = $domain;
     }
 
     public function getId(): string
@@ -96,5 +108,10 @@ class Event
     public function getRecordedOn(): \DateTimeImmutable
     {
         return $this->recordedOn;
+    }
+
+    public function getDomain(): string
+    {
+        return $this->domain;
     }
 }

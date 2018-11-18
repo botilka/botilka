@@ -31,5 +31,5 @@ interface EventStore
     /**
      * @throws EventStoreConcurrencyException
      */
-    public function append(string $id, int $playhead, string $type, Event $payload, ?array $metadata, \DateTimeImmutable $recordedOn): void;
+    public function append(string $id, int $playhead, string $type, Event $payload, ?array $metadata, \DateTimeImmutable $recordedOn, string $domain): void;
 }

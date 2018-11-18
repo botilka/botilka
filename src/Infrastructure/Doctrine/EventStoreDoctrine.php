@@ -51,9 +51,9 @@ final class EventStoreDoctrine implements EventStore
         return $this->deserialize($stmt->fetchAll());
     }
 
-    public function append(string $id, int $playhead, string $type, DomainEvent $payload, ?array $metadata, \DateTimeImmutable $recordedOn): void
+    public function append(string $id, int $playhead, string $type, DomainEvent $payload, ?array $metadata, \DateTimeImmutable $recordedOn, string $domain): void
     {
-        $stmt = $this->connection->prepare("INSERT INTO {$this->table} VALUES (:id, :playhead, :type, :payload, :metadata, :recordedOn)");
+        $stmt = $this->connection->prepare("INSERT INTO {$this->table} VALUES (:id, :playhead, :type, :payload, :metadata, :recordedOn, :domain)");
 
         $values = [
             'id' => $id,
@@ -62,6 +62,7 @@ final class EventStoreDoctrine implements EventStore
             'payload' => \json_encode($this->normalizer->normalize($payload)),
             'metadata' => \json_encode($metadata),
             'recordedOn' => $recordedOn->format('Y-m-d H:i:s.u'),
+            'domain' => $domain,
         ];
 
         try {
