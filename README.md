@@ -7,7 +7,7 @@
 
 An modern & easy-to-use Event Sourcing & CQRS library framework. It's shipped with implementations built on top of Symfony components.
 
-It can leverage [API Platform](https://api-platform.com) to expose the `Commands` and `Queries` via REST.
+It can leverage [API Platform](https://api-platform.com) to expose yours `Commands` and `Queries` via REST.
 
 ## Features
 
@@ -57,19 +57,23 @@ You'll need to create Commands, Queries, Events and so on. [Read the documentati
 It you've added or changed a business rule, you may want to see how it would have behaved with your event stream,
 this is a use case for event replaying.
 
-Let's say the BI team said they want to send a SMS each time withdrawal is made, so you have to:
+You can replay event by aggregate id or by domain.
+
+Let's say your a bank. The BI team said they want to send a SMS each time withdrawal is made if amount is
+more than a value and they want to know how many SMS would have been sent.
+You have to:
 1. create the new event handler
 2. re-play events
 
 The event
 ```php
 <?php
-final class SendPostalCardOnBankAccountCreated implements EventHandler
+final class SendSMSOnWithdrawalPerformed implements EventHandler
 {
     public function onWithdrawalPerformed(WithdrawalPerformed $event): void
     {
         $user = $this->userRepository->getOwner($event->getgetAccountId());
-        if ($this->isMobilePhone($phoneNumber = $user->getPhoneNumber())) {
+        if ($this->isMobilePhone($phoneNumber = $user->getPhoneNumber()) && $event->getAmount() > self::ALERT_AMOUNT) {
             // record the calls count somewhere, now you know how many SMS would have been sent
             $this->smsSender->send($phoneNumber);
         }
@@ -79,14 +83,16 @@ final class SendPostalCardOnBankAccountCreated implements EventHandler
 
 Replay:
 ```bash
+bin/console botilka:event_store:replay domain [domain name]
+# or
 # you can limit the scope with --from/-f & --to/-t
-bin/console botilka:event_store:replay [aggregate root id] --from 150
+bin/console botilka:event_store:replay id [aggregate root id]
 ```
 
 ### Projection replay
 
 In the same way than replaying events, you can replay projection. If you've added a projection
-and you want to replay only these projection, use the `--matching/-m` options.
+and you want to replay only this projection, use the `--matching/-m` options.
 
 > Matching is a regex matched against \[ProjectFQCN\]::\[method\],
 > ie. `App\BankAccount\Projection\Doctrine\BankAccountProjector::sumOfDeposit`
@@ -108,7 +114,7 @@ final class BankAccountProjector implements Projector
     public static function getSubscribedEvents()
     {
         return [
-            onWithdrawalPerformed::class => 'onWithdrawalPerformed',
+            DepositPerformed::class => 'sumOfDeposit',
         ];
     }
 }
@@ -116,8 +122,10 @@ final class BankAccountProjector implements Projector
 
 Replay projection:
 ```bash
+bin/console botilka:projector:build domain [domain name]
+# or
 # you can limit the scope with --from/-f & --to/-t
-bin/console botilka:projector:replay [aggregate root id] --matching sumOfDeposit
+bin/console botilka:projector:build id [aggregate root id]  --matching sumOfDeposit
 ```
 
 
