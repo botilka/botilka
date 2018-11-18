@@ -4,32 +4,32 @@ declare(strict_types=1);
 
 namespace Botilka\Tests\Ui\Console;
 
-use Botilka\Event\EventBus;
 use Botilka\EventStore\EventStoreManager;
 use Botilka\EventStore\ManagedEvent;
+use Botilka\Projector\Projectionist;
 use Botilka\Tests\Fixtures\Domain\StubEvent;
-use Botilka\Ui\Console\EventReplayCommand;
+use Botilka\Ui\Console\ProjectorBuildCommand;
 use PHPUnit\Framework\MockObject\MockObject;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 
-final class EventReplayCommandTest extends KernelTestCase
+final class ProjectorBuildCommandTest extends TestCase
 {
     /** @var EventStoreManager|MockObject */
     private $eventStoreManager;
-    /** @var EventBus|MockObject */
-    private $eventBus;
+    /** @var Projectionist|MockObject */
+    private $projectionist;
     /** @var array */
     private $events;
-    /** @var EventReplayCommand */
+    /** @var ProjectorBuildCommand */
     private $command;
 
     protected function setUp()
     {
         $this->eventStoreManager = $this->createMock(EventStoreManager::class);
-        $this->eventBus = $this->createMock(EventBus::class);
-        $this->command = new EventReplayCommand($this->eventStoreManager, $this->eventBus);
+        $this->projectionist = $this->createMock(Projectionist::class);
+        $this->command = new ProjectorBuildCommand($this->eventStoreManager, $this->projectionist);
 
         $this->events = [
             new ManagedEvent('foo', new StubEvent(42), 0, null, new \DateTimeImmutable(), 'Foo\\Domain'),
@@ -39,7 +39,7 @@ final class EventReplayCommandTest extends KernelTestCase
 
     public function testName(): void
     {
-        $this->assertSame('botilka:event_store:replay', $this->command->getName());
+        $this->assertSame('botilka:projector:build', $this->command->getName());
     }
 
     /** @dataProvider executeIdProvider */
@@ -50,12 +50,17 @@ final class EventReplayCommandTest extends KernelTestCase
             ->with($value, $from, $to)
             ->willReturn($this->events);
 
-        $this->eventBus->expects($this->exactly(\count($this->events)))
-            ->method('dispatch')
+        $this->projectionist->expects($this->exactly(\count($this->events)))
+            ->method('play')
             ->withConsecutive(...$this->events);
 
         $input = new ArrayInput(['target' => 'id', 'value' => $value, '--from' => $from, '--to' => $to]);
-        $this->command->run($input, new BufferedOutput());
+        $output = new BufferedOutput();
+        $this->command->run($input, $output);
+        $stdout = $output->fetch();
+        $this->assertContains('[NOTE] 2 events found.', $stdout);
+        $this->assertContains('(     0): Botilka\Tests\Fixtures\Domain\StubEvent (null)', $stdout);
+        $this->assertContains('(     1): Botilka\Tests\Fixtures\Domain\StubEvent ({"foo":"bar"})', $stdout);
     }
 
     public function executeIdProvider(): array
@@ -74,8 +79,8 @@ final class EventReplayCommandTest extends KernelTestCase
             ->with('Foo\\Domain')
             ->willReturn($this->events);
 
-        $this->eventBus->expects($this->exactly(\count($this->events)))
-            ->method('dispatch')
+        $this->projectionist->expects($this->exactly(\count($this->events)))
+            ->method('play')
             ->withConsecutive(...$this->events);
 
         $input = new ArrayInput(['target' => 'domain', 'value' => 'Foo\\Domain']);

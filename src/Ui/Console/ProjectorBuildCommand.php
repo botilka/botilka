@@ -13,7 +13,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-final class ProjectorReplayCommand extends Command
+final class ProjectorBuildCommand extends Command
 {
     use EventsFromEventStoreManagerCommandTrait;
 
@@ -22,16 +22,16 @@ final class ProjectorReplayCommand extends Command
 
     public function __construct(EventStoreManager $eventStoreManager, Projectionist $projectionist)
     {
-        parent::__construct('botilka:projector:replay');
+        parent::__construct('botilka:projector:build');
         $this->eventStoreManager = $eventStoreManager;
         $this->projectionist = $projectionist;
     }
 
     protected function configure()
     {
-        $this->setDescription('Re build projections for an aggregate')
+        $this->setDescription('Build projections for an aggregate or a domain')
             ->configureDefault($this)
-            ->addOption('matching', 'm', InputOption::VALUE_OPTIONAL, 'User projector FQCN that matches (regex)');
+            ->addOption('matching', 'm', InputOption::VALUE_OPTIONAL, 'Use projector FQCN that matches (regex)');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)

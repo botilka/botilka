@@ -9,7 +9,7 @@ use Botilka\Event\Event;
 /**
  * Represents an domain event record in the event store.
  * By creating this class, we're able to do a 'meta' management of events, we can keep the domain Event
- * as its bare minimum and use managed events in event store manager, replayer, projector, ...
+ * to its bare minimum and use managed events in event store manager, replayer, projector, ...
  *
  * @internal
  */

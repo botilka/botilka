@@ -65,9 +65,15 @@ abstract class AbstractKernelTestCase extends KernelTestCase
         $collection = $client->selectCollection($database, $collectionName);
 
         $eventStore = new EventStoreMongoDB($collection, $normalizer, $denormalizer);
+
         foreach (['foo', 'bar'] as $id) {
             for ($i = 0; $i < ('foo' === $id ? 10 : 5); ++$i) {
-                $eventStore->append($id, $i, StubEvent::class, new StubEvent($i * ('foo' === $id ? 2 : 3)), [$id => $i], new \DateTimeImmutable(), 'Foo\\Bar');
+                $eventStore->append($id, $i, StubEvent::class, new StubEvent($i * ('foo' === $id ? 2 : 3)), [$id => $i], new \DateTimeImmutable(), 'FooBar\\Domain');
+            }
+        }
+        foreach (['faz', 'baz'] as $id) {
+            for ($i = 0; $i < ('faz' === $id ? 10 : 5); ++$i) {
+                $eventStore->append($id, $i, StubEvent::class, new StubEvent($i * ('faz' === $id ? 4 : 5)), [$id => $i], new \DateTimeImmutable(), 'FazBaz\\Domain');
             }
         }
         static::assertInstanceOf(EventStore::class, $eventStore);

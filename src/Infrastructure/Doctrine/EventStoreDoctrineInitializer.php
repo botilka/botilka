@@ -8,6 +8,7 @@ use Botilka\Application\EventStore\EventStoreInitializer;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception\TableExistsException;
 use Doctrine\DBAL\Schema\Schema;
+use Doctrine\DBAL\Schema\Table;
 
 final class EventStoreDoctrineInitializer implements EventStoreInitializer
 {
@@ -31,6 +32,7 @@ final class EventStoreDoctrineInitializer implements EventStoreInitializer
             $schemaManager->dropTable($table);
         }
 
+        /** @var Table $table */
         $table = $schema->createTable($table);
         $table->addColumn('id', 'uuid');
         $table->addColumn('playhead', 'integer', ['unsigned' => true]);
@@ -40,6 +42,7 @@ final class EventStoreDoctrineInitializer implements EventStoreInitializer
         $table->addColumn('recorded_on', 'datetime_immutable');
         $table->addColumn('domain', 'string', ['length' => 255]);
         $table->setPrimaryKey(['id', 'playhead']);
+        $table->addIndex(['domain']);
 
         $sql = $schema->toSql($connection->getDatabasePlatform());
 

@@ -22,19 +22,15 @@ final class EventStoreManagerMongoDB implements EventStoreManager
         $this->denormalizer = $denormalizer;
     }
 
-    public function loadByDomain(string $domain, ?int $from = null, ?int $to = null): array
+    public function loadByDomain(string $domain): iterable
     {
-        return $this->load(['domain' => $domain], $from, $to);
+        return $this->deserialize($this->collection->find(['domain' => $domain], ['sort' => ['playhead' => 1]]));
     }
 
-    public function loadByAggregateRootId(string $id, ?int $from = null, ?int $to = null): array
+    public function loadByAggregateRootId(string $id, ?int $from = null, ?int $to = null): iterable
     {
-        return $this->load(['id' => $id], $from, $to);
-    }
-
-    private function load(array $filter, ?int $from = null, ?int $to = null): array
-    {
-        $filter += [
+        $filter = [
+            'id' => $id,
             'playhead' => [],
         ];
 

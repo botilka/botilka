@@ -11,7 +11,12 @@ use Ramsey\Uuid\UuidInterface;
 
 /**
  * @ORM\Entity(readOnly=true)
- * @ORM\Table(name="event_store")
+ * @ORM\Table(
+ *     name="event_store",
+ *     indexes={
+ *         @ORM\Index(columns={"domain"})
+ *     }
+ * )
  * @ApiResource(
  *     routePrefix="/event_store",
  *     collectionOperations={"get"},

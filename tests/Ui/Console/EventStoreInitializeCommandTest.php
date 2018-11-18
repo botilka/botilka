@@ -13,11 +13,16 @@ use Symfony\Component\Console\Output\BufferedOutput;
 
 final class EventStoreInitializeCommandTest extends TestCase
 {
-    public function testExecuteNoInitializer(): void
+    public function testName(): void
     {
         $command = new EventStoreInitializeCommand();
 
         $this->assertSame('botilka:event_store:initialize', $command->getName());
+    }
+
+    public function testExecuteNoInitializer(): void
+    {
+        $command = new EventStoreInitializeCommand();
 
         $input = new ArrayInput(['implementation' => 'foo']);
 

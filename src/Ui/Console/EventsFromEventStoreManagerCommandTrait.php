@@ -43,9 +43,13 @@ trait EventsFromEventStoreManagerCommandTrait
         $target = $input->getArgument('target');
         $value = $input->getArgument('value');
 
+        if (EventStoreManager::TARGET_DOMAIN === $target) {
+            return $this->eventStoreManager->loadByDomain($value);
+        }
+
         $from = $input->getOption('from');
         $to = $input->getOption('to');
 
-        return EventStoreManager::TARGET_DOMAIN === $target ? $this->eventStoreManager->loadByDomain($value, $from, $to) : $this->eventStoreManager->loadByAggregateRootId($value, $from, $to);
+        return $this->eventStoreManager->loadByAggregateRootId($value, $from, $to);
     }
 }

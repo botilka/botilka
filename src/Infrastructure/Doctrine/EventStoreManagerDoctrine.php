@@ -22,19 +22,11 @@ final class EventStoreManagerDoctrine implements EventStoreManager
         $this->table = $table;
     }
 
-    public function loadByAggregateRootId(string $id, ?int $from = null, ?int $to = null): array
+    public function loadByAggregateRootId(string $id, ?int $from = null, ?int $to = null): iterable
     {
-        return $this->load('id = :id', ['id' => $id], $from, $to);
-    }
+        $parameters = ['id' => $id];
 
-    public function loadByDomain(string $domain, ?int $from = null, ?int $to = null): array
-    {
-        return $this->load('domain = :domain', ['domain' => $domain], $from, $to);
-    }
-
-    private function load(string $where, array $parameters, ?int $from = null, ?int $to = null): array
-    {
-        $query = "SELECT * FROM {$this->table} WHERE $where";
+        $query = "SELECT * FROM {$this->table} WHERE id = :id";
 
         if (null !== $from) {
             $query .= ' AND playhead >= :from';
@@ -52,25 +44,34 @@ final class EventStoreManagerDoctrine implements EventStoreManager
         return $this->deserialize($stmt->fetchAll());
     }
 
+    public function loadByDomain(string $domain): iterable
+    {
+        $query = "SELECT * FROM {$this->table} WHERE domain = :domain";
+
+        $stmt = $this->connection->prepare("$query ORDER BY playhead");
+        $stmt->execute(['domain' => $domain]);
+
+        return $this->deserialize($stmt->fetchAll());
+    }
+
     public function getAggregateRootIds(): array
     {
-        $query = "SELECT DISTINCT id FROM {$this->table}";
-        $stmt = $this->connection->prepare($query);
-        $stmt->execute();
-
-        return \array_map(function ($row) {
-            return $row['id'];
-        }, $stmt->fetchAll());
+        return $this->getDistinct('id');
     }
 
     public function getDomains(): array
     {
-        $query = "SELECT DISTINCT domain FROM {$this->table}";
+        return $this->getDistinct('domain');
+    }
+
+    private function getDistinct(string $column): array
+    {
+        $query = "SELECT DISTINCT $column FROM {$this->table}";
         $stmt = $this->connection->prepare($query);
         $stmt->execute();
 
-        return \array_map(function ($row) {
-            return $row['domain'];
+        return \array_map(function ($row) use ($column) {
+            return $row[$column];
         }, $stmt->fetchAll());
     }
 
