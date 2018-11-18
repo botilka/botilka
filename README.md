@@ -5,7 +5,7 @@
 [![Code Coverage](https://scrutinizer-ci.com/g/botilka/botilka/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/botilka/botilka/?branch=master)
 [![PHPStan](https://img.shields.io/badge/PHPStan-enabled-brightgreen.svg?style=flat)](https://github.com/phpstan/phpstan)
 
-An modern & easy-to-use Event Sourcing & CQRS library framework. It's shipped with implementations built on top of Symfony components.
+An modern & easy-to-use Event Sourcing & CQRS library. It's shipped with implementations built on top of Symfony components.
 
 It can leverage [API Platform](https://api-platform.com) to expose yours `Commands` and `Queries` via REST.
 
@@ -23,8 +23,7 @@ It can leverage [API Platform](https://api-platform.com) to expose yours `Comman
 
 ## Configuration
 
-An event store should (must) be persisted and the default implementation is not! \
-Choose between:
+An event store should (must) be persisted and the default implementation is not! Choose between:
  - `Botilka\Infrastructure\Doctrine\EventStoreDoctrine`
  - `Botilka\Infrastructure\MongoDB\EventStoreMongoDB`
  
@@ -54,7 +53,7 @@ You'll need to create Commands, Queries, Events and so on. [Read the documentati
 
 ### Event replaying
 
-It you've added or changed a business rule, you may want to see how it would have behaved with your event stream,
+It you've added or changed a business rule, you may want to see how it would have behaved with the event stream,
 this is a use case for event replaying.
 
 You can replay event by aggregate id or by domain.
@@ -146,7 +145,6 @@ Have a look [here](/documentation/internals.md) to better understand the design 
 
 - Snapshots.
 - Raw events iterator & modifiers (for updatating events).
-- Add domain concept to event store.
 - (maybe) Process manager.
 - (maybe) Smart command retry on concurrency exception.
 
