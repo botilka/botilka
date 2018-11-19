@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Botilka\Tests\Infrastructure\Symfony\Messenger\Middleware;
 
 use Botilka\Application\Command\CommandResponse;
+use Botilka\Application\Command\EventSourcedCommandResponse;
 use Botilka\Event\EventBus;
 use Botilka\EventStore\EventStore;
 use Botilka\EventStore\EventStoreConcurrencyException;
@@ -35,13 +36,15 @@ final class EventDispatcherMiddlewareTest extends TestCase
         $this->projectionist = $this->createMock(Projectionist::class);
     }
 
-    public function testHandle(): void
+    /** @dataProvider handleProvider */
+    public function testHandle(CommandResponse $commandResponse): void
     {
-        $event = new StubEvent(1337);
+        $event = $commandResponse->getEvent();
+        $eventStoreAppendExpected = EventSourcedCommandResponse::class === \get_class($commandResponse);
 
-        $this->eventStore->expects($this->once())
+        $this->eventStore->expects($eventStoreAppendExpected ? $this->once() : $this->never())
             ->method('append')
-            ->with('foo', 42, StubEvent::class, $event, null, $this->isInstanceOf(\DateTimeImmutable::class), 'Foo\\Domain');
+            ->with('foo', 51, \get_class($event), $event, null, $this->isInstanceOf(\DateTimeImmutable::class), 'FooBar\\Domain');
 
         $this->eventBus->expects($this->once())
             ->method('dispatch')
@@ -53,25 +56,29 @@ final class EventDispatcherMiddlewareTest extends TestCase
         $this->projectionist->expects($this->once())
             ->method('play');
 
-        $commandResponse = new CommandResponse('foo', 42, $event, 'Foo\\Domain');
-
         $callable = function ($message) use ($commandResponse) {
             return $commandResponse;
         };
 
         $middleware = new EventDispatcherMiddleware($this->eventStore, $this->eventBus, $this->logger, $this->projectionist);
 
-        $result = $middleware->handle('foofoo', $callable);
+        $result = $middleware->handle('baz', $callable);
         $this->assertSame($commandResponse, $result);
+    }
+
+    public function handleProvider(): array
+    {
+        $event = new StubEvent(1337);
+
+        return [
+            [new EventSourcedCommandResponse('foo', $event, 51, 'FooBar\\Domain')],
+            [new CommandResponse('foo', $event)],
+        ];
     }
 
     public function testHandleNoHandlerForMessageException(): void
     {
         $event = new StubEvent(1337);
-
-        $this->eventStore->expects($this->once())
-            ->method('append')
-            ->with('foo', 42, StubEvent::class, $event, null, $this->isInstanceOf(\DateTimeImmutable::class), 'Foo\\Domain');
 
         $this->eventBus->expects($this->once())
             ->method('dispatch')
@@ -85,7 +92,7 @@ final class EventDispatcherMiddlewareTest extends TestCase
         $this->projectionist->expects($this->once())
             ->method('play');
 
-        $commandResponse = new CommandResponse('foo', 42, $event, 'Foo\\Domain');
+        $commandResponse = new CommandResponse('foo', $event);
 
         $callable = function ($message) use ($commandResponse) {
             return $commandResponse;
@@ -93,7 +100,7 @@ final class EventDispatcherMiddlewareTest extends TestCase
 
         $middleware = new EventDispatcherMiddleware($this->eventStore, $this->eventBus, $this->logger, $this->projectionist);
 
-        $result = $middleware->handle('foofoo', $callable);
+        $result = $middleware->handle('baz', $callable);
         $this->assertSame($commandResponse, $result);
     }
 
@@ -115,7 +122,7 @@ final class EventDispatcherMiddlewareTest extends TestCase
             ->method('error')
             ->with('bar');
 
-        $commandResponse = new CommandResponse('foo', 42, $event, 'Foo\\Domain');
+        $commandResponse = new EventSourcedCommandResponse('foo', $event, 51, 'FooBar\\Domain');
 
         $callable = function ($message) use ($commandResponse) {
             return $commandResponse;
@@ -123,7 +130,7 @@ final class EventDispatcherMiddlewareTest extends TestCase
 
         $middleware = new EventDispatcherMiddleware($this->eventStore, $this->eventBus, $this->logger, $this->projectionist);
 
-        $this->assertNull($middleware->handle('foofoo', $callable));
+        $this->assertNull($middleware->handle('baz', $callable));
     }
 
     /**

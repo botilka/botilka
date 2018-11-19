@@ -13,7 +13,6 @@ The event is
 
 Create a command:
 ```php
-<?php
 use Botilka\Application\Command\Command;
 
 final class CreateBankAccountCommand implements Command
@@ -32,7 +31,6 @@ final class CreateBankAccountCommand implements Command
 
 and it's handler:
 ```php
-<?php
 namespace App\BankAccount\Application\Command;
 
 use App\BankAccount\Domain\BankAccount;
@@ -47,14 +45,12 @@ final class CreateBankAccountHandler implements CommandHandler
         $id = Uuid::uuid4();
         /** @var BankAccount $instance */
         [$instance, $event] = BankAccount::create($id->toString(), $command->getName(), $command->getCurrency());
-        return CommandResponse::withValue($instance->getAggregateRootId(), $instance->getPlayhead(), $event);
+        return EventSourcedCommandResponse::fromEventSourcedAggregateRoot($instance, $event);
     }
 }
 ```
 Add the event applier into the domain model:
 ```php
-<?php
-
 namespace App\BankAccount\Domain;
 
 use Botilka\Domain\EventSourcedAggregateRoot;
@@ -98,7 +94,6 @@ final class BankAccount implements EventSourcedAggregateRoot
 ```
 and the corresponding event:
 ```php
-<?php
 
 namespace App\BankAccount\Domain;
 
@@ -123,7 +118,6 @@ final class BankAccountCreated implements Event
 
 Then dispatch the command
 ```php
-<?php
 use Botilka\Application\Command\CommandBus;
 
 /** @var CommandBus $bus */
