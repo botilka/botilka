@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Botilka\Infrastructure\Symfony\Messenger\Middleware;
 
 use Botilka\Application\Command\CommandResponse;
+use Botilka\Application\Command\EventSourcedCommandResponse;
+use Botilka\Event\Event;
 use Botilka\Event\EventBus;
 use Botilka\EventStore\EventStore;
 use Botilka\EventStore\EventStoreConcurrencyException;
@@ -42,12 +44,15 @@ final class EventDispatcherMiddleware implements MiddlewareInterface
 
         $event = $result->getEvent();
 
-        try {
-            $this->eventStore->append($result->getId(), $result->getPlayhead(), \get_class($event), $event, null, new \DateTimeImmutable(), $result->getDomain());
-        } catch (EventStoreConcurrencyException $e) {
-            $this->logger->error($e->getMessage());
+        // persist to event store only if aggregate is event sourced
+        if ($result instanceof EventSourcedCommandResponse) {
+            try {
+                $this->eventStore->append($result->getId(), $result->getPlayhead(), \get_class($event), $event, null, new \DateTimeImmutable(), $result->getDomain());
+            } catch (EventStoreConcurrencyException $e) {
+                $this->logger->error($e->getMessage());
 
-            return;
+                return;
+            }
         }
 
         try {

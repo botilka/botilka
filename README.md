@@ -5,26 +5,26 @@
 [![Code Coverage](https://scrutinizer-ci.com/g/botilka/botilka/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/botilka/botilka/?branch=master)
 [![PHPStan](https://img.shields.io/badge/PHPStan-enabled-brightgreen.svg?style=flat)](https://github.com/phpstan/phpstan)
 
-An modern & easy-to-use Event Sourcing & CQRS library framework. It's shipped with implementations built on top of Symfony components.
+An modern & easy-to-use Event Sourcing & CQRS library. It's shipped with implementations built on top of Symfony components.
 
 It can leverage [API Platform](https://api-platform.com) to expose yours `Commands` and `Queries` via REST.
 
 ## Features
 
 - EventStore implementation with [Doctrine](https://www.doctrine-project.org/) or [MongoDB](https://www.mongodb.com).
-- Commands/queries handling & description on API Platform UI.
+- Swagger commands & queries description (via API Platform UI).
+- REST API access to commands & queries.
 - Sync or async event handling is a matter of configuration.
-- Replay all or some events (allow to test domain changes).
-- Rebuild a projection on demand (ie. when you add a ReadModel).
-- Safe commands concurrency.
+- Event replaying (allow to test domain changes).
+- Projection re-building on demand (ie. when you add a ReadModel).
+- Safe commands concurrency (optimistic locking).
 - Fully immutable, not a single setter.
 - Tested, good code coverage. 
-- EventSourced and CQRS repositories available.
+- Event sourced and "normal" CQRS mode.
 
 ## Configuration
 
-An event store should (must) be persisted and the default implementation is not! \
-Choose between:
+An event store should (must) be persisted and the default implementation is not! Choose between:
  - `Botilka\Infrastructure\Doctrine\EventStoreDoctrine`
  - `Botilka\Infrastructure\MongoDB\EventStoreMongoDB`
  
@@ -54,7 +54,7 @@ You'll need to create Commands, Queries, Events and so on. [Read the documentati
 
 ### Event replaying
 
-It you've added or changed a business rule, you may want to see how it would have behaved with your event stream,
+It you've added or changed a business rule, you may want to see how it would have behaved with the event stream,
 this is a use case for event replaying.
 
 You can replay event by aggregate id or by domain.
@@ -67,7 +67,6 @@ You have to:
 
 The event
 ```php
-<?php
 final class SendSMSOnWithdrawalPerformed implements EventHandler
 {
     public function onWithdrawalPerformed(WithdrawalPerformed $event): void
@@ -99,7 +98,6 @@ and you want to replay only this projection, use the `--matching/-m` options.
 
 The projection
 ```php
-<?php
 namespace App\BankAccount\Projection\Doctrine;
 
 final class BankAccountProjector implements Projector
@@ -145,9 +143,8 @@ Have a look [here](/documentation/internals.md) to better understand the design 
 ### todo
 
 - Snapshots.
-- Raw events iterator & modifiers (for updatating events).
-- Add domain concept to event store.
-- (maybe) Process manager.
+- Raw events iterator & modifiers (for updating events).
+- (maybe) Saga / Process manager.
 - (maybe) Smart command retry on concurrency exception.
 
 

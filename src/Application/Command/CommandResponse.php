@@ -4,22 +4,21 @@ declare(strict_types=1);
 
 namespace Botilka\Application\Command;
 
-use Botilka\Domain\EventSourcedAggregateRoot;
 use Botilka\Event\Event;
 
-final class CommandResponse
+/**
+ * Represent a response from a command in 'CQRS' mode, meaning there is no information about the event
+ * This event may not be saved, you need to update your aggregate state by yourself.
+ */
+class CommandResponse
 {
     private $id;
     private $event;
-    private $playhead;
-    private $domain;
 
-    public function __construct(string $id, int $playhead, Event $event, string $domain)
+    public function __construct(string $id, Event $event)
     {
         $this->id = $id;
-        $this->playhead = $playhead;
         $this->event = $event;
-        $this->domain = $domain;
     }
 
     public function getId(): string
@@ -27,23 +26,13 @@ final class CommandResponse
         return $this->id;
     }
 
-    public function getPlayhead(): int
-    {
-        return $this->playhead;
-    }
-
     public function getEvent(): Event
     {
         return $this->event;
     }
 
-    public function getDomain(): string
+    public static function fromValues(string $id, Event $event): self
     {
-        return $this->domain;
-    }
-
-    public static function withValue(EventSourcedAggregateRoot $aggregateRoot, Event $event): self
-    {
-        return new self($aggregateRoot->getAggregateRootId(), $aggregateRoot->getPlayhead(), $event, \get_class($aggregateRoot));
+        return new self($id, $event);
     }
 }

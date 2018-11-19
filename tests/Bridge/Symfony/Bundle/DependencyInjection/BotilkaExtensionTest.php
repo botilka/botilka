@@ -21,6 +21,9 @@ use Botilka\Infrastructure\MongoDB\EventStoreMongoDB;
 use Botilka\Infrastructure\Symfony\Messenger\Middleware\EventDispatcherMiddleware;
 use Botilka\Infrastructure\InMemory\EventStoreInMemory;
 use Botilka\Projector\Projector;
+use Botilka\Ui\Console\EventReplayCommand;
+use Botilka\Ui\Console\EventStoreInitializeCommand;
+use Botilka\Ui\Console\ProjectorBuildCommand;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Prophecy\ObjectProphecy;
 use Symfony\Component\DependencyInjection\ChildDefinition;
@@ -47,10 +50,7 @@ final class BotilkaExtensionTest extends TestCase
         $this->extension = new BotilkaExtension();
     }
 
-    /**
-     * This method doesn't build the prophecy and return it because PHPStan doesn't get it.
-     */
-    private function addDefaultCalls(ObjectProphecy $containerBuilderProphecy): void
+    private function addContainerBuilderDefaultCalls(ObjectProphecy $containerBuilderProphecy): void
     {
         $containerBuilderProphecy->setParameter('botilka.bridge.api_platform', false)->shouldBeCalled();
         $containerBuilderProphecy->setParameter('botilka.messenger.doctrine_transaction_middleware', false)->shouldBeCalled();
@@ -60,7 +60,7 @@ final class BotilkaExtensionTest extends TestCase
     public function testPrependWithDefaultMessenger(string $eventStore, bool $withDoctrineTranslationMiddleware): void
     {
         $containerBuilderProphecy = $this->prophesize(ContainerBuilder::class);
-        $this->addDefaultCalls($containerBuilderProphecy);
+        $this->addContainerBuilderDefaultCalls($containerBuilderProphecy);
         $containerBuilderProphecy->hasExtension('api_platform')->shouldBeCalled();
         $containerBuilderProphecy->getExtensionConfig('botilka')->willReturn(\array_merge_recursive(self::DEFAULT_CONFIG, [
             [
@@ -75,7 +75,7 @@ final class BotilkaExtensionTest extends TestCase
 
         $middleware = [EventDispatcherMiddleware::class];
 
-        if ('Botilka\\Infrastructure\\Doctrine\\EventStoreDoctrine' === $eventStore) {
+        if (EventStoreDoctrine::class === $eventStore) {
             $containerBuilderProphecy->setParameter('botilka.messenger.doctrine_transaction_middleware', true)->shouldBeCalledTimes((int) $withDoctrineTranslationMiddleware);
             if (true === $withDoctrineTranslationMiddleware) {
                 \array_unshift($middleware, 'doctrine_transaction_middleware');
@@ -103,17 +103,19 @@ final class BotilkaExtensionTest extends TestCase
     public function prependWithDefaultMessengerProvider(): array
     {
         return [
-            ['Botilka\\Infrastructure\\Doctrine\\EventStoreDoctrine', true],
-            ['Botilka\\Infrastructure\\Doctrine\\EventStoreDoctrine', false],
-            ['Botilka\\Infrastructure\\InMemory\\EventStoreInMemory', true],
-            ['Botilka\\Infrastructure\\InMemory\\EventStoreInMemory', false],
+            [EventStoreDoctrine::class, true],
+            [EventStoreDoctrine::class, false],
+            [EventStoreInMemory::class, true],
+            [EventStoreInMemory::class, false],
+            [EventStoreMongoDB::class, true],
+            [EventStoreMongoDB::class, false],
         ];
     }
 
     public function testPrependWithoutDefaultMessenger(): void
     {
         $containerBuilderProphecy = $this->prophesize(ContainerBuilder::class);
-        $this->addDefaultCalls($containerBuilderProphecy);
+        $this->addContainerBuilderDefaultCalls($containerBuilderProphecy);
         $containerBuilderProphecy->hasExtension('api_platform')->shouldBeCalled();
         $containerBuilderProphecy->getExtensionConfig('botilka')->willReturn(\array_merge_recursive(self::DEFAULT_CONFIG, [
             [
@@ -133,7 +135,7 @@ final class BotilkaExtensionTest extends TestCase
     public function testPrependApiPlatform(): void
     {
         $containerBuilderProphecy = $this->prophesize(ContainerBuilder::class);
-        $this->addDefaultCalls($containerBuilderProphecy);
+        $this->addContainerBuilderDefaultCalls($containerBuilderProphecy);
         $containerBuilderProphecy->hasExtension('api_platform')->willReturn(true)->shouldBeCalled();
         $containerBuilderProphecy->getExtensionConfig('botilka')->willReturn(\array_merge_recursive(self::DEFAULT_CONFIG, [
             [
@@ -169,6 +171,10 @@ final class BotilkaExtensionTest extends TestCase
         $this->extension->load($configs, $container);
 
         $this->assertSame($eventStore, (string) $container->getAlias(EventStore::class));
+        $this->assertTrue($container->hasDefinition(EventStoreInitializeCommand::class));
+        $this->assertTrue($container->hasDefinition(EventReplayCommand::class));
+        $this->assertTrue($container->hasDefinition(ProjectorBuildCommand::class));
+
         $this->assertSame((bool) $container->getParameter('botilka.messenger.doctrine_transaction_middleware'), $container->hasDefinition('messenger.middleware.doctrine_transaction_middleware'));
         $this->assertSame($defaultMessengerConfig, $container->hasDefinition(EventDispatcherMiddleware::class));
         $this->assertSame($hasApiPlatformBridge, $container->hasDefinition(DescriptionContainer::class));

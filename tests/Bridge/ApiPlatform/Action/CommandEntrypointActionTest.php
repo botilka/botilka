@@ -36,7 +36,7 @@ final class CommandEntrypointActionTest extends TestCase
             ->with($commandResource->getPayload(), 'Foo\\Bar')
             ->willReturn($command);
 
-        $commandResponse = new CommandResponse('foo', 123, new StubEvent(123), 'Foo\\Domain');
+        $commandResponse = new CommandResponse('foo', new StubEvent(123));
 
         $commandBus->expects($this->once())
             ->method('dispatch')

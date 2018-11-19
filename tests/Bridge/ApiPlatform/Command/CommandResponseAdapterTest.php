@@ -14,7 +14,7 @@ final class CommandResponseAdapterTest extends TestCase
     public function testGetId(): void
     {
         $event = new StubEvent(123);
-        $commandResponse = new CommandResponse('foo', 123, $event, 'Foo\\Domain');
+        $commandResponse = new CommandResponse('foo', new StubEvent(123));
         $adapter = new CommandResponseAdapter($commandResponse);
         $this->assertSame('foo', $adapter->getId());
     }
