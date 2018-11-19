@@ -12,14 +12,15 @@ It can leverage [API Platform](https://api-platform.com) to expose yours `Comman
 ## Features
 
 - EventStore implementation with [Doctrine](https://www.doctrine-project.org/) or [MongoDB](https://www.mongodb.com).
-- Commands/queries handling & description on API Platform UI.
+- Swagger commands & queries description (via API Platform UI).
+- REST API access to commands & queries.
 - Sync or async event handling is a matter of configuration.
-- Replay all or some events (allow to test domain changes).
-- Rebuild a projection on demand (ie. when you add a ReadModel).
-- Safe commands concurrency.
+- Event replaying (allow to test domain changes).
+- Projection re-building on demand (ie. when you add a ReadModel).
+- Safe commands concurrency (optimistic locking).
 - Fully immutable, not a single setter.
 - Tested, good code coverage. 
-- EventSourced and CQRS repositories available.
+- Event sourced and "normal" CQRS mode.
 
 ## Configuration
 
@@ -66,7 +67,6 @@ You have to:
 
 The event
 ```php
-<?php
 final class SendSMSOnWithdrawalPerformed implements EventHandler
 {
     public function onWithdrawalPerformed(WithdrawalPerformed $event): void
@@ -98,7 +98,6 @@ and you want to replay only this projection, use the `--matching/-m` options.
 
 The projection
 ```php
-<?php
 namespace App\BankAccount\Projection\Doctrine;
 
 final class BankAccountProjector implements Projector
@@ -144,8 +143,8 @@ Have a look [here](/documentation/internals.md) to better understand the design 
 ### todo
 
 - Snapshots.
-- Raw events iterator & modifiers (for updatating events).
-- (maybe) Process manager.
+- Raw events iterator & modifiers (for updating events).
+- (maybe) Saga / Process manager.
 - (maybe) Smart command retry on concurrency exception.
 
 
