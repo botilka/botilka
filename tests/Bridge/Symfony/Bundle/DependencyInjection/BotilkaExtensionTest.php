@@ -23,7 +23,7 @@ use Botilka\Infrastructure\InMemory\EventStoreInMemory;
 use Botilka\Projector\Projector;
 use Botilka\Ui\Console\EventReplayCommand;
 use Botilka\Ui\Console\EventStoreInitializeCommand;
-use Botilka\Ui\Console\ProjectorBuildCommand;
+use Botilka\Ui\Console\ProjectorPlayCommand;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Prophecy\ObjectProphecy;
 use Symfony\Component\DependencyInjection\ChildDefinition;
@@ -173,7 +173,7 @@ final class BotilkaExtensionTest extends TestCase
         $this->assertSame($eventStore, (string) $container->getAlias(EventStore::class));
         $this->assertTrue($container->hasDefinition(EventStoreInitializeCommand::class));
         $this->assertTrue($container->hasDefinition(EventReplayCommand::class));
-        $this->assertTrue($container->hasDefinition(ProjectorBuildCommand::class));
+        $this->assertTrue($container->hasDefinition(ProjectorPlayCommand::class));
 
         $this->assertSame((bool) $container->getParameter('botilka.messenger.doctrine_transaction_middleware'), $container->hasDefinition('messenger.middleware.doctrine_transaction_middleware'));
         $this->assertSame($defaultMessengerConfig, $container->hasDefinition(EventDispatcherMiddleware::class));

@@ -18,19 +18,22 @@ trait EventsFromEventStoreManagerCommandTrait
 {
     private function configureDefault(self $self): self
     {
-        return $self->addArgument('target', InputArgument::REQUIRED, \sprintf('Target to load (%s)', \implode(', ', EventStoreManager::TARGETS)))
-            ->addArgument('value', InputArgument::REQUIRED, 'Value to use')
+        return $self->addArgument('value', InputArgument::REQUIRED, 'The id or the domain')
+            ->addOption('id', 'i', InputOption::VALUE_NONE, 'Aggregate root id')
+            ->addOption('domain', 'd', InputOption::VALUE_NONE, 'Domain')
             ->addOption('from', 'f', InputOption::VALUE_OPTIONAL, 'From playhead (included)')
             ->addOption('to', 't', InputOption::VALUE_OPTIONAL, 'To playhead (included)');
     }
 
     protected function initialize(InputInterface $input, OutputInterface $output)
     {
-        /** @var string $target */
-        $target = $input->getArgument('target');
+        /** @var bool $target */
+        $id = $input->getOption('id');
+        /** @var bool $target */
+        $domain = $input->getOption('domain');
 
-        if (!\in_array($target, EventStoreManager::TARGETS, true)) {
-            throw new \InvalidArgumentException(\sprintf('Given target value \'%s\' is not one of %s.', $target, \implode(', ', EventStoreManager::TARGETS)));
+        if ((true === $id && true === $domain) || (false === $id && false === $domain)) {
+            throw new \InvalidArgumentException('You must set a domain or an id.');
         }
     }
 
@@ -39,13 +42,18 @@ trait EventsFromEventStoreManagerCommandTrait
      */
     private function getManagedEvents(InputInterface $input): array
     {
-        /** @var string $target */
-        $target = $input->getArgument('target');
+        /** @var string $domain */
         $value = $input->getArgument('value');
 
-        if (EventStoreManager::TARGET_DOMAIN === $target) {
+        /** @var bool $target */
+        $domain = $input->getOption('domain');
+
+        if (null !== $domain) {
             return $this->eventStoreManager->loadByDomain($value);
         }
+
+        /** @var bool $target */
+        $id = $input->getOption('id');
 
         $from = $input->getOption('from');
         $to = $input->getOption('to');

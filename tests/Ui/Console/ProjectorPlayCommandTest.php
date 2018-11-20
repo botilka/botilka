@@ -8,13 +8,13 @@ use Botilka\EventStore\EventStoreManager;
 use Botilka\EventStore\ManagedEvent;
 use Botilka\Projector\Projectionist;
 use Botilka\Tests\Fixtures\Domain\StubEvent;
-use Botilka\Ui\Console\ProjectorBuildCommand;
+use Botilka\Ui\Console\ProjectorPlayCommand;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 
-final class ProjectorBuildCommandTest extends TestCase
+final class ProjectorPlayCommandTest extends TestCase
 {
     /** @var EventStoreManager|MockObject */
     private $eventStoreManager;
@@ -22,14 +22,14 @@ final class ProjectorBuildCommandTest extends TestCase
     private $projectionist;
     /** @var array */
     private $events;
-    /** @var ProjectorBuildCommand */
+    /** @var ProjectorPlayCommand */
     private $command;
 
     protected function setUp()
     {
         $this->eventStoreManager = $this->createMock(EventStoreManager::class);
         $this->projectionist = $this->createMock(Projectionist::class);
-        $this->command = new ProjectorBuildCommand($this->eventStoreManager, $this->projectionist);
+        $this->command = new ProjectorPlayCommand($this->eventStoreManager, $this->projectionist);
 
         $this->events = [
             new ManagedEvent('foo', new StubEvent(42), 0, null, new \DateTimeImmutable(), 'Foo\\Domain'),
@@ -39,7 +39,7 @@ final class ProjectorBuildCommandTest extends TestCase
 
     public function testName(): void
     {
-        $this->assertSame('botilka:projector:build', $this->command->getName());
+        $this->assertSame('botilka:projectors:play', $this->command->getName());
     }
 
     /** @dataProvider executeIdProvider */

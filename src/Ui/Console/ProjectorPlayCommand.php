@@ -13,7 +13,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-final class ProjectorBuildCommand extends Command
+final class ProjectorPlayCommand extends Command
 {
     use EventsFromEventStoreManagerCommandTrait;
 
@@ -22,14 +22,14 @@ final class ProjectorBuildCommand extends Command
 
     public function __construct(EventStoreManager $eventStoreManager, Projectionist $projectionist)
     {
-        parent::__construct('botilka:projector:build');
+        parent::__construct('botilka:projectors:play');
         $this->eventStoreManager = $eventStoreManager;
         $this->projectionist = $projectionist;
     }
 
     protected function configure()
     {
-        $this->setDescription('Build projections for an aggregate or a domain')
+        $this->setDescription('Play projections for an aggregate or a domain')
             ->configureDefault($this)
             ->addOption('matching', 'm', InputOption::VALUE_OPTIONAL, 'Use projector FQCN that matches (regex)');
     }
