@@ -8,13 +8,13 @@ use Botilka\EventStore\EventStoreManager;
 use Botilka\EventStore\ManagedEvent;
 use Botilka\Projector\Projectionist;
 use Botilka\Tests\Fixtures\Domain\StubEvent;
-use Botilka\Ui\Console\ProjectorBuildCommand;
+use Botilka\Ui\Console\ProjectorPlayCommand;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 
-final class ProjectorBuildCommandTest extends TestCase
+final class ProjectorPlayCommandTest extends TestCase
 {
     /** @var EventStoreManager|MockObject */
     private $eventStoreManager;
@@ -22,14 +22,14 @@ final class ProjectorBuildCommandTest extends TestCase
     private $projectionist;
     /** @var array */
     private $events;
-    /** @var ProjectorBuildCommand */
+    /** @var ProjectorPlayCommand */
     private $command;
 
     protected function setUp()
     {
         $this->eventStoreManager = $this->createMock(EventStoreManager::class);
         $this->projectionist = $this->createMock(Projectionist::class);
-        $this->command = new ProjectorBuildCommand($this->eventStoreManager, $this->projectionist);
+        $this->command = new ProjectorPlayCommand($this->eventStoreManager, $this->projectionist);
 
         $this->events = [
             new ManagedEvent('foo', new StubEvent(42), 0, null, new \DateTimeImmutable(), 'Foo\\Domain'),
@@ -39,7 +39,7 @@ final class ProjectorBuildCommandTest extends TestCase
 
     public function testName(): void
     {
-        $this->assertSame('botilka:projector:build', $this->command->getName());
+        $this->assertSame('botilka:projectors:play', $this->command->getName());
     }
 
     /** @dataProvider executeIdProvider */
@@ -54,7 +54,7 @@ final class ProjectorBuildCommandTest extends TestCase
             ->method('play')
             ->withConsecutive(...$this->events);
 
-        $input = new ArrayInput(['target' => 'id', 'value' => $value, '--from' => $from, '--to' => $to]);
+        $input = new ArrayInput(['--id' => true, 'value' => $value, '--from' => $from, '--to' => $to]);
         $output = new BufferedOutput();
         $this->command->run($input, $output);
         $stdout = $output->fetch();
@@ -83,17 +83,26 @@ final class ProjectorBuildCommandTest extends TestCase
             ->method('play')
             ->withConsecutive(...$this->events);
 
-        $input = new ArrayInput(['target' => 'domain', 'value' => 'Foo\\Domain']);
+        $input = new ArrayInput(['--domain' => true, 'value' => 'Foo\\Domain']);
         $this->command->run($input, new BufferedOutput());
     }
 
     /**
+     * @dataProvider executeFailProvider
      * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Given target value 'foo' is not one of domain, id.
+     * @expectedExceptionMessage You must set a domain or an id.
      */
-    public function testExecuteFail(): void
+    public function testExecuteFail(array $parameters): void
     {
-        $input = new ArrayInput(['target' => 'foo', 'value' => 'bar']);
+        $input = new ArrayInput($parameters);
         $this->command->run($input, new BufferedOutput());
+    }
+
+    public function executeFailProvider(): array
+    {
+        return [
+            [['--id' => true, '--domain' => true, 'value' => 'foo']],
+            [['value' => 'foo']],
+        ];
     }
 }

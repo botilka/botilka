@@ -16,7 +16,7 @@ It can leverage [API Platform](https://api-platform.com) to expose yours `Comman
 - REST API access to commands & queries.
 - Sync or async event handling is a matter of configuration.
 - Event replaying (allow to test domain changes).
-- Projection re-building on demand (ie. when you add a ReadModel).
+- Projection re-play on demand (ie. when you add a ReadModel).
 - Safe commands concurrency (optimistic locking).
 - Fully immutable, not a single setter.
 - Tested, good code coverage. 
@@ -31,7 +31,6 @@ An event store should (must) be persisted and the default implementation is not!
 ```yaml
 # config/packages/botilka.yaml
 botilka:
-    
     # default implementation is 'Botilka\Infrastructure\InMemory\EventStoreInMemory', not persisted!!
     event_store: Botilka\Infrastructure\Doctrine\EventStoreDoctrine # or 'Botilka\Infrastructure\MongoDB\EventStoreMongoDB'
 ```
@@ -39,11 +38,11 @@ botilka:
 Botilka provide a command to create & configure the event store:
 
 ```sh
-bin/console botilka:event_store:initialize doctrine # or 'mongodb'
+bin/console botilka:event_store:initialize
 ```
-you can force recreate, but be carefull, you will lost all the previous events:
+You can force recreate, but be carefull, you will lost all the previous events:
 ```sh
-bin/console botilka:event_store:initialize doctrine -f # or 'mongodb'
+bin/console botilka:event_store:initialize -f
 ```
 
 ## Usage
@@ -82,10 +81,10 @@ final class SendSMSOnWithdrawalPerformed implements EventHandler
 
 Replay:
 ```bash
-bin/console botilka:event_store:replay domain [domain name]
-# or
-# you can limit the scope with --from/-f & --to/-t
-bin/console botilka:event_store:replay id [aggregate root id]
+# by domain
+bin/console botilka:event_store:replay --domain [domain name]
+# or by id
+bin/console botilka:event_store:replay --id [aggregate root id] # you can limit the scope with --from/-f & --to/-t
 ```
 
 ### Projection replay
@@ -120,10 +119,10 @@ final class BankAccountProjector implements Projector
 
 Replay projection:
 ```bash
+# by domain
 bin/console botilka:projector:build domain [domain name]
-# or
-# you can limit the scope with --from/-f & --to/-t
-bin/console botilka:projector:build id [aggregate root id]  --matching sumOfDeposit
+# or by id
+bin/console botilka:projector:build id [aggregate root id]  --matching sumOfDeposit # you can limit the scope with --from/-f & --to/-t
 ```
 
 
@@ -143,7 +142,7 @@ Have a look [here](/documentation/internals.md) to better understand the design 
 ### todo
 
 - Snapshots.
-- Raw events iterator & modifiers (for updating events).
+- Event upcasting
 - (maybe) Saga / Process manager.
 - (maybe) Smart command retry on concurrency exception.
 

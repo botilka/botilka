@@ -13,7 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 final class EventReplayCommand extends Command
 {
-    use EventsFromEventStoreManagerCommandTrait;
+    use HandleEventsFromEventStoreManagerCommandTrait;
 
     private $eventStoreManager;
     private $eventBus;
@@ -28,7 +28,7 @@ final class EventReplayCommand extends Command
     protected function configure()
     {
         $this->setDescription('Replay events for an aggregate or a domain')
-            ->configureDefault($this);
+            ->configureCommon($this);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)

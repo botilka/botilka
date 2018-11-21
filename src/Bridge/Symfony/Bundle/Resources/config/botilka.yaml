@@ -14,7 +14,7 @@ services:
     Botilka\EventStore\EventStoreManager: '@Botilka\Infrastructure\InMemory\EventStoreManagerInMemory'
 
     Botilka\Ui\Console\EventReplayCommand: ~
-    Botilka\Ui\Console\ProjectorBuildCommand: ~
+    Botilka\Ui\Console\ProjectorPlayCommand: ~
 
     Botilka\Ui\Console\EventStoreInitializeCommand:
         arguments:

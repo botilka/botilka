@@ -54,7 +54,7 @@ final class EventReplayCommandTest extends KernelTestCase
             ->method('dispatch')
             ->withConsecutive(...$this->events);
 
-        $input = new ArrayInput(['target' => 'id', 'value' => $value, '--from' => $from, '--to' => $to]);
+        $input = new ArrayInput(['--id' => true, 'value' => $value, '--from' => $from, '--to' => $to]);
         $this->command->run($input, new BufferedOutput());
     }
 
@@ -78,17 +78,26 @@ final class EventReplayCommandTest extends KernelTestCase
             ->method('dispatch')
             ->withConsecutive(...$this->events);
 
-        $input = new ArrayInput(['target' => 'domain', 'value' => 'Foo\\Domain']);
+        $input = new ArrayInput(['--domain' => true, 'value' => 'Foo\\Domain']);
         $this->command->run($input, new BufferedOutput());
     }
 
     /**
+     * @dataProvider executeFailProvider
      * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Given target value 'foo' is not one of domain, id.
+     * @expectedExceptionMessage You must set a domain or an id.
      */
-    public function testExecuteFail(): void
+    public function testExecuteFail(array $parameters): void
     {
-        $input = new ArrayInput(['target' => 'foo', 'value' => 'bar']);
+        $input = new ArrayInput($parameters);
         $this->command->run($input, new BufferedOutput());
+    }
+
+    public function executeFailProvider(): array
+    {
+        return [
+            [['--id' => true, '--domain' => true, 'value' => 'foo']],
+            [['value' => 'foo']],
+        ];
     }
 }
