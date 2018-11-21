@@ -27,7 +27,7 @@ matrix:
 
 before_script:
   - composer global require friendsofphp/php-cs-fixer
-  - export PATH="$PATH:$HOME/.composer/vendor/bin"
+  - export PATH='$PATH:$HOME/.composer/vendor/bin'
 
 script:
   - vendor/bin/phpunit --group default,functional --coverage-clover=coverage.clover
@@ -41,8 +41,7 @@ after_script:
 install:
   - pecl -q install mongodb || true
   # mongodb.so is enabled with PHP 7.1
-  - if [ ! $TRAVIS_PHP_VERSION = "7.1" ]; then echo "extension=mongodb.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini; fi
-  - echo "extension=mongodb.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+  - if [ ! $TRAVIS_PHP_VERSION = '7.1' ]; then echo 'extension=mongodb.so' >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini; fi
   - if [[ $deps = 'low' ]]; then
       composer update --prefer-dist --no-progress --no-suggest --ansi --prefer-stable --prefer-lowest;
     else
