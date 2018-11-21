@@ -6,10 +6,6 @@ namespace Botilka\EventStore;
 
 interface EventStoreManager
 {
-    public const TARGET_DOMAIN = 'domain';
-    public const TARGET_ID = 'id';
-    public const TARGETS = [self::TARGET_DOMAIN, self::TARGET_ID];
-
     /**
      * @return ManagedEvent[]
      */

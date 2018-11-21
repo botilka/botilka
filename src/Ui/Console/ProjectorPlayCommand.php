@@ -15,7 +15,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 final class ProjectorPlayCommand extends Command
 {
-    use EventsFromEventStoreManagerCommandTrait;
+    use HandleEventsFromEventStoreManagerCommandTrait;
 
     private $eventStoreManager;
     private $projectionist;
@@ -30,7 +30,7 @@ final class ProjectorPlayCommand extends Command
     protected function configure()
     {
         $this->setDescription('Play projections for an aggregate or a domain')
-            ->configureDefault($this)
+            ->configureCommon($this)
             ->addOption('matching', 'm', InputOption::VALUE_OPTIONAL, 'Use projector FQCN that matches (regex)');
     }
 
