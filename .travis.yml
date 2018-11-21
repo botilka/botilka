@@ -8,6 +8,7 @@ services:
 php:
   - '7.1'
   - '7.2'
+  - '7.3'
 
 env:
   global:
@@ -35,6 +36,8 @@ after_script:
 
 install:
   - pecl -q install mongodb || true
+  # mongodb.so is enabled with PHP 7.1
+  - if [ ! $TRAVIS_PHP_VERSION = "7.1" ]; then echo "extension=mongodb.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini; fi
   - echo "extension=mongodb.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
   - if [[ $deps = 'low' ]]; then
       composer update --prefer-dist --no-progress --no-suggest --ansi --prefer-stable --prefer-lowest;
