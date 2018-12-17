@@ -24,14 +24,14 @@ abstract class AbstractHydrator
 
     protected function doHydrate($data, string $class)
     {
-        $query = $this->denormalizer->denormalize($data, $class);
+        $hydrated = $this->denormalizer->denormalize($data, $class);
 
-        $violations = $this->validator->validate($query);
+        $violations = $this->validator->validate($hydrated);
 
         if (0 < \count($violations)) {
             throw new ValidationException($violations);
         }
 
-        return $query;
+        return $hydrated;
     }
 }

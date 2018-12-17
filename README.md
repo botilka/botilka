@@ -142,7 +142,7 @@ Have a look [here](/documentation/internals.md) to better understand the design 
 ### todo
 
 - Snapshots.
-- Event upcasting
+- Event upcasting.
 - (maybe) Saga / Process manager.
 - (maybe) Smart command retry on concurrency exception.
 
