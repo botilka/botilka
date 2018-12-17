@@ -36,7 +36,7 @@
     },
     "suggest": {
         "doctrine/orm": "To use Doctrine as an EventStore",
-        "mongodb/mongodb": "To use MongDB as an EventStore",
+        "mongodb/mongodb": "To use MongoDB as an EventStore",
         "api-platform/core": "To expose your commands & queries via REST"
     },
     "config": {
@@ -62,7 +62,7 @@
     ],
     "extra": {
         "branch-alias": {
-            "dev-master": "1.0.x-dev"
+            "dev-master": "1.1.x-dev"
         }
     }
 }
