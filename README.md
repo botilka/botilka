@@ -18,9 +18,7 @@ It can leverage [API Platform](https://api-platform.com) to expose yours `Comman
 - Event replaying (allow to test domain changes).
 - Projection re-play on demand (ie. when you add a ReadModel).
 - Safe commands concurrency (optimistic locking).
-- Fully immutable, not a single setter.
-- Tested, good code coverage. 
-- Event sourced and "normal" CQRS mode.
+- Tested, good code coverage.
 
 ## Configuration
 
@@ -92,7 +90,7 @@ bin/console botilka:event_store:replay --id [aggregate root id] # you can limit 
 In the same way than replaying events, you can replay projection. If you've added a projection
 and you want to replay only this projection, use the `--matching/-m` options.
 
-> Matching is a regex matched against \[ProjectFQCN\]::\[method\],
+> Matching is a regex matched against `[ProjectorFQCN]::[method]`,
 > ie. `App\BankAccount\Projection\Doctrine\BankAccountProjector::sumOfDeposit`
 
 The projection
