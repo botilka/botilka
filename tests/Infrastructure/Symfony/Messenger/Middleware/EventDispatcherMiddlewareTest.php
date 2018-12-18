@@ -13,11 +13,12 @@ use Botilka\Infrastructure\Symfony\Messenger\Middleware\EventDispatcherMiddlewar
 use Botilka\Projector\Projectionist;
 use Botilka\Tests\Fixtures\Domain\StubEvent;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Exception\NoHandlerForMessageException;
+use Symfony\Component\Messenger\Test\Middleware\MiddlewareTestCase;
 
-final class EventDispatcherMiddlewareTest extends TestCase
+final class EventDispatcherMiddlewareTest extends MiddlewareTestCase
 {
     /** @var EventStore|MockObject */
     private $eventStore;
@@ -56,14 +57,9 @@ final class EventDispatcherMiddlewareTest extends TestCase
         $this->projectionist->expects($this->once())
             ->method('play');
 
-        $callable = function ($message) use ($commandResponse) {
-            return $commandResponse;
-        };
-
         $middleware = new EventDispatcherMiddleware($this->eventStore, $this->eventBus, $this->logger, $this->projectionist);
 
-        $result = $middleware->handle('baz', $callable);
-        $this->assertSame($commandResponse, $result);
+        $result = $middleware->handle(new Envelope($commandResponse), $this->getStackMock());
     }
 
     public function handleProvider(): array
@@ -94,23 +90,22 @@ final class EventDispatcherMiddlewareTest extends TestCase
 
         $commandResponse = new CommandResponse('foo', $event);
 
-        $callable = function ($message) use ($commandResponse) {
-            return $commandResponse;
-        };
-
         $middleware = new EventDispatcherMiddleware($this->eventStore, $this->eventBus, $this->logger, $this->projectionist);
 
-        $result = $middleware->handle('baz', $callable);
-        $this->assertSame($commandResponse, $result);
+        $middleware->handle(new Envelope($commandResponse), $this->getStackMock());
     }
 
+    /**
+     * @expectedException \Botilka\EventStore\EventStoreConcurrencyException
+     * @expectedExceptionMessage bar message
+     */
     public function testHandleEventStoreConcurrencyException(): void
     {
         $event = new StubEvent(1337);
 
         $this->eventStore->expects($this->once())
             ->method('append')
-            ->willThrowException(new EventStoreConcurrencyException('bar'));
+            ->willThrowException(new EventStoreConcurrencyException('bar message'));
 
         $this->eventBus->expects($this->never())
             ->method('dispatch');
@@ -120,17 +115,13 @@ final class EventDispatcherMiddlewareTest extends TestCase
 
         $this->logger->expects($this->once())
             ->method('error')
-            ->with('bar');
+            ->with('bar message');
 
         $commandResponse = new EventSourcedCommandResponse('foo', $event, 51, 'FooBar\\Domain');
 
-        $callable = function ($message) use ($commandResponse) {
-            return $commandResponse;
-        };
-
         $middleware = new EventDispatcherMiddleware($this->eventStore, $this->eventBus, $this->logger, $this->projectionist);
 
-        $this->assertNull($middleware->handle('baz', $callable));
+        $middleware->handle(new Envelope($commandResponse), $this->getStackMock());
     }
 
     /**
@@ -139,11 +130,6 @@ final class EventDispatcherMiddlewareTest extends TestCase
      */
     public function testHandleNotCommandResponse(): void
     {
-        $result = new \stdClass();
-        $callable = function ($message) use ($result) {
-            return $result;
-        };
-
         $this->eventStore->expects($this->never())
             ->method('append');
 
@@ -154,6 +140,6 @@ final class EventDispatcherMiddlewareTest extends TestCase
             ->method('play');
 
         $middleware = new EventDispatcherMiddleware($this->eventStore, $this->eventBus, $this->logger, $this->projectionist);
-        $middleware->handle('foobar', $callable);
+        $middleware->handle(new Envelope(new \stdClass()), $this->getStackMock());
     }
 }
