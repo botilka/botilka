@@ -20,6 +20,8 @@ final class MessengerCommandBus implements CommandBus
 
     public function dispatch(Command $message): CommandResponse
     {
-        return $this->bus->dispatch($message);
+        $evenlope = $this->bus->dispatch($message);
+
+        return $evenlope->getMessage();
     }
 }

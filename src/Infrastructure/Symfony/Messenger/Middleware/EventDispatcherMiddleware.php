@@ -13,8 +13,10 @@ use Botilka\EventStore\EventStoreConcurrencyException;
 use Botilka\Projector\Projection;
 use Botilka\Projector\Projectionist;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Exception\NoHandlerForMessageException;
 use Symfony\Component\Messenger\Middleware\MiddlewareInterface;
+use Symfony\Component\Messenger\Middleware\StackInterface;
 
 final class EventDispatcherMiddleware implements MiddlewareInterface
 {
@@ -34,9 +36,10 @@ final class EventDispatcherMiddleware implements MiddlewareInterface
     /**
      * Save event as soon as the command has been handled so if it fails, we won't dispatch non saved events.
      */
-    public function handle($message, callable $next)
+    public function handle(Envelope $envelope, StackInterface $stack): Envelope
     {
-        $result = $next($message); // execute the handler first
+        $envelope = $stack->next()->handle($envelope, $stack);
+        $result = $envelope->getMessage(); // execute the handler first
 
         if (!$result instanceof CommandResponse) {
             throw new \InvalidArgumentException(\sprintf('Result must be an instance of %s, %s given.', CommandResponse::class, \is_object($result) ? \get_class($result) : \gettype($result)));
@@ -51,7 +54,7 @@ final class EventDispatcherMiddleware implements MiddlewareInterface
             } catch (EventStoreConcurrencyException $e) {
                 $this->logger->error($e->getMessage());
 
-                return;
+                throw $e;
             }
         }
 
@@ -64,6 +67,6 @@ final class EventDispatcherMiddleware implements MiddlewareInterface
         $projection = new Projection($event);
         $this->projectionist->play($projection); // make your projector async if necessary
 
-        return $result;
+        return $envelope;
     }
 }

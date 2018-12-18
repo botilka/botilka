@@ -19,6 +19,8 @@ final class MessengerQueryBus implements QueryBus
 
     public function dispatch(Query $message)
     {
-        return $this->bus->dispatch($message);
+        $evenlope = $this->bus->dispatch($message);
+
+        return $evenlope->getMessage();
     }
 }
