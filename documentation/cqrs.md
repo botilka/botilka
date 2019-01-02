@@ -4,14 +4,16 @@
 
 ## Command
 
-You need to create the command, its corresponding handler, the event and its event applier into the domain model.
+You need to create :
+* the command and its corresponding handler
+* the event and its event applier into the domain model
 
-The handler retrieve the domain model & call a method on it. The domain model method create
-the domain event, apply it to itself and then return the event.
+The command handler retrieves the domain model & calls a method on it. The domain model method creates
+the domain event, applies it to itself and then returns the event.
 
-The event is 
+### Example
 
-Create a command:
+1. Create a command:
 ```php
 use Botilka\Application\Command\Command;
 
@@ -29,7 +31,7 @@ final class CreateBankAccountCommand implements Command
 }
 ```
 
-and it's handler:
+and its handler:
 ```php
 namespace App\BankAccount\Application\Command;
 
@@ -49,7 +51,7 @@ final class CreateBankAccountHandler implements CommandHandler
     }
 }
 ```
-Add the event applier into the domain model:
+2. Add the event applier into the domain model:
 ```php
 namespace App\BankAccount\Domain;
 
@@ -116,7 +118,7 @@ final class BankAccountCreated implements Event
 
 ``` 
 
-Then dispatch the command
+3. Then dispatch the command:
 ```php
 use Botilka\Application\Command\CommandBus;
 
