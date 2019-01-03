@@ -141,7 +141,10 @@ final class EventDispatcherMiddlewareTest extends MiddlewareTestCase
         $middleware->handle($this->getEnvelopeWithHandledStamp(new \stdClass()), $this->getStackMock());
     }
 
-    private function getEnvelopeWithHandledStamp(object $result): Envelope
+    /**
+     * @param mixed $result
+     */
+    private function getEnvelopeWithHandledStamp($result): Envelope
     {
         $stamp = new HandledStamp($result, 'fooCallableName');
         $message = new \stdClass();
