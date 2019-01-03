@@ -17,6 +17,7 @@ use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Exception\NoHandlerForMessageException;
 use Symfony\Component\Messenger\Middleware\MiddlewareInterface;
 use Symfony\Component\Messenger\Middleware\StackInterface;
+use Symfony\Component\Messenger\Stamp\HandledStamp;
 
 final class EventDispatcherMiddleware implements MiddlewareInterface
 {
@@ -38,8 +39,10 @@ final class EventDispatcherMiddleware implements MiddlewareInterface
      */
     public function handle(Envelope $envelope, StackInterface $stack): Envelope
     {
-        $envelope = $stack->next()->handle($envelope, $stack);
-        $result = $envelope->getMessage(); // execute the handler first
+        $envelope = $stack->next()->handle($envelope, $stack); // execute the handler first
+        /** @var HandledStamp $handledStamp */
+        $handledStamp = $envelope->all(HandledStamp::class)[0];
+        $result = $handledStamp->getResult();
 
         if (!$result instanceof CommandResponse) {
             throw new \InvalidArgumentException(\sprintf('Result must be an instance of %s, %s given.', CommandResponse::class, \is_object($result) ? \get_class($result) : \gettype($result)));
