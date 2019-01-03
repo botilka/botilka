@@ -16,6 +16,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Exception\NoHandlerForMessageException;
+use Symfony\Component\Messenger\Stamp\HandledStamp;
 use Symfony\Component\Messenger\Test\Middleware\MiddlewareTestCase;
 
 final class EventDispatcherMiddlewareTest extends MiddlewareTestCase
@@ -58,8 +59,7 @@ final class EventDispatcherMiddlewareTest extends MiddlewareTestCase
             ->method('play');
 
         $middleware = new EventDispatcherMiddleware($this->eventStore, $this->eventBus, $this->logger, $this->projectionist);
-
-        $result = $middleware->handle(new Envelope($commandResponse), $this->getStackMock());
+        $middleware->handle($this->getEnvelopeWithHandledStamp($commandResponse), $this->getStackMock());
     }
 
     public function handleProvider(): array
@@ -91,8 +91,7 @@ final class EventDispatcherMiddlewareTest extends MiddlewareTestCase
         $commandResponse = new CommandResponse('foo', $event);
 
         $middleware = new EventDispatcherMiddleware($this->eventStore, $this->eventBus, $this->logger, $this->projectionist);
-
-        $middleware->handle(new Envelope($commandResponse), $this->getStackMock());
+        $middleware->handle($this->getEnvelopeWithHandledStamp($commandResponse), $this->getStackMock());
     }
 
     /**
@@ -120,8 +119,7 @@ final class EventDispatcherMiddlewareTest extends MiddlewareTestCase
         $commandResponse = new EventSourcedCommandResponse('foo', $event, 51, 'FooBar\\Domain');
 
         $middleware = new EventDispatcherMiddleware($this->eventStore, $this->eventBus, $this->logger, $this->projectionist);
-
-        $middleware->handle(new Envelope($commandResponse), $this->getStackMock());
+        $middleware->handle($this->getEnvelopeWithHandledStamp($commandResponse), $this->getStackMock());
     }
 
     /**
@@ -140,6 +138,15 @@ final class EventDispatcherMiddlewareTest extends MiddlewareTestCase
             ->method('play');
 
         $middleware = new EventDispatcherMiddleware($this->eventStore, $this->eventBus, $this->logger, $this->projectionist);
-        $middleware->handle(new Envelope(new \stdClass()), $this->getStackMock());
+        $middleware->handle($this->getEnvelopeWithHandledStamp(new \stdClass()), $this->getStackMock());
+    }
+
+    private function getEnvelopeWithHandledStamp(object $result): Envelope
+    {
+        $stamp = new HandledStamp($result, 'fooCallableName');
+        $message = new \stdClass();
+        $message->foo = 'bar';
+
+        return new Envelope($message, $stamp);
     }
 }
