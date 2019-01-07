@@ -78,7 +78,7 @@ final class BotilkaExtensionTest extends TestCase
         if (EventStoreDoctrine::class === $eventStore) {
             $containerBuilderProphecy->setParameter('botilka.messenger.doctrine_transaction_middleware', true)->shouldBeCalledTimes((int) $withDoctrineTranslationMiddleware);
             if (true === $withDoctrineTranslationMiddleware) {
-                \array_unshift($middleware, 'doctrine_transaction_middleware');
+                \array_unshift($middleware, 'doctrine_transaction');
             }
         }
 
@@ -175,7 +175,7 @@ final class BotilkaExtensionTest extends TestCase
         $this->assertTrue($container->hasDefinition(EventReplayCommand::class));
         $this->assertTrue($container->hasDefinition(ProjectorPlayCommand::class));
 
-        $this->assertSame((bool) $container->getParameter('botilka.messenger.doctrine_transaction_middleware'), $container->hasDefinition('messenger.middleware.doctrine_transaction_middleware'));
+        $this->assertSame((bool) $container->getParameter('botilka.messenger.doctrine_transaction_middleware'), $container->hasDefinition('messenger.middleware.doctrine_transaction'));
         $this->assertSame($defaultMessengerConfig, $container->hasDefinition(EventDispatcherMiddleware::class));
         $this->assertSame($hasApiPlatformBridge, $container->hasDefinition(DescriptionContainer::class));
         $this->assertSame($hasApiPlatformBridge, $container->hasDefinition(CommandDataProvider::class));

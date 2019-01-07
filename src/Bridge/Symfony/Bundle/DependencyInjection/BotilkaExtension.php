@@ -50,10 +50,10 @@ final class BotilkaExtension extends Extension implements PrependExtensionInterf
     {
         $commandBusMiddlewares = [EventDispatcherMiddleware::class];
 
-        // if EventStoreDoctrine is used, add doctrine_transaction_middleware by default
+        // if EventStoreDoctrine is used, add doctrine_transaction middleware by default
         if ('Botilka\\Infrastructure\\Doctrine\\EventStoreDoctrine' === ($config['event_store'] ?? '') && ($config['doctrine_transaction_middleware'] ?? true)) {
             $container->setParameter('botilka.messenger.doctrine_transaction_middleware', true);
-            \array_unshift($commandBusMiddlewares, 'doctrine_transaction_middleware');
+            \array_unshift($commandBusMiddlewares, 'doctrine_transaction');
         }
 
         $container->prependExtensionConfig('framework', [
