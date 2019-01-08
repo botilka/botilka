@@ -53,6 +53,7 @@ final class EventDispatcherMiddleware implements MiddlewareInterface
         // persist to event store only if aggregate is event sourced
         if ($result instanceof EventSourcedCommandResponse) {
             try {
+                // @todo use repository
                 $this->eventStore->append($result->getId(), $result->getPlayhead(), \get_class($event), $event, null, new \DateTimeImmutable(), $result->getDomain());
             } catch (EventStoreConcurrencyException $e) {
                 $this->logger->error($e->getMessage());

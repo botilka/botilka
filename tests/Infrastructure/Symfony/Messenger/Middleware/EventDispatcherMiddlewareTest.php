@@ -6,6 +6,7 @@ namespace Botilka\Tests\Infrastructure\Symfony\Messenger\Middleware;
 
 use Botilka\Application\Command\CommandResponse;
 use Botilka\Application\Command\EventSourcedCommandResponse;
+use Botilka\Domain\EventSourcedAggregateRoot;
 use Botilka\Event\EventBus;
 use Botilka\EventStore\EventStore;
 use Botilka\EventStore\EventStoreConcurrencyException;
@@ -67,7 +68,7 @@ final class EventDispatcherMiddlewareTest extends MiddlewareTestCase
         $event = new StubEvent(1337);
 
         return [
-            [new EventSourcedCommandResponse('foo', $event, 51, 'FooBar\\Domain')],
+            [new EventSourcedCommandResponse('foo', $event, 51, 'FooBar\\Domain', $this->createMock(EventSourcedAggregateRoot::class))],
             [new CommandResponse('foo', $event)],
         ];
     }
@@ -116,7 +117,7 @@ final class EventDispatcherMiddlewareTest extends MiddlewareTestCase
             ->method('error')
             ->with('bar message');
 
-        $commandResponse = new EventSourcedCommandResponse('foo', $event, 51, 'FooBar\\Domain');
+        $commandResponse = new EventSourcedCommandResponse('foo', $event, 51, 'FooBar\\Domain', $this->createMock(EventSourcedAggregateRoot::class));
 
         $middleware = new EventDispatcherMiddleware($this->eventStore, $this->eventBus, $this->logger, $this->projectionist);
         $middleware->handle($this->getEnvelopeWithHandledStamp($commandResponse), $this->getStackMock());

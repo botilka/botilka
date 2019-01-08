@@ -15,12 +15,14 @@ final class EventSourcedCommandResponse extends CommandResponse
 {
     private $playhead;
     private $domain;
+    private $aggregateRoot;
 
-    public function __construct(string $id, Event $event, int $playhead, string $domain)
+    public function __construct(string $id, Event $event, int $playhead, string $domain, EventSourcedAggregateRoot $aggregateRoot)
     {
         parent::__construct($id, $event);
         $this->playhead = $playhead;
         $this->domain = $domain;
+        $this->aggregateRoot = $aggregateRoot;
     }
 
     public function getPlayhead(): int
@@ -33,8 +35,13 @@ final class EventSourcedCommandResponse extends CommandResponse
         return $this->domain;
     }
 
+    public function getAggregateRoot(): EventSourcedAggregateRoot
+    {
+        return $this->aggregateRoot;
+    }
+
     public static function fromEventSourcedAggregateRoot(EventSourcedAggregateRoot $aggregateRoot, Event $event, ?string $domain = null): self
     {
-        return new self($aggregateRoot->getAggregateRootId(), $event, $aggregateRoot->getPlayhead(), $domain ?? \get_class($aggregateRoot));
+        return new self($aggregateRoot->getAggregateRootId(), $event, $aggregateRoot->getPlayhead(), $domain ?? \get_class($aggregateRoot), $aggregateRoot);
     }
 }

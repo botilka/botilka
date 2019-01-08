@@ -7,7 +7,7 @@ namespace Botilka\Application\Command;
 use Botilka\Event\Event;
 
 /**
- * Represent a response from a command in 'CQRS' mode, meaning there is no information about the event
+ * Represent a response from a command in 'CQRS' mode, meaning there is no information about the event.
  * This event may not be saved, you need to update your aggregate state by yourself.
  */
 class CommandResponse
