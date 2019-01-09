@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Botilka\Infrastructure\Doctrine;
 
 use Botilka\Event\Event as DomainEvent;
+use Botilka\EventStore\AggregateRootNotFoundException;
 use Botilka\EventStore\EventStore;
 use Botilka\EventStore\EventStoreConcurrencyException;
 use Doctrine\DBAL\Driver\Connection;
@@ -32,15 +33,23 @@ final class EventStoreDoctrine implements EventStore
         $stmt = $this->connection->prepare("SELECT type, payload FROM {$this->table} WHERE id = :id ORDER BY playhead");
         $stmt->execute(['id' => $id]);
 
-        return $this->deserialize($stmt->fetchAll());
+        if (0 === \count($events = $stmt->fetchAll())) {
+            throw new AggregateRootNotFoundException("No aggregrate root found for $id.");
+        }
+
+        return $this->deserialize($events);
     }
 
     public function loadFromPlayhead(string $id, int $fromPlayhead): array
     {
-        $stmt = $this->connection->prepare("SELECT type, payload FROM {$this->table} WHERE id = :id AND playhead > :playhead ORDER BY playhead");
-        $stmt->execute(['id' => $id, 'playhead' => $fromPlayhead]);
+        $stmt = $this->connection->prepare("SELECT type, payload FROM {$this->table} WHERE id = :id AND playhead > :from ORDER BY playhead");
+        $stmt->execute(['id' => $id, 'from' => $fromPlayhead]);
 
-        return $this->deserialize($stmt->fetchAll());
+        if (0 === \count($events = $stmt->fetchAll())) {
+            throw new AggregateRootNotFoundException("No aggregrate root found for $id from playhead $fromPlayhead.");
+        }
+
+        return $this->deserialize($events);
     }
 
     public function loadFromPlayheadToPlayhead(string $id, int $fromPlayhead, int $toPlayhead): array
@@ -48,7 +57,11 @@ final class EventStoreDoctrine implements EventStore
         $stmt = $this->connection->prepare("SELECT type, payload FROM {$this->table} WHERE id = :id AND playhead BETWEEN :from AND :to ORDER BY playhead");
         $stmt->execute(['id' => $id, 'from' => $fromPlayhead, 'to' => $toPlayhead]);
 
-        return $this->deserialize($stmt->fetchAll());
+        if (0 === \count($events = $stmt->fetchAll())) {
+            throw new AggregateRootNotFoundException("No aggregrate root found for $id from playhead $fromPlayhead to playhead $toPlayhead.");
+        }
+
+        return $this->deserialize($events);
     }
 
     public function append(string $id, int $playhead, string $type, DomainEvent $payload, ?array $metadata, \DateTimeImmutable $recordedOn, string $domain): void

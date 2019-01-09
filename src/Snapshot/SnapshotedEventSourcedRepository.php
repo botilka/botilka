@@ -13,21 +13,27 @@ use Botilka\Snapshot\Strategist\SnapshotStrategist;
 final class SnapshotedEventSourcedRepository implements EventSourcedRepository
 {
     private $snapshotStore;
-    private $eventStore;
     private $strategist;
+    private $eventSourcedRepository; // default event sourced repository
+    private $eventStore; // default event sourced repository
 
-    public function __construct(SnapshotStore $snapshotStore, EventStore $eventStore, SnapshotStrategist $strategist)
+    public function __construct(SnapshotStore $snapshotStore, SnapshotStrategist $strategist, EventSourcedRepository $eventSourcedRepository, EventStore $eventStore)
     {
         $this->snapshotStore = $snapshotStore;
-        $this->eventStore = $eventStore;
         $this->strategist = $strategist;
+        $this->eventSourcedRepository = $eventSourcedRepository;
+        $this->eventStore = $eventStore;
     }
 
     public function load(string $id): EventSourcedAggregateRoot
     {
-        $instance = $this->snapshotStore->load($id);
+        try {
+            $instance = $this->snapshotStore->load($id);
+        } catch (SnapshotNotFoundException $e) {
+            return $this->eventSourcedRepository->load($id);
+        }
 
-        $events = null === $instance ? $this->eventStore->load($id) : $this->eventStore->loadFromPlayhead($instance->getPlayhead());
+        $events = $this->eventStore->loadFromPlayhead($id, $instance->getPlayhead() + 1);
 
         foreach ($events as $event) {
             $instance = $instance->apply($event);
@@ -44,7 +50,6 @@ final class SnapshotedEventSourcedRepository implements EventSourcedRepository
             $this->snapshotStore->snapshot($aggregateRoot);
         }
 
-        $event = $commandResponse->getEvent();
-        $this->eventStore->append($commandResponse->getId(), $commandResponse->getPlayhead(), \get_class($event), $event, null, new \DateTimeImmutable(), $commandResponse->getDomain());
+        $this->eventSourcedRepository->save($commandResponse);
     }
 }

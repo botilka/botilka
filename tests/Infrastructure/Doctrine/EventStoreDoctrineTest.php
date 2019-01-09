@@ -36,77 +36,91 @@ final class EventStoreDoctrineTest extends TestCase
         $this->assertInstanceOf(EventStore::class, $this->eventStore);
     }
 
-    /**
-     * @param MockObject|Statement $stmt
-     */
-    private function addDenormalizerExpectation(MockObject $stmt): void
+    private function getStatement(bool $withResult): MockObject
     {
-        $result = [
+        $stmt = $this->createMock(Statement::class);
+
+        $result = $withResult ? [
             ['type' => 'Foo\\Bar', 'payload' => \json_encode(['foo' => 'bar'])],
-        ];
+        ] : [];
 
         $stmt->expects($this->once())
             ->method('fetchAll')
             ->willReturn($result);
 
+        return $stmt;
+    }
+
+    private function addDenormalizerAssertion(): void
+    {
         $this->denormalizer->expects($this->once())
             ->method('denormalize')
             ->with(['foo' => 'bar'], 'Foo\\Bar')
             ->willReturn('baz');
     }
 
-    public function testLoad(): void
+    private function addLoadAssertions(string $query, array $executeParameters, bool $withResult): void
     {
-        $stmt = $this->createMock(Statement::class);
-
         $this->connection->expects($this->once())
             ->method('prepare')
-            ->with('SELECT type, payload FROM event_store WHERE id = :id ORDER BY playhead')
-            ->willReturn($stmt);
+            ->with($query)
+            ->willReturn($stmt = $this->getStatement($withResult));
 
         $stmt->expects($this->once())
             ->method('execute')
-            ->with(['id' => 'foo']);
+            ->with($executeParameters);
 
-        $this->addDenormalizerExpectation($stmt);
+        if (true === $withResult) {
+            $this->addDenormalizerAssertion();
+        }
+    }
 
+    public function testLoadSuccess(): void
+    {
+        $this->addLoadAssertions('SELECT type, payload FROM event_store WHERE id = :id ORDER BY playhead', ['id' => 'foo'], true);
         $this->assertSame(['baz'], $this->eventStore->load('foo'));
     }
 
-    public function testLoadFromPlayhead(): void
+    /**
+     * @expectedException \Botilka\EventStore\AggregateRootNotFoundException
+     * @expectedExceptionMessage No aggregrate root found for foo.
+     */
+    public function testLoadFail(): void
     {
-        $stmt = $this->createMock(Statement::class);
+        $this->addLoadAssertions('SELECT type, payload FROM event_store WHERE id = :id ORDER BY playhead', ['id' => 'foo'], false);
+        $this->eventStore->load('foo');
+    }
 
-        $this->connection->expects($this->once())
-            ->method('prepare')
-            ->with('SELECT type, payload FROM event_store WHERE id = :id AND playhead > :playhead ORDER BY playhead')
-            ->willReturn($stmt);
-
-        $stmt->expects($this->once())
-            ->method('execute')
-            ->with(['id' => 'foo', 'playhead' => 2]);
-
-        $this->addDenormalizerExpectation($stmt);
-
+    public function testLoadFromPlayheadSuccess(): void
+    {
+        $this->addLoadAssertions('SELECT type, payload FROM event_store WHERE id = :id AND playhead > :from ORDER BY playhead', ['id' => 'foo', 'from' => 2], true);
         $this->assertSame(['baz'], $this->eventStore->loadFromPlayhead('foo', 2));
     }
 
-    public function testLoadFromPlayheadToPlayhead(): void
+    /**
+     * @expectedException \Botilka\EventStore\AggregateRootNotFoundException
+     * @expectedExceptionMessage No aggregrate root found for foo from playhead 2.
+     */
+    public function testLoadFromPlayheadFail(): void
     {
-        $stmt = $this->createMock(Statement::class);
+        $this->addLoadAssertions('SELECT type, payload FROM event_store WHERE id = :id AND playhead > :from ORDER BY playhead', ['id' => 'foo', 'from' => 2], false);
+        $this->eventStore->loadFromPlayhead('foo', 2);
+    }
 
-        $this->connection->expects($this->once())
-            ->method('prepare')
-            ->with('SELECT type, payload FROM event_store WHERE id = :id AND playhead BETWEEN :from AND :to ORDER BY playhead')
-            ->willReturn($stmt);
-
-        $stmt->expects($this->once())
-            ->method('execute')
-            ->with(['id' => 'foo', 'from' => 2, 'to' => 4]);
-
-        $this->addDenormalizerExpectation($stmt);
-
+    public function testLoadFromPlayheadToPlayheadSuccess(): void
+    {
+        $this->addLoadAssertions('SELECT type, payload FROM event_store WHERE id = :id AND playhead BETWEEN :from AND :to ORDER BY playhead', ['id' => 'foo', 'from' => 2, 'to' => 4], true);
         $this->assertSame(['baz'], $this->eventStore->loadFromPlayheadToPlayhead('foo', 2, 4));
+    }
+
+    /**
+     * @expectedException \Botilka\EventStore\AggregateRootNotFoundException
+     * @expectedExceptionMessage No aggregrate root found for foo from playhead 2 to playhead 4.
+     */
+    public function testLoadFromPlayheadToPlayheadFail(): void
+    {
+        $this->addLoadAssertions('SELECT type, payload FROM event_store WHERE id = :id AND playhead BETWEEN :from AND :to ORDER BY playhead', ['id' => 'foo', 'from' => 2, 'to' => 4], false);
+        $this->eventStore->loadFromPlayheadToPlayhead('foo', 2, 4);
     }
 
     public function testAppend(): void

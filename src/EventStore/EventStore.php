@@ -9,7 +9,9 @@ use Botilka\Event\Event;
 interface EventStore
 {
     /**
-     * @return Event[]
+     * @return Event[]*
+     *
+     * @throws AggregateRootNotFoundException
      */
     public function load(string $id): array;
 
@@ -17,6 +19,8 @@ interface EventStore
      * @param int $fromPlayhead Playhead value is included
      *
      * @return Event[]
+     *
+     * @throws AggregateRootNotFoundException
      */
     public function loadFromPlayhead(string $id, int $fromPlayhead): array;
 
@@ -25,6 +29,8 @@ interface EventStore
      * @param int $toPlayhead   Playhead value is included
      *
      * @return Event[]
+     *
+     * @throws AggregateRootNotFoundException
      */
     public function loadFromPlayheadToPlayhead(string $id, int $fromPlayhead, int $toPlayhead): array;
 

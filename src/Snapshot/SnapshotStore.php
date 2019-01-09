@@ -8,7 +8,10 @@ use Botilka\Domain\EventSourcedAggregateRoot;
 
 interface SnapshotStore
 {
-    public function load(string $id): ?EventSourcedAggregateRoot;
+    /**
+     * @throws SnapshotNotFoundException
+     */
+    public function load(string $id): EventSourcedAggregateRoot;
 
     public function snapshot(EventSourcedAggregateRoot $aggregateRoot): void;
 }

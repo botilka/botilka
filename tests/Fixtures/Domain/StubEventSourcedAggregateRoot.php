@@ -14,7 +14,7 @@ final class StubEventSourcedAggregateRoot implements EventSourcedAggregateRoot
     private $foo = 123;
 
     protected $eventMap = [
-        StubEvent::class => 'onStubHasStubbed',
+        StubEvent::class => 'stubbed',
     ];
 
     public function getAggregateRootId(): string
@@ -30,7 +30,17 @@ final class StubEventSourcedAggregateRoot implements EventSourcedAggregateRoot
         return $this->foo;
     }
 
-    public function onStubHasStubbed(StubEvent $event): EventSourcedAggregateRoot
+    public function stub(int $foo): array
+    {
+        $event = new StubEvent($foo);
+
+        return [
+            $this->apply($event),
+            $event,
+        ];
+    }
+
+    private function stubbed(StubEvent $event): EventSourcedAggregateRoot
     {
         $instance = clone $this;
         $instance->foo = $event->getFoo();

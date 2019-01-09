@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Botilka\Infrastructure\MongoDB;
 
 use Botilka\Event\Event;
+use Botilka\EventStore\AggregateRootNotFoundException;
 use Botilka\EventStore\EventStore;
 use Botilka\EventStore\EventStoreConcurrencyException;
 use MongoDB\Collection;
@@ -29,29 +30,46 @@ final class EventStoreMongoDB implements EventStore
 
     public function load(string $id): array
     {
-        return $this->deserialize(
-            $this->collection->find(['id' => $id], ['sort' => ['playhead' => 1]])
-        );
+        $criteria = ['id' => $id];
+        if (0 === $this->collection->count($criteria)) {
+            throw new AggregateRootNotFoundException("No aggregrate root found for $id.");
+        }
+
+        $events = $this->collection->find(['id' => $id], ['sort' => ['playhead' => 1]]);
+
+        return $this->deserialize($events);
     }
 
     public function loadFromPlayhead(string $id, int $fromPlayhead): array
     {
-        return $this->deserialize(
-            $this->collection->find([
-                'id' => $id,
-                'playhead' => ['$gte' => $fromPlayhead],
-            ], ['sort' => ['playhead' => 1]])
-        );
+        $criteria = [
+            'id' => $id,
+            'playhead' => ['$gte' => $fromPlayhead],
+        ];
+
+        if (0 === $this->collection->count($criteria)) {
+            throw new AggregateRootNotFoundException("No aggregrate root found for $id from playhead $fromPlayhead.");
+        }
+
+        $events = $this->collection->find($criteria, ['sort' => ['playhead' => 1]]);
+
+        return $this->deserialize($events);
     }
 
     public function loadFromPlayheadToPlayhead(string $id, int $fromPlayhead, int $toPlayhead): array
     {
-        return $this->deserialize(
-            $this->collection->find([
-                'id' => $id,
-                'playhead' => ['$gte' => $fromPlayhead, '$lte' => $toPlayhead],
-            ], ['sort' => ['playhead' => 1]])
-        );
+        $criteria = [
+            'id' => $id,
+            'playhead' => ['$gte' => $fromPlayhead, '$lte' => $toPlayhead],
+        ];
+
+        if (0 === $this->collection->count($criteria)) {
+            throw new AggregateRootNotFoundException("No aggregrate root found for $id from playhead $fromPlayhead to playhead $toPlayhead.");
+        }
+
+        $events = $this->collection->find($criteria, ['sort' => ['playhead' => 1]]);
+
+        return $this->deserialize($events);
     }
 
     public function append(string $id, int $playhead, string $type, Event $payload, ?array $metadata, \DateTimeImmutable $recordedOn, string $domain): void
