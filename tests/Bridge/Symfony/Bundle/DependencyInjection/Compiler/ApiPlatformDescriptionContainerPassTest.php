@@ -11,11 +11,11 @@ use Botilka\Bridge\Symfony\Bundle\DependencyInjection\Compiler\ApiPlatformDescri
 use Botilka\Tests\Fixtures\Application\Command\ParameterNotTypedCommand;
 use Botilka\Tests\Fixtures\Application\Command\SimpleCommand;
 use Botilka\Tests\Fixtures\Application\Command\WithoutConstructorCommand;
-use Botilka\Tests\Fixtures\Application\Command\WithValueObjectCommand;
+use Botilka\Tests\Fixtures\Application\Command\ComplexCommand;
 use Botilka\Tests\Fixtures\Application\Query\ParameterNotTypedQuery;
 use Botilka\Tests\Fixtures\Application\Query\SimpleQuery;
 use Botilka\Tests\Fixtures\Application\Query\WithoutConstructorQuery;
-use Botilka\Tests\Fixtures\Application\Query\WithValueObjectQuery;
+use Botilka\Tests\Fixtures\Application\Query\ComplexQuery;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -41,7 +41,7 @@ final class ApiPlatformDescriptionContainerPassTest extends TestCase
         $container = $this->container;
 
         $container->setDefinition(SimpleCommand::class, (new Definition(SimpleCommand::class))->addTag('cqrs.command'));
-        $container->setDefinition(WithValueObjectCommand::class, (new Definition(WithValueObjectCommand::class))->addTag('cqrs.command'));
+        $container->setDefinition(ComplexCommand::class, (new Definition(ComplexCommand::class))->addTag('cqrs.command'));
 
         $this->compilerPass->process($container);
 
@@ -54,8 +54,8 @@ final class ApiPlatformDescriptionContainerPassTest extends TestCase
                     'bar' => '?int',
                 ],
             ],
-            'botilka_tests_fixtures_application_with_value_object' => [
-                'class' => 'Botilka\\Tests\\Fixtures\\Application\\Command\\WithValueObjectCommand',
+            'botilka_tests_fixtures_application_complex' => [
+                'class' => 'Botilka\\Tests\\Fixtures\\Application\\Command\\ComplexCommand',
                 'payload' => [
                     'foo' => 'string',
                     'bar' => '?int',
@@ -63,6 +63,8 @@ final class ApiPlatformDescriptionContainerPassTest extends TestCase
                         'baz' => 'string',
                         'buz' => 'float',
                     ],
+                    'lup' => 'string',
+                    'ool' => '?string',
                 ],
             ],
         ];
@@ -75,7 +77,7 @@ final class ApiPlatformDescriptionContainerPassTest extends TestCase
         $container = $this->container;
 
         $container->setDefinition(SimpleQuery::class, (new Definition(SimpleQuery::class))->addTag('cqrs.query'));
-        $container->setDefinition(WithValueObjectQuery::class, (new Definition(WithValueObjectQuery::class))->addTag('cqrs.query'));
+        $container->setDefinition(ComplexQuery::class, (new Definition(ComplexQuery::class))->addTag('cqrs.query'));
 
         $this->compilerPass->process($container);
 
@@ -88,8 +90,8 @@ final class ApiPlatformDescriptionContainerPassTest extends TestCase
                     'bar' => '?int',
                 ],
             ],
-            'botilka_tests_fixtures_application_with_value_object' => [
-                'class' => 'Botilka\\Tests\\Fixtures\\Application\\Query\\WithValueObjectQuery',
+            'botilka_tests_fixtures_application_complex' => [
+                'class' => 'Botilka\\Tests\\Fixtures\\Application\\Query\\ComplexQuery',
                 'payload' => [
                     'foo' => 'string',
                     'bar' => '?int',
@@ -97,6 +99,8 @@ final class ApiPlatformDescriptionContainerPassTest extends TestCase
                         'baz' => 'string',
                         'buz' => 'float',
                     ],
+                    'lup' => 'string',
+                    'ool' => '?string',
                 ],
             ],
         ];

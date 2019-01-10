@@ -60,14 +60,12 @@ final class ApiPlatformDescriptionContainerPass implements CompilerPassInterface
         }
         $constructorParameters = $constructor->getParameters();
         foreach ($constructorParameters as $parameter) {
-
             $parameterClass = $parameter->getClass();
+            $parameterName = $parameter->getName();
 
             if (null !== $parameterClass) {
-
-                $parameterName = $parameter->getName();
-                if (in_array($parameterClass->getName(), [\DateTime::class, \DateTimeImmutable::class, \DateInterval::class], true)) {
-                    $values[$parameterName] = 'string';
+                if (\in_array($parameterClass->getName(), [\DateTime::class, \DateTimeImmutable::class, \DateInterval::class], true)) {
+                    $values[$parameterName] = ($parameter->allowsNull() ? '?' : '').'string';
                     continue;
                 }
 
@@ -75,7 +73,6 @@ final class ApiPlatformDescriptionContainerPass implements CompilerPassInterface
                 continue;
             }
 
-            $parameterName = $parameter->getName();
             /** @var ?\ReflectionType $parameterType */
             $parameterType = $parameter->getType();
             if (null === $parameterType) {
