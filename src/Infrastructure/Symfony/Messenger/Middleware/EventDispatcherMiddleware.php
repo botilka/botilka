@@ -42,19 +42,19 @@ final class EventDispatcherMiddleware implements MiddlewareInterface
         $envelope = $stack->next()->handle($envelope, $stack); // execute the handler first
         /** @var HandledStamp $handledStamp */
         $handledStamp = $envelope->all(HandledStamp::class)[0];
-        $result = $handledStamp->getResult();
+        $commandResponse = $handledStamp->getResult();
 
-        if (!$result instanceof CommandResponse) {
-            throw new \InvalidArgumentException(\sprintf('Result must be an instance of %s, %s given.', CommandResponse::class, \is_object($result) ? \get_class($result) : \gettype($result)));
+        if (!$commandResponse instanceof CommandResponse) {
+            throw new \InvalidArgumentException(\sprintf('Result must be an instance of %s, %s given.', CommandResponse::class, \is_object($commandResponse) ? \get_class($commandResponse) : \gettype($commandResponse)));
         }
 
-        $event = $result->getEvent();
+        $event = $commandResponse->getEvent();
 
         // persist to event store only if aggregate is event sourced
-        if ($result instanceof EventSourcedCommandResponse) {
+        if ($commandResponse instanceof EventSourcedCommandResponse) {
             try {
                 // @todo use repository
-                $this->eventStore->append($result->getId(), $result->getPlayhead(), \get_class($event), $event, null, new \DateTimeImmutable(), $result->getDomain());
+                $this->eventStore->append($commandResponse->getId(), $commandResponse->getPlayhead(), \get_class($event), $event, null, new \DateTimeImmutable(), $commandResponse->getDomain());
             } catch (EventStoreConcurrencyException $e) {
                 $this->logger->error($e->getMessage());
 
