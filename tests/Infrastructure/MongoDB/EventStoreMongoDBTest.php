@@ -13,12 +13,6 @@ final class EventStoreMongoDBTest extends AbstractKernelTestCase
 {
     use EventStoreMongoDBSetup;
 
-    public static function setUpBeforeClass()
-    {
-        [$eventStore, $collection] = self::setUpEventStore();
-        self::$eventStore = $eventStore;
-    }
-
     /**
      * @dataProvider loadFunctionalProvider
      * @group functional
@@ -26,7 +20,7 @@ final class EventStoreMongoDBTest extends AbstractKernelTestCase
     public function testLoadFunctional(int $expectedCount, string $id): void
     {
         /** @var EventStore $eventStore */
-        $eventStore = static::$eventStore;
+        [$eventStore, $collection] = $this->setUpEventStore();
         $this->assertCount($expectedCount, $eventStore->load($id));
     }
 
@@ -46,7 +40,7 @@ final class EventStoreMongoDBTest extends AbstractKernelTestCase
     public function testLoadNotFoundFunctional(): void
     {
         /** @var EventStore $eventStore */
-        $eventStore = static::$eventStore;
+        [$eventStore, $collection] = $this->setUpEventStore();
         $eventStore->load('non_existent');
     }
 
@@ -57,7 +51,7 @@ final class EventStoreMongoDBTest extends AbstractKernelTestCase
     public function testLoadFromPlayheadFunctional(int $expectedCount, string $id, int $fromPlayhead): void
     {
         /** @var EventStore $eventStore */
-        $eventStore = static::$eventStore;
+        [$eventStore, $collection] = $this->setUpEventStore();
         $this->assertCount($expectedCount, $eventStore->loadFromPlayhead($id, $fromPlayhead));
     }
 
@@ -79,7 +73,7 @@ final class EventStoreMongoDBTest extends AbstractKernelTestCase
     public function testLoadFromPlayheadNotFoundFunctional(): void
     {
         /** @var EventStore $eventStore */
-        $eventStore = static::$eventStore;
+        [$eventStore, $collection] = $this->setUpEventStore();
         $eventStore->loadFromPlayhead('non_existent', 2);
     }
 
@@ -90,7 +84,7 @@ final class EventStoreMongoDBTest extends AbstractKernelTestCase
     public function testLoadFromPlayheadToPlayheadFunctional(int $expectedCount, string $id, int $fromPlayhead, int $toPlayhead): void
     {
         /** @var EventStore $eventStore */
-        $eventStore = static::$eventStore;
+        [$eventStore, $collection] = $this->setUpEventStore();
         $this->assertCount($expectedCount, $eventStore->loadFromPlayheadToPlayhead($id, $fromPlayhead, $toPlayhead));
     }
 
@@ -112,7 +106,7 @@ final class EventStoreMongoDBTest extends AbstractKernelTestCase
     public function testLoadFromPlayheadToPlayheadNotFoundFunctional(): void
     {
         /** @var EventStore $eventStore */
-        $eventStore = static::$eventStore;
+        [$eventStore, $collection] = $this->setUpEventStore();
         $eventStore->loadFromPlayheadToPlayhead('non_existent', 2, 4);
     }
 
@@ -124,7 +118,7 @@ final class EventStoreMongoDBTest extends AbstractKernelTestCase
     public function testAppendBulkWriteExceptionFunctional(): void
     {
         /** @var EventStore $eventStore */
-        $eventStore = static::$eventStore;
+        [$eventStore, $collection] = $this->setUpEventStore();
         $eventStore->append('bar', 1, StubEvent::class, new StubEvent(42), null, new \DateTimeImmutable(), 'Foo\\Domain');
     }
 }

@@ -14,10 +14,7 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 trait EventStoreMongoDBSetup
 {
-    /** @var EventStore */
-    private static $eventStore;
-
-    private static function setUpEventStore(): array
+    private function setUpEventStore(): array
     {
         static::bootKernel();
         $container = static::$container;
@@ -40,7 +37,7 @@ trait EventStoreMongoDBSetup
         $denormalizer = $container->get('serializer');
 
         $eventStore = new EventStoreMongoDB($collection, $normalizer, $denormalizer);
-        static::assertInstanceOf(EventStore::class, $eventStore);
+        $this->assertInstanceOf(EventStore::class, $eventStore);
 
         foreach (['foo', 'bar'] as $id) {
             for ($i = 0; $i < ('foo' === $id ? 10 : 5); ++$i) {

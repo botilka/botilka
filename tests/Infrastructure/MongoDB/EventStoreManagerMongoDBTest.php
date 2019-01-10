@@ -20,7 +20,7 @@ final class EventStoreManagerMongoDBTest extends AbstractKernelTestCase
      */
     public function testLoadByAggregateRootIdFunctional(int $shouldBeCount, string $id, ?int $from = null, ?int $to = null): void
     {
-        [$eventStore, $collection] = self::setUpEventStore();
+        [$eventStore, $collection] = $this->setUpEventStore();
 
         /** @var DenormalizerInterface $denormalizer */
         $denormalizer = self::$container->get('serializer');
