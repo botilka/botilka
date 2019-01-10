@@ -6,16 +6,16 @@ namespace Botilka\Tests\Infrastructure\MongoDB;
 
 use Botilka\EventStore\EventStore;
 use Botilka\Tests\AbstractKernelTestCase;
+use Botilka\Tests\Fixtures\Application\EventStore\EventStoreMongoDBSetup;
 use Botilka\Tests\Fixtures\Domain\StubEvent;
 
 final class EventStoreMongoDBTest extends AbstractKernelTestCase
 {
-    /** @var EventStore */
-    protected static $eventStore;
+    use EventStoreMongoDBSetup;
 
     public static function setUpBeforeClass()
     {
-        [$eventStore, $collection] = self::setUpMongoDbEventStore();
+        [$eventStore, $collection] = self::setUpEventStore();
         self::$eventStore = $eventStore;
     }
 

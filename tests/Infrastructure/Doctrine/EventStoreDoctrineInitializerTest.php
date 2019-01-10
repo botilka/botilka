@@ -6,6 +6,7 @@ namespace Botilka\Tests\Infrastructure\Doctrine;
 
 use Botilka\Infrastructure\Doctrine\EventStoreDoctrineInitializer;
 use Botilka\Tests\AbstractKernelTestCase;
+use Botilka\Tests\Fixtures\Application\EventStore\EventStoreDoctrineSetup;
 use Doctrine\DBAL\Connection;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
@@ -14,10 +15,12 @@ final class EventStoreDoctrineInitializerTest extends AbstractKernelTestCase
     /** @var EventStoreDoctrineInitializer */
     private $initializer;
 
+    use EventStoreDoctrineSetup;
+
     private function resetEventStore(): void
     {
         $kernel = static::bootKernel();
-        static::setUpDoctrineEventStore($kernel);
+        static::setUpEventStore($kernel);
         $container = self::$container;
 
         /** @var string $table */
