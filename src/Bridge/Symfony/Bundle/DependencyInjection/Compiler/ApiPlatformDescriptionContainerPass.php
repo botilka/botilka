@@ -60,9 +60,18 @@ final class ApiPlatformDescriptionContainerPass implements CompilerPassInterface
         }
         $constructorParameters = $constructor->getParameters();
         foreach ($constructorParameters as $parameter) {
+
             $parameterClass = $parameter->getClass();
+
             if (null !== $parameterClass) {
-                $values[$parameter->getName()] = $this->extractConstructorArgumentsUntilScalar($parameterClass);
+
+                $parameterName = $parameter->getName();
+                if (in_array($parameterClass->getName(), [\DateTime::class, \DateTimeImmutable::class, \DateInterval::class], true)) {
+                    $values[$parameterName] = 'string';
+                    continue;
+                }
+
+                $values[$parameterName] = $this->extractConstructorArgumentsUntilScalar($parameterClass);
                 continue;
             }
 
