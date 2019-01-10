@@ -27,7 +27,7 @@ matrix:
 
 before_script:
   - composer global require friendsofphp/php-cs-fixer
-  - export PATH='$PATH:$HOME/.composer/vendor/bin'
+  - export PATH="$PATH:$HOME/.composer/vendor/bin"
 
 script:
   - vendor/bin/phpunit --group default,functional --coverage-clover=coverage.clover
