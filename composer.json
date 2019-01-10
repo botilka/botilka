@@ -30,8 +30,16 @@
     },
     "scripts": {
         "analyze": "phpstan analyze",
-        "test": "phpunit",
-        "testcov": "phpunit --group default,functional --coverage-html=coverage"
+        "tests:unit": "phpunit",
+        "tests:functional": "phpunit --group functional",
+        "tests:coverage": "phpunit --group default,functional --coverage-html=coverage",
+        "csfix:dry": "php php-cs-fixer fix --allow-risky=yes --dry-run",
+        "csfix": "php php-cs-fixer fix --allow-risky=yes",
+        "tests": [
+            "@analyze",
+            "@tests:coverage",
+            "@csfix:dry"
+        ]
     },
     "suggest": {
         "doctrine/orm": "To use Doctrine as an EventStore",
