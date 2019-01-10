@@ -14,6 +14,8 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 final class ApiPlatformDescriptionContainerPass implements CompilerPassInterface
 {
+    private const FORCE_PARAMETERS_AS_STRING = [\DateTime::class, \DateTimeImmutable::class, \DateInterval::class];
+
     private const RESOURCE_TO_TAG = [
         Command::class => 'cqrs.command',
         Query::class => 'cqrs.query',
@@ -64,7 +66,7 @@ final class ApiPlatformDescriptionContainerPass implements CompilerPassInterface
             $parameterName = $parameter->getName();
 
             if (null !== $parameterClass) {
-                if (\in_array($parameterClass->getName(), [\DateTime::class, \DateTimeImmutable::class, \DateInterval::class], true)) {
+                if (\in_array($parameterClass->getName(), self::FORCE_PARAMETERS_AS_STRING, true)) {
                     $values[$parameterName] = ($parameter->allowsNull() ? '?' : '').'string';
                     continue;
                 }
