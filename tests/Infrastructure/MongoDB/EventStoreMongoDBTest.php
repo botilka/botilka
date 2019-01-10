@@ -15,7 +15,7 @@ final class EventStoreMongoDBTest extends AbstractKernelTestCase
 
     public static function setUpBeforeClass()
     {
-        [$eventStore, $collection] = self::setUpMongoDb();
+        [$eventStore, $collection] = self::setUpMongoDbEventStore();
         self::$eventStore = $eventStore;
     }
 
@@ -23,11 +23,11 @@ final class EventStoreMongoDBTest extends AbstractKernelTestCase
      * @dataProvider loadFunctionalProvider
      * @group functional
      */
-    public function testLoadFunctional(int $expected, string $id): void
+    public function testLoadFunctional(int $expectedCount, string $id): void
     {
         /** @var EventStore $eventStore */
         $eventStore = static::$eventStore;
-        $this->assertCount($expected, $eventStore->load($id));
+        $this->assertCount($expectedCount, $eventStore->load($id));
     }
 
     public function loadFunctionalProvider(): array
@@ -39,14 +39,59 @@ final class EventStoreMongoDBTest extends AbstractKernelTestCase
     }
 
     /**
-     * @dataProvider loadFromPlayheadToPlayheadFunctionalProvider
+     * @expectedException \Botilka\EventStore\AggregateRootNotFoundException
+     * @expectedExceptionMessage No aggregrate root found for non_existent.
      * @group functional
      */
-    public function testLoadFromPlayheadToPlayheadFunctional(int $expected, string $id, int $fromPlayhead, int $toPlayhead): void
+    public function testLoadNotFoundFunctional(): void
     {
         /** @var EventStore $eventStore */
         $eventStore = static::$eventStore;
-        $this->assertCount($expected, $eventStore->loadFromPlayheadToPlayhead($id, $fromPlayhead, $toPlayhead));
+        $eventStore->load('non_existent');
+    }
+
+    /**
+     * @dataProvider loadFromPlayheadFunctionalProvider
+     * @group functional
+     */
+    public function testLoadFromPlayheadFunctional(int $expectedCount, string $id, int $fromPlayhead): void
+    {
+        /** @var EventStore $eventStore */
+        $eventStore = static::$eventStore;
+        $this->assertCount($expectedCount, $eventStore->loadFromPlayhead($id, $fromPlayhead));
+    }
+
+    public function loadFromPlayheadFunctionalProvider(): array
+    {
+        return [
+            [8, 'foo', 2],
+            [6, 'foo', 4],
+            [3, 'bar', 2],
+            [1, 'bar', 4],
+        ];
+    }
+
+    /**
+     * @expectedException \Botilka\EventStore\AggregateRootNotFoundException
+     * @expectedExceptionMessage No aggregrate root found for non_existent from playhead 2.
+     * @group functional
+     */
+    public function testLoadFromPlayheadNotFoundFunctional(): void
+    {
+        /** @var EventStore $eventStore */
+        $eventStore = static::$eventStore;
+        $eventStore->loadFromPlayhead('non_existent', 2);
+    }
+
+    /**
+     * @dataProvider loadFromPlayheadToPlayheadFunctionalProvider
+     * @group functional
+     */
+    public function testLoadFromPlayheadToPlayheadFunctional(int $expectedCount, string $id, int $fromPlayhead, int $toPlayhead): void
+    {
+        /** @var EventStore $eventStore */
+        $eventStore = static::$eventStore;
+        $this->assertCount($expectedCount, $eventStore->loadFromPlayheadToPlayhead($id, $fromPlayhead, $toPlayhead));
     }
 
     public function loadFromPlayheadToPlayheadFunctionalProvider(): array
@@ -60,24 +105,15 @@ final class EventStoreMongoDBTest extends AbstractKernelTestCase
     }
 
     /**
-     * @dataProvider loadFromPlayheadFunctionalProvider
+     * @expectedException \Botilka\EventStore\AggregateRootNotFoundException
+     * @expectedExceptionMessage No aggregrate root found for non_existent from playhead 2 to playhead 4.
      * @group functional
      */
-    public function testLoadFromPlayheadFunctional(int $expected, string $id, int $fromPlayhead): void
+    public function testLoadFromPlayheadToPlayheadNotFoundFunctional(): void
     {
         /** @var EventStore $eventStore */
         $eventStore = static::$eventStore;
-        $this->assertCount($expected, $eventStore->loadFromPlayhead($id, $fromPlayhead));
-    }
-
-    public function loadFromPlayheadFunctionalProvider(): array
-    {
-        return [
-            [8, 'foo', 2],
-            [6, 'foo', 4],
-            [3, 'bar', 2],
-            [1, 'bar', 4],
-        ];
+        $eventStore->loadFromPlayheadToPlayhead('non_existent', 2, 4);
     }
 
     /**

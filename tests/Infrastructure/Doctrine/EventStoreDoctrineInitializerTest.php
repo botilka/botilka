@@ -17,7 +17,7 @@ final class EventStoreDoctrineInitializerTest extends AbstractKernelTestCase
     private function resetEventStore(): void
     {
         $kernel = static::bootKernel();
-        static::setUpDoctrine($kernel);
+        static::setUpDoctrineEventStore($kernel);
         $container = self::$container;
 
         /** @var string $table */

@@ -31,7 +31,7 @@ abstract class AbstractKernelTestCase extends KernelTestCase
         return parent::bootKernel($options + ['environment' => 'test']);
     }
 
-    public static function setUpDoctrine(KernelInterface $kernel): void
+    public static function setUpDoctrineEventStore(KernelInterface $kernel): void
     {
         $application = new DropDatabaseDoctrineCommand();
         $application->setContainer(self::$container);
@@ -42,7 +42,7 @@ abstract class AbstractKernelTestCase extends KernelTestCase
         $application->run(new ArrayInput([]), new NullOutput());
     }
 
-    protected static function setUpMongoDb(): array
+    protected static function setUpMongoDbEventStore(): array
     {
         static::bootKernel();
         $container = static::$container;
@@ -65,6 +65,7 @@ abstract class AbstractKernelTestCase extends KernelTestCase
         $collection = $client->selectCollection($database, $collectionName);
 
         $eventStore = new EventStoreMongoDB($collection, $normalizer, $denormalizer);
+        static::assertInstanceOf(EventStore::class, $eventStore);
 
         foreach (['foo', 'bar'] as $id) {
             for ($i = 0; $i < ('foo' === $id ? 10 : 5); ++$i) {
@@ -76,7 +77,6 @@ abstract class AbstractKernelTestCase extends KernelTestCase
                 $eventStore->append($id, $i, StubEvent::class, new StubEvent($i * ('faz' === $id ? 4 : 5)), [$id => $i], new \DateTimeImmutable(), 'FazBaz\\Domain');
             }
         }
-        static::assertInstanceOf(EventStore::class, $eventStore);
 
         return [$eventStore, $collection];
     }

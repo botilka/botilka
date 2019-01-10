@@ -17,7 +17,7 @@ final class EventStoreManagerMongoDBTest extends AbstractKernelTestCase
      */
     public function testLoadByAggregateRootIdFunctional(int $shouldBeCount, string $id, ?int $from = null, ?int $to = null): void
     {
-        [$eventStore, $collection] = self::setUpMongoDb();
+        [$eventStore, $collection] = self::setUpMongoDbEventStore();
 
         /** @var DenormalizerInterface $denormalizer */
         $denormalizer = self::$container->get('serializer');
@@ -46,7 +46,7 @@ final class EventStoreManagerMongoDBTest extends AbstractKernelTestCase
      */
     public function testLoadByDomainFunctional(int $shouldBeCount, string $domain): void
     {
-        [$eventStore, $collection] = self::setUpMongoDb();
+        [$eventStore, $collection] = self::setUpMongoDbEventStore();
 
         /** @var DenormalizerInterface $denormalizer */
         $denormalizer = self::$container->get('serializer');
