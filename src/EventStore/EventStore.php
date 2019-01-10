@@ -9,7 +9,7 @@ use Botilka\Event\Event;
 interface EventStore
 {
     /**
-     * @return Event[]*
+     * @return Event[]
      *
      * @throws AggregateRootNotFoundException
      */
