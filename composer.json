@@ -18,7 +18,7 @@
     "require-dev": {
         "api-platform/core": "^2.3",
         "doctrine/doctrine-bundle": "^1.9.1",
-        "doctrine/orm": "^2.6",
+        "doctrine/orm": "^2.6.3",
         "jangregor/phpstan-prophecy": "^0.2.0",
         "mongodb/mongodb": "^1.4",
         "phpstan/phpstan": "^0.10.3",
