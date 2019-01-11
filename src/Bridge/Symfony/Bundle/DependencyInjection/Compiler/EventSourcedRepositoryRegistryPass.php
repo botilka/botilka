@@ -23,6 +23,7 @@ final class EventSourcedRepositoryRegistryPass implements CompilerPassInterface
             $argumentNames = \array_keys($repositoryDef->getArguments());
             if (!\in_array('$aggregateRootClassName', $argumentNames, true)) {
                 $container->log($this, "Skipped: repository '$serviceId' don't have an argument named '\$aggregateRootClassName'.");
+                continue;
             }
 
             $aggregateRootClassName = $repositoryDef->getArgument('$aggregateRootClassName');

@@ -12,7 +12,6 @@ use Botilka\EventStore\EventStore;
 use Botilka\EventStore\EventStoreConcurrencyException;
 use Botilka\Projector\Projection;
 use Botilka\Projector\Projectionist;
-use Botilka\Repository\EventSourcedRepositoryRegistry;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Envelope;

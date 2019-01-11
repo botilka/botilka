@@ -16,7 +16,7 @@ final class EventSourcedRepositoryRegistry implements ContainerInterface
 {
     private $repositories;
 
-    public function __construct(array $repositories)
+    public function __construct(array $repositories = [])
     {
         $this->repositories = $repositories;
     }
