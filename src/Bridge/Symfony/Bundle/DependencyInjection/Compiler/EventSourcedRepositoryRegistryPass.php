@@ -31,6 +31,6 @@ final class EventSourcedRepositoryRegistryPass implements CompilerPassInterface
             $services[$aggregateRootClassName] = $repositoryDef;
         }
 
-        $registryDef->setArgument('$services', $services);
+        $registryDef->setArgument('$repositories', $services);
     }
 }

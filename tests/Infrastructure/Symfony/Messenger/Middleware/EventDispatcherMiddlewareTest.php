@@ -7,11 +7,13 @@ namespace Botilka\Tests\Infrastructure\Symfony\Messenger\Middleware;
 use Botilka\Application\Command\CommandResponse;
 use Botilka\Application\Command\EventSourcedCommandResponse;
 use Botilka\Domain\EventSourcedAggregateRoot;
+use Botilka\Event\Event;
 use Botilka\Event\EventBus;
 use Botilka\EventStore\EventStore;
 use Botilka\EventStore\EventStoreConcurrencyException;
 use Botilka\Infrastructure\Symfony\Messenger\Middleware\EventDispatcherMiddleware;
 use Botilka\Projector\Projectionist;
+use Botilka\Repository\EventSourcedRepository;
 use Botilka\Tests\Fixtures\Domain\StubEvent;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Container\ContainerInterface;
@@ -43,16 +45,8 @@ final class EventDispatcherMiddlewareTest extends MiddlewareTestCase
         $this->projectionist = $this->createMock(Projectionist::class);
     }
 
-    /** @dataProvider handleProvider */
-    public function testHandle(CommandResponse $commandResponse): void
+    private function addHandleAssertions(Event $event): void
     {
-        $event = $commandResponse->getEvent();
-        $eventStoreAppendExpected = EventSourcedCommandResponse::class === \get_class($commandResponse);
-
-        $this->eventStore->expects($eventStoreAppendExpected ? $this->once() : $this->never())
-            ->method('append')
-            ->with('foo', 51, \get_class($event), $event, null, $this->isInstanceOf(\DateTimeImmutable::class), 'FooBar\\Domain');
-
         $this->eventBus->expects($this->once())
             ->method('dispatch')
             ->with($event);
@@ -62,18 +56,63 @@ final class EventDispatcherMiddlewareTest extends MiddlewareTestCase
 
         $this->projectionist->expects($this->once())
             ->method('play');
+    }
+
+    public function testHandleCommandResponse(): void
+    {
+        $event = new StubEvent(123);
+        $commandResponse = new CommandResponse('foo', $event);
+
+        $this->eventStore->expects($this->never())
+            ->method('append');
+
+        $this->addHandleAssertions($event);
 
         $middleware = new EventDispatcherMiddleware($this->eventStore, $this->repositoryRegistry, $this->eventBus, $this->logger, $this->projectionist);
         $middleware->handle($this->getEnvelopeWithHandledStamp($commandResponse), $this->getStackMock());
     }
 
-    public function handleProvider(): array
+    /** @dataProvider handleEventSourcedCommandResponseProvider */
+    public function testHandleEventSourcedCommandResponse(EventSourcedCommandResponse $commandResponse, bool $registryHasRepository): void
+    {
+        $event = $commandResponse->getEvent();
+        $eventStoreAppendExpected = EventSourcedCommandResponse::class === \get_class($commandResponse);
+
+        $this->eventStore->expects(!$registryHasRepository ? $this->once() : $this->never())
+            ->method('append')
+            ->with('foo', 51, \get_class($event), $event, null, $this->isInstanceOf(\DateTimeImmutable::class), 'FooBar\\Domain');
+
+        $aggregateRootClassName = \get_class($commandResponse->getAggregateRoot());
+        $this->repositoryRegistry->expects($this->once())
+            ->method('has')
+            ->with($aggregateRootClassName)
+            ->willReturn($registryHasRepository);
+
+        $repository = $this->createMock(EventSourcedRepository::class);
+        if ($registryHasRepository) {
+            $repository->expects($this->once())
+                ->method('save')
+                ->with($commandResponse);
+        }
+
+        $this->repositoryRegistry->expects($registryHasRepository ? $this->once() : $this->never())
+            ->method('get')
+            ->with($aggregateRootClassName)
+            ->willReturn($repository);
+
+        $this->addHandleAssertions($event);
+
+        $middleware = new EventDispatcherMiddleware($this->eventStore, $this->repositoryRegistry, $this->eventBus, $this->logger, $this->projectionist);
+        $middleware->handle($this->getEnvelopeWithHandledStamp($commandResponse), $this->getStackMock());
+    }
+
+    public function handleEventSourcedCommandResponseProvider(): array
     {
         $event = new StubEvent(1337);
 
         return [
-            [new EventSourcedCommandResponse('foo', $event, 51, 'FooBar\\Domain', $this->createMock(EventSourcedAggregateRoot::class))],
-            [new CommandResponse('foo', $event)],
+            [new EventSourcedCommandResponse('foo', $event, 51, 'FooBar\\Domain', $this->createMock(EventSourcedAggregateRoot::class)), true],
+            [new EventSourcedCommandResponse('foo', $event, 51, 'FooBar\\Domain', $this->createMock(EventSourcedAggregateRoot::class)), false],
         ];
     }
 
