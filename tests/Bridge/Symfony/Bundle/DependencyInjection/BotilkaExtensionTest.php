@@ -21,6 +21,7 @@ use Botilka\Infrastructure\MongoDB\EventStoreMongoDB;
 use Botilka\Infrastructure\Symfony\Messenger\Middleware\EventDispatcherMiddleware;
 use Botilka\Infrastructure\InMemory\EventStoreInMemory;
 use Botilka\Projector\Projector;
+use Botilka\Repository\EventSourcedRepository;
 use Botilka\Ui\Console\EventReplayCommand;
 use Botilka\Ui\Console\EventStoreInitializeCommand;
 use Botilka\Ui\Console\ProjectorPlayCommand;
@@ -214,6 +215,7 @@ final class BotilkaExtensionTest extends TestCase
             Command::class => ['cqrs.command'],
             Query::class => ['cqrs.query'],
             EventStoreInitializer::class => ['botilka.event_store.initializer'],
+            EventSourcedRepository::class => ['botilka.repository.event_sourced'],
         ];
         $count = \count($tags);
 

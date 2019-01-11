@@ -8,6 +8,7 @@ use Botilka\Bridge\Symfony\Bundle\BotilkaBundle;
 use Botilka\Bridge\Symfony\Bundle\DependencyInjection\Compiler\ApiPlatformCommandEntrypointActionPass;
 use Botilka\Bridge\Symfony\Bundle\DependencyInjection\Compiler\ApiPlatformDataProviderPass;
 use Botilka\Bridge\Symfony\Bundle\DependencyInjection\Compiler\ApiPlatformDescriptionContainerPass;
+use Botilka\Bridge\Symfony\Bundle\DependencyInjection\Compiler\EventSourcedRepositoryRegistryPass;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
@@ -22,12 +23,13 @@ final class BotilkaBundleTest extends TestCase
         $container->expects($this->once())
             ->method('hasExtension')->willReturn($hasExtension);
 
-        $container->expects($hasExtension ? $this->exactly(3) : $this->never())
+        $container->expects($hasExtension ? $this->exactly(4) : $this->never())
             ->method('addCompilerPass')
             ->withConsecutive(
                 [$this->isInstanceOf(ApiPlatformDescriptionContainerPass::class)],
                 [$this->isInstanceOf(ApiPlatformDataProviderPass::class)],
-                [$this->isInstanceOf(ApiPlatformCommandEntrypointActionPass::class)]
+                [$this->isInstanceOf(ApiPlatformCommandEntrypointActionPass::class)],
+                [$this->isInstanceOf(EventSourcedRepositoryRegistryPass::class)]
             );
 
         $bundle->build($container);
