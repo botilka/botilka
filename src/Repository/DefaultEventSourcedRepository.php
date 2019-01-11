@@ -11,19 +11,19 @@ use Botilka\EventStore\EventStore;
 final class DefaultEventSourcedRepository implements EventSourcedRepository
 {
     private $eventStore;
-    private $aggregateRootClass;
+    private $aggregateRootClassName;
 
-    public function __construct(EventStore $eventStore, string $aggregateRootClass)
+    public function __construct(EventStore $eventStore, string $aggregateRootClassName)
     {
         $this->eventStore = $eventStore;
-        $this->aggregateRootClass = $aggregateRootClass;
+        $this->aggregateRootClassName = $aggregateRootClassName;
     }
 
     public function load(string $id): EventSourcedAggregateRoot
     {
         $events = $this->eventStore->load($id);
         /** @var EventSourcedAggregateRoot $instance */
-        $instance = new $this->aggregateRootClass();
+        $instance = new $this->aggregateRootClassName();
 
         foreach ($events as $event) {
             $instance = $instance->apply($event);

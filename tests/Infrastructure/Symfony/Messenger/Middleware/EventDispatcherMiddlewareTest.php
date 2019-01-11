@@ -14,6 +14,7 @@ use Botilka\Infrastructure\Symfony\Messenger\Middleware\EventDispatcherMiddlewar
 use Botilka\Projector\Projectionist;
 use Botilka\Tests\Fixtures\Domain\StubEvent;
 use PHPUnit\Framework\MockObject\MockObject;
+use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Exception\NoHandlerForMessageException;
@@ -24,6 +25,8 @@ final class EventDispatcherMiddlewareTest extends MiddlewareTestCase
 {
     /** @var EventStore|MockObject */
     private $eventStore;
+    /** @var ContainerInterface|MockObject */
+    private $repositoryRegistry;
     /** @var EventBus|MockObject */
     private $eventBus;
     /** @var LoggerInterface|MockObject */
@@ -34,6 +37,7 @@ final class EventDispatcherMiddlewareTest extends MiddlewareTestCase
     protected function setUp()
     {
         $this->eventStore = $this->createMock(EventStore::class);
+        $this->repositoryRegistry = $this->createMock(ContainerInterface::class);
         $this->eventBus = $this->createMock(EventBus::class);
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->projectionist = $this->createMock(Projectionist::class);
@@ -59,7 +63,7 @@ final class EventDispatcherMiddlewareTest extends MiddlewareTestCase
         $this->projectionist->expects($this->once())
             ->method('play');
 
-        $middleware = new EventDispatcherMiddleware($this->eventStore, $this->eventBus, $this->logger, $this->projectionist);
+        $middleware = new EventDispatcherMiddleware($this->eventStore, $this->repositoryRegistry, $this->eventBus, $this->logger, $this->projectionist);
         $middleware->handle($this->getEnvelopeWithHandledStamp($commandResponse), $this->getStackMock());
     }
 
@@ -91,7 +95,7 @@ final class EventDispatcherMiddlewareTest extends MiddlewareTestCase
 
         $commandResponse = new CommandResponse('foo', $event);
 
-        $middleware = new EventDispatcherMiddleware($this->eventStore, $this->eventBus, $this->logger, $this->projectionist);
+        $middleware = new EventDispatcherMiddleware($this->eventStore, $this->repositoryRegistry, $this->eventBus, $this->logger, $this->projectionist);
         $middleware->handle($this->getEnvelopeWithHandledStamp($commandResponse), $this->getStackMock());
     }
 
@@ -119,7 +123,7 @@ final class EventDispatcherMiddlewareTest extends MiddlewareTestCase
 
         $commandResponse = new EventSourcedCommandResponse('foo', $event, 51, 'FooBar\\Domain', $this->createMock(EventSourcedAggregateRoot::class));
 
-        $middleware = new EventDispatcherMiddleware($this->eventStore, $this->eventBus, $this->logger, $this->projectionist);
+        $middleware = new EventDispatcherMiddleware($this->eventStore, $this->repositoryRegistry, $this->eventBus, $this->logger, $this->projectionist);
         $middleware->handle($this->getEnvelopeWithHandledStamp($commandResponse), $this->getStackMock());
     }
 
@@ -138,7 +142,7 @@ final class EventDispatcherMiddlewareTest extends MiddlewareTestCase
         $this->projectionist->expects($this->never())
             ->method('play');
 
-        $middleware = new EventDispatcherMiddleware($this->eventStore, $this->eventBus, $this->logger, $this->projectionist);
+        $middleware = new EventDispatcherMiddleware($this->eventStore, $this->repositoryRegistry, $this->eventBus, $this->logger, $this->projectionist);
         $middleware->handle($this->getEnvelopeWithHandledStamp(new \stdClass()), $this->getStackMock());
     }
 

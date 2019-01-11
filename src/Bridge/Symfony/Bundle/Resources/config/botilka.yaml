@@ -13,6 +13,8 @@ services:
     Botilka\Infrastructure\InMemory\EventStoreManagerInMemory: ~
     Botilka\EventStore\EventStoreManager: '@Botilka\Infrastructure\InMemory\EventStoreManagerInMemory'
 
+    Botilka\Repository\EventSourcedRepositoryRegistry: ~
+
     Botilka\Ui\Console\EventReplayCommand: ~
     Botilka\Ui\Console\ProjectorPlayCommand: ~
 
