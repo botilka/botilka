@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Botilka\Tests\Infrastructure\MongoDB;
+namespace Botilka\Tests\Infrastructure\MongoDB\Initializer;
 
-use Botilka\Infrastructure\MongoDB\EventStoreMongoDBInitializer;
+use Botilka\Infrastructure\MongoDB\Initializer\EventStoreMongoDBInitializer;
 use Botilka\Tests\AbstractKernelTestCase;
 use MongoDB\Client;
 use MongoDB\Collection;

@@ -6,7 +6,6 @@ namespace Botilka\Tests\Bridge\Symfony\Bundle\DependencyInjection;
 
 use Botilka\Application\Command\Command;
 use Botilka\Application\Command\CommandHandler;
-use Botilka\Application\EventStore\EventStoreInitializer;
 use Botilka\Application\Query\Query;
 use Botilka\Application\Query\QueryHandler;
 use Botilka\Bridge\ApiPlatform\Action\CommandEntrypointAction;
@@ -18,12 +17,13 @@ use Botilka\Event\EventHandler;
 use Botilka\EventStore\EventStore;
 use Botilka\Infrastructure\Doctrine\EventStoreDoctrine;
 use Botilka\Infrastructure\MongoDB\EventStoreMongoDB;
+use Botilka\Infrastructure\StoreInitializer;
 use Botilka\Infrastructure\Symfony\Messenger\Middleware\EventDispatcherMiddleware;
 use Botilka\Infrastructure\InMemory\EventStoreInMemory;
 use Botilka\Projector\Projector;
 use Botilka\Repository\EventSourcedRepository;
 use Botilka\Ui\Console\EventReplayCommand;
-use Botilka\Ui\Console\EventStoreInitializeCommand;
+use Botilka\Ui\Console\StoreInitializeCommand;
 use Botilka\Ui\Console\ProjectorPlayCommand;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Prophecy\ObjectProphecy;
@@ -172,7 +172,7 @@ final class BotilkaExtensionTest extends TestCase
         $this->extension->load($configs, $container);
 
         $this->assertSame($eventStore, (string) $container->getAlias(EventStore::class));
-        $this->assertTrue($container->hasDefinition(EventStoreInitializeCommand::class));
+        $this->assertTrue($container->hasDefinition(StoreInitializeCommand::class));
         $this->assertTrue($container->hasDefinition(EventReplayCommand::class));
         $this->assertTrue($container->hasDefinition(ProjectorPlayCommand::class));
 
@@ -214,7 +214,7 @@ final class BotilkaExtensionTest extends TestCase
             Projector::class => ['botilka.projector'],
             Command::class => ['cqrs.command'],
             Query::class => ['cqrs.query'],
-            EventStoreInitializer::class => ['botilka.event_store.initializer'],
+            StoreInitializer::class => ['botilka.store.initializer'],
             EventSourcedRepository::class => ['botilka.repository.event_sourced'],
         ];
         $count = \count($tags);

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Botilka\Tests\Infrastructure\Doctrine;
+namespace Botilka\Tests\Infrastructure\Doctrine\Initializer;
 
-use Botilka\Infrastructure\Doctrine\EventStoreDoctrineInitializer;
+use Botilka\Infrastructure\Doctrine\Initializer\EventStoreDoctrineInitializer;
 use Botilka\Tests\AbstractKernelTestCase;
 use Botilka\Tests\Fixtures\Application\EventStore\EventStoreDoctrineSetup;
 use Doctrine\DBAL\Connection;

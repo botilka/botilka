@@ -36,11 +36,11 @@ botilka:
 Botilka provide a command to create & configure the event store:
 
 ```sh
-bin/console botilka:event_store:initialize
+bin/console botilka:store:initialize event doctrine # or mongodb
 ```
 You can force recreate, but be carefull, you will lost all the previous events:
 ```sh
-bin/console botilka:event_store:initialize -f
+bin/console botilka:store:initialize event -f
 ```
 
 ## Usage

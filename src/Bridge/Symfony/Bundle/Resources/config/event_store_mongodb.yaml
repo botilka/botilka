@@ -3,6 +3,10 @@ services:
         autowire: true
         autoconfigure: true
         public: false
+        bind:
+            $client: '@MongoDB\Client'
+            $database: '%env(MONGODB_DB)%'
+
 
     MongoDB\Client:
        arguments: ['%env(MONGODB_URL)%']
@@ -20,8 +24,11 @@ services:
     Botilka\Infrastructure\MongoDB\EventStoreManagerMongoDB: ~
     Botilka\EventStore\EventStoreManager: '@Botilka\Infrastructure\MongoDB\EventStoreManagerMongoDB'
 
-    Botilka\Infrastructure\MongoDB\EventStoreMongoDBInitializer:
+    Botilka\Infrastructure\MongoDB\Initializer\EventStoreMongoDBInitializer:
         arguments:
-            $client: '@MongoDB\Client'
-            $database: '%env(MONGODB_DB)%'
             $collection: '%env(MONGODB_COLLECTION)%'
+
+    Botilka\Infrastructure\MongoDB\Initializer\SnapshotStoreMongoDBInitializer:
+        arguments:
+            arguments:
+                $collection: '%env(SNAPSHOT_STORE_COLLECTION)%'

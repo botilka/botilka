@@ -6,7 +6,7 @@ namespace Botilka\Tests\Fixtures\Application\EventStore;
 
 use Botilka\EventStore\EventStore;
 use Botilka\Infrastructure\MongoDB\EventStoreMongoDB;
-use Botilka\Infrastructure\MongoDB\EventStoreMongoDBInitializer;
+use Botilka\Infrastructure\MongoDB\Initializer\EventStoreMongoDBInitializer;
 use Botilka\Tests\Fixtures\Domain\StubEvent;
 use MongoDB\Client;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;

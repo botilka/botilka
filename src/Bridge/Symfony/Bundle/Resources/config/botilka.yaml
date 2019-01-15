@@ -24,9 +24,9 @@ services:
     Botilka\Ui\Console\ProjectorPlayCommand: ~
 
     # Event store initializers
-    Botilka\Ui\Console\EventStoreInitializeCommand:
+    Botilka\Ui\Console\StoreInitializeCommand:
         arguments:
-            $initializers: !tagged botilka.event_store.initializer
+            $initializers: !tagged botilka.store.initializer
 
     # Projectionist
     Botilka\Projector\Projectionist:

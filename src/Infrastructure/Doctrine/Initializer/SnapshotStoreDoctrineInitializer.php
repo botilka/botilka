@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace Botilka\Infrastructure\Doctrine;
+namespace Botilka\Infrastructure\Doctrine\Initializer;
 
-use Botilka\Application\EventStore\EventStoreInitializer;
+use Botilka\Infrastructure\StoreInitializer;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception\TableExistsException;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\Table;
 
-final class EventStoreDoctrineInitializer implements EventStoreInitializer
+final class SnapshotStoreDoctrineInitializer implements StoreInitializer
 {
     private $connection;
     private $table;
 
-    public function __construct(Connection $connection, string $table)
+    public function __construct(Connection $connection, string $table = 'snapshot')
     {
         $this->connection = $connection;
         $this->table = $table;
@@ -36,13 +36,8 @@ final class EventStoreDoctrineInitializer implements EventStoreInitializer
         $table = $schema->createTable($table);
         $table->addColumn('id', 'uuid');
         $table->addColumn('playhead', 'integer', ['unsigned' => true]);
-        $table->addColumn('type', 'string', ['length' => 255]);
-        $table->addColumn('payload', 'json');
-        $table->addColumn('metadata', 'json');
-        $table->addColumn('recorded_on', 'datetime_immutable');
-        $table->addColumn('domain', 'string', ['length' => 255]);
-        $table->setPrimaryKey(['id', 'playhead']);
-        $table->addIndex(['domain']);
+        $table->addColumn('payload', 'text');
+        $table->setPrimaryKey(['id']);
 
         $sql = $schema->toSql($connection->getDatabasePlatform());
 
@@ -57,5 +52,10 @@ final class EventStoreDoctrineInitializer implements EventStoreInitializer
             $connection->rollBack();
             throw new \RuntimeException($e->getMessage());
         }
+    }
+
+    public function getType(): string
+    {
+        return StoreInitializer::TYPE_SNAPSHOT_STORE;
     }
 }

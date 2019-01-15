@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Botilka\Infrastructure\MongoDB;
+namespace Botilka\Infrastructure\MongoDB\Initializer;
 
-use Botilka\Application\EventStore\EventStoreInitializer;
+use Botilka\Infrastructure\StoreInitializer;
 use MongoDB\Client;
 
-final class EventStoreMongoDBInitializer implements EventStoreInitializer
+final class SnapshotStoreMongoDBInitializer implements StoreInitializer
 {
     private $client;
     private $database;
@@ -34,6 +34,11 @@ final class EventStoreMongoDBInitializer implements EventStoreInitializer
             throw new \RuntimeException("Collection '{$this->collection}' already exists.");
         }
 
-        $database->selectCollection($this->collection)->createIndex(['id' => 1, 'playhead' => 1], ['unique' => true]);
+        $database->selectCollection($this->collection)->createIndex(['id' => 1], ['unique' => true]);
+    }
+
+    public function getType(): string
+    {
+        return StoreInitializer::TYPE_SNAPSHOT_STORE;
     }
 }
