@@ -13,7 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * @internal
  */
-trait HandleEventsFromEventStoreManagerCommandTrait
+trait GetManagedEventsFromEventStoreTrait
 {
     private function configureCommon(self $self): self
     {

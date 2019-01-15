@@ -26,7 +26,7 @@ final class EventStoreInitializeCommand extends Command
     {
         $this->setDescription('Initialize an event store implementation (create, unique index, ...).')
             ->addArgument('implementation', InputArgument::REQUIRED, 'Implementation name')
-            ->addOption('force', 'f', InputOption::VALUE_NONE, 'Force to recreate the event store. ⚠ You lost all the data, don\'t use it in production.');
+            ->addOption('force', 'f', InputOption::VALUE_NONE, 'Force to recreate the event store. ⚠ You will lost all the data, don\'t use it in production.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -55,10 +55,6 @@ final class EventStoreInitializeCommand extends Command
             }
         }
 
-        if (true === $found) {
-            $io->success('Finished.');
-        } else {
-            $io->warning('No initializer found.');
-        }
+        true === $found ? $io->success('Finished.') : $io->warning('No initializer found.');
     }
 }

@@ -13,7 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 final class EventReplayCommand extends Command
 {
-    use HandleEventsFromEventStoreManagerCommandTrait;
+    use GetManagedEventsFromEventStoreTrait;
 
     private $eventStoreManager;
     private $eventBus;

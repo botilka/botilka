@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Botilka\Application\EventStore;
+namespace Botilka\Snapshot;
 
-interface EventStoreInitializer
+interface SnapshotStoreInitializer
 {
     /**
      * @throws \RuntimeException if the store already exists

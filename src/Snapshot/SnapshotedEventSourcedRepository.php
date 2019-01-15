@@ -6,16 +6,19 @@ namespace Botilka\Snapshot;
 
 use Botilka\Application\Command\EventSourcedCommandResponse;
 use Botilka\Domain\EventSourcedAggregateRoot;
+use Botilka\EventStore\AggregateRootEventApplierTrait;
 use Botilka\EventStore\EventStore;
 use Botilka\Repository\EventSourcedRepository;
 use Botilka\Snapshot\Strategist\SnapshotStrategist;
 
 final class SnapshotedEventSourcedRepository implements EventSourcedRepository
 {
+    use AggregateRootEventApplierTrait;
+
     private $snapshotStore;
     private $strategist;
     private $eventSourcedRepository; // default event sourced repository
-    private $eventStore; // default event sourced repository
+    private $eventStore;
 
     public function __construct(SnapshotStore $snapshotStore, SnapshotStrategist $strategist, EventSourcedRepository $eventSourcedRepository, EventStore $eventStore)
     {
@@ -35,11 +38,7 @@ final class SnapshotedEventSourcedRepository implements EventSourcedRepository
 
         $events = $this->eventStore->loadFromPlayhead($id, $instance->getPlayhead() + 1);
 
-        foreach ($events as $event) {
-            $instance = $instance->apply($event);
-        }
-
-        return $instance;
+        return $this->applyEventsToAggregateRoot($instance, $events);
     }
 
     public function save(EventSourcedCommandResponse $commandResponse): void

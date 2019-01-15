@@ -8,9 +8,9 @@ use Botilka\Domain\EventSourcedAggregateRoot;
 
 final class PlayheadValueSnapshotStrategist implements SnapshotStrategist
 {
-    private $eachPlayhead = 50;
+    private $eachPlayhead;
 
-    public function __construct(int $eachPlayhead)
+    public function __construct(int $eachPlayhead = 50)
     {
         $this->eachPlayhead = $eachPlayhead;
     }
