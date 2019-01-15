@@ -9,6 +9,11 @@ services:
     Botilka\Infrastructure\Doctrine\EventStoreDoctrine: ~
     Botilka\EventStore\EventStore: '@Botilka\Infrastructure\Doctrine\EventStoreDoctrine'
 
+    Botilka\Infrastructure\Doctrine\SnapshotStoreDoctrine:
+        arguments:
+            $table: '%env(SNAPSHOT_STORE_COLLECTION)%'
+    Botilka\Snapshot\SnapshotStore: '@Botilka\Infrastructure\Doctrine\SnapshotStoreDoctrine'
+
     Botilka\Infrastructure\Doctrine\EventStoreManagerDoctrine: ~
     Botilka\EventStore\EventStoreManager: '@Botilka\Infrastructure\Doctrine\EventStoreManagerDoctrine'
 
