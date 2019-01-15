@@ -47,10 +47,6 @@ final class EventStoreMongoDB implements EventStore
             'playhead' => ['$gte' => $fromPlayhead],
         ];
 
-        if (0 === $this->collection->countDocuments($criteria)) {
-            throw new AggregateRootNotFoundException("No aggregrate root found for $id from playhead $fromPlayhead.");
-        }
-
         $events = $this->collection->find($criteria, ['sort' => ['playhead' => 1]]);
 
         return $this->deserialize($events);
@@ -62,10 +58,6 @@ final class EventStoreMongoDB implements EventStore
             'id' => $id,
             'playhead' => ['$gte' => $fromPlayhead, '$lte' => $toPlayhead],
         ];
-
-        if (0 === $this->collection->countDocuments($criteria)) {
-            throw new AggregateRootNotFoundException("No aggregrate root found for $id from playhead $fromPlayhead to playhead $toPlayhead.");
-        }
 
         $events = $this->collection->find($criteria, ['sort' => ['playhead' => 1]]);
 

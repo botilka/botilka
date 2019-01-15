@@ -62,19 +62,8 @@ final class EventStoreMongoDBTest extends AbstractKernelTestCase
             [6, 'foo', 4],
             [3, 'bar', 2],
             [1, 'bar', 4],
+            [0, 'bar', 1337],
         ];
-    }
-
-    /**
-     * @expectedException \Botilka\EventStore\AggregateRootNotFoundException
-     * @expectedExceptionMessage No aggregrate root found for non_existent from playhead 2.
-     * @group functional
-     */
-    public function testLoadFromPlayheadNotFoundFunctional(): void
-    {
-        /** @var EventStore $eventStore */
-        [$eventStore, $collection] = $this->setUpEventStore();
-        $eventStore->loadFromPlayhead('non_existent', 2);
     }
 
     /**
@@ -95,19 +84,8 @@ final class EventStoreMongoDBTest extends AbstractKernelTestCase
             [6, 'foo', 4, 10],
             [3, 'bar', 2, 10],
             [3, 'bar', 2, 4],
+            [0, 'bar', 42, 51],
         ];
-    }
-
-    /**
-     * @expectedException \Botilka\EventStore\AggregateRootNotFoundException
-     * @expectedExceptionMessage No aggregrate root found for non_existent from playhead 2 to playhead 4.
-     * @group functional
-     */
-    public function testLoadFromPlayheadToPlayheadNotFoundFunctional(): void
-    {
-        /** @var EventStore $eventStore */
-        [$eventStore, $collection] = $this->setUpEventStore();
-        $eventStore->loadFromPlayheadToPlayhead('non_existent', 2, 4);
     }
 
     /**

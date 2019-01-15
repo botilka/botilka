@@ -93,34 +93,14 @@ final class EventStoreDoctrineTest extends TestCase
 
     public function testLoadFromPlayheadSuccess(): void
     {
-        $this->addLoadAssertions('SELECT type, payload FROM event_store WHERE id = :id AND playhead > :from ORDER BY playhead', ['id' => 'foo', 'from' => 2], true);
+        $this->addLoadAssertions('SELECT type, payload FROM event_store WHERE id = :id AND playhead >= :from ORDER BY playhead', ['id' => 'foo', 'from' => 2], true);
         $this->assertSame(['baz'], $this->eventStore->loadFromPlayhead('foo', 2));
-    }
-
-    /**
-     * @expectedException \Botilka\EventStore\AggregateRootNotFoundException
-     * @expectedExceptionMessage No aggregrate root found for foo from playhead 2.
-     */
-    public function testLoadFromPlayheadFail(): void
-    {
-        $this->addLoadAssertions('SELECT type, payload FROM event_store WHERE id = :id AND playhead > :from ORDER BY playhead', ['id' => 'foo', 'from' => 2], false);
-        $this->eventStore->loadFromPlayhead('foo', 2);
     }
 
     public function testLoadFromPlayheadToPlayheadSuccess(): void
     {
         $this->addLoadAssertions('SELECT type, payload FROM event_store WHERE id = :id AND playhead BETWEEN :from AND :to ORDER BY playhead', ['id' => 'foo', 'from' => 2, 'to' => 4], true);
         $this->assertSame(['baz'], $this->eventStore->loadFromPlayheadToPlayhead('foo', 2, 4));
-    }
-
-    /**
-     * @expectedException \Botilka\EventStore\AggregateRootNotFoundException
-     * @expectedExceptionMessage No aggregrate root found for foo from playhead 2 to playhead 4.
-     */
-    public function testLoadFromPlayheadToPlayheadFail(): void
-    {
-        $this->addLoadAssertions('SELECT type, payload FROM event_store WHERE id = :id AND playhead BETWEEN :from AND :to ORDER BY playhead', ['id' => 'foo', 'from' => 2, 'to' => 4], false);
-        $this->eventStore->loadFromPlayheadToPlayhead('foo', 2, 4);
     }
 
     public function testAppend(): void

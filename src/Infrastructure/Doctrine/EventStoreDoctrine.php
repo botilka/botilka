@@ -42,14 +42,10 @@ final class EventStoreDoctrine implements EventStore
 
     public function loadFromPlayhead(string $id, int $fromPlayhead): array
     {
-        $stmt = $this->connection->prepare("SELECT type, payload FROM {$this->table} WHERE id = :id AND playhead > :from ORDER BY playhead");
+        $stmt = $this->connection->prepare("SELECT type, payload FROM {$this->table} WHERE id = :id AND playhead >= :from ORDER BY playhead");
         $stmt->execute(['id' => $id, 'from' => $fromPlayhead]);
 
-        if (0 === \count($events = $stmt->fetchAll())) {
-            throw new AggregateRootNotFoundException("No aggregrate root found for $id from playhead $fromPlayhead.");
-        }
-
-        return $this->deserialize($events);
+        return $this->deserialize($stmt->fetchAll());
     }
 
     public function loadFromPlayheadToPlayhead(string $id, int $fromPlayhead, int $toPlayhead): array
@@ -57,11 +53,7 @@ final class EventStoreDoctrine implements EventStore
         $stmt = $this->connection->prepare("SELECT type, payload FROM {$this->table} WHERE id = :id AND playhead BETWEEN :from AND :to ORDER BY playhead");
         $stmt->execute(['id' => $id, 'from' => $fromPlayhead, 'to' => $toPlayhead]);
 
-        if (0 === \count($events = $stmt->fetchAll())) {
-            throw new AggregateRootNotFoundException("No aggregrate root found for $id from playhead $fromPlayhead to playhead $toPlayhead.");
-        }
-
-        return $this->deserialize($events);
+        return $this->deserialize($stmt->fetchAll());
     }
 
     public function append(string $id, int $playhead, string $type, DomainEvent $payload, ?array $metadata, \DateTimeImmutable $recordedOn, string $domain): void
