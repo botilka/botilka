@@ -13,20 +13,20 @@ final class EventStoreManagerDoctrine implements EventStoreManager
 {
     private $connection;
     private $denormalizer;
-    private $table;
+    private $tableName;
 
-    public function __construct(Connection $connection, DenormalizerInterface $denormalizer, string $table)
+    public function __construct(Connection $connection, DenormalizerInterface $denormalizer, string $tableName)
     {
         $this->connection = $connection;
         $this->denormalizer = $denormalizer;
-        $this->table = $table;
+        $this->tableName = $tableName;
     }
 
     public function loadByAggregateRootId(string $id, ?int $from = null, ?int $to = null): iterable
     {
         $parameters = ['id' => $id];
 
-        $query = "SELECT * FROM {$this->table} WHERE id = :id";
+        $query = "SELECT * FROM {$this->tableName} WHERE id = :id";
 
         if (null !== $from) {
             $query .= ' AND playhead >= :from';
@@ -46,7 +46,7 @@ final class EventStoreManagerDoctrine implements EventStoreManager
 
     public function loadByDomain(string $domain): iterable
     {
-        $query = "SELECT * FROM {$this->table} WHERE domain = :domain";
+        $query = "SELECT * FROM {$this->tableName} WHERE domain = :domain";
 
         $stmt = $this->connection->prepare("$query ORDER BY playhead");
         $stmt->execute(['domain' => $domain]);
@@ -66,7 +66,7 @@ final class EventStoreManagerDoctrine implements EventStoreManager
 
     private function getDistinct(string $column): array
     {
-        $query = "SELECT DISTINCT $column FROM {$this->table}";
+        $query = "SELECT DISTINCT $column FROM {$this->tableName}";
         $stmt = $this->connection->prepare($query);
         $stmt->execute();
 

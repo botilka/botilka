@@ -19,7 +19,7 @@ abstract class AbstractDoctrineInitializerTest extends AbstractKernelTestCase
     protected $initializer;
 
     /** @var string */
-    protected $table;
+    protected $tableName;
 
     /** @var string */
     protected $type;
@@ -38,7 +38,7 @@ abstract class AbstractDoctrineInitializerTest extends AbstractKernelTestCase
         /** @var Connection $connection */
         $connection = $registry->getConnection();
         $connection->getConfiguration()->setSQLLogger(null);
-        $connection->exec("DROP TABLE IF EXISTS {$this->table};");
+        $connection->exec("DROP TABLE IF EXISTS {$this->tableName};");
         $this->connection = $connection;
     }
 
@@ -51,7 +51,7 @@ abstract class AbstractDoctrineInitializerTest extends AbstractKernelTestCase
         $this->initializer->initialize();
         $this->assertTrue(true);
 
-        $this->expectExceptionMessageRegExp('/Duplicate table:.*relation "'.$this->table.'" already exists/');
+        $this->expectExceptionMessageRegExp('/Duplicate table:.*relation "'.$this->tableName.'" already exists/');
 
         $this->initializer->initialize();
     }

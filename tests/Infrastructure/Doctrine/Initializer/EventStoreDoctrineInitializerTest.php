@@ -12,9 +12,9 @@ final class EventStoreDoctrineInitializerTest extends AbstractDoctrineInitialize
 
     protected function setUp()
     {
-        $this->table = \getenv('POSTGRES_TABLE').'_test';
+        $this->tableName = \getenv('POSTGRES_TABLE').'_test';
 
         $this->resetStore();
-        $this->initializer = new EventStoreDoctrineInitializer($this->connection, $this->table);
+        $this->initializer = new EventStoreDoctrineInitializer($this->connection, $this->tableName);
     }
 }

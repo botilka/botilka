@@ -9,6 +9,11 @@ use Botilka\Domain\EventSourcedAggregateRoot;
 use Botilka\EventStore\AggregateRootEventApplierTrait;
 use Botilka\EventStore\EventStore;
 
+/**
+ * This class is a default event sourced repository that just load & persist from the event store.
+ * The EventSourcedAggregateRoot is instanciated without any parameters.
+ * Feel free to decorate/override it.
+ */
 final class DefaultEventSourcedRepository implements EventSourcedRepository
 {
     use AggregateRootEventApplierTrait;

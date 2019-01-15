@@ -12,9 +12,9 @@ final class SnapshotStoreDoctrineInitializerTest extends AbstractDoctrineInitial
 
     protected function setUp()
     {
-        $this->table = \getenv('SNAPSHOT_STORE_COLLECTION').'_test';
+        $this->tableName = \getenv('SNAPSHOT_STORE_COLLECTION').'_test';
 
         $this->resetStore();
-        $this->initializer = new SnapshotStoreDoctrineInitializer($this->connection, $this->table);
+        $this->initializer = new SnapshotStoreDoctrineInitializer($this->connection, $this->tableName);
     }
 }

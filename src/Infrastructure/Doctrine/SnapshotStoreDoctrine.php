@@ -12,17 +12,17 @@ use Doctrine\DBAL\Driver\Connection;
 final class SnapshotStoreDoctrine implements SnapshotStore
 {
     private $connection;
-    private $table;
+    private $tableName;
 
-    public function __construct(Connection $connection, string $table)
+    public function __construct(Connection $connection, string $tableName)
     {
         $this->connection = $connection;
-        $this->table = $table;
+        $this->tableName = $tableName;
     }
 
     public function load(string $id): EventSourcedAggregateRoot
     {
-        $stmt = $this->connection->prepare("SELECT payload FROM {$this->table} WHERE id = :id");
+        $stmt = $this->connection->prepare("SELECT payload FROM {$this->tableName} WHERE id = :id");
         $stmt->execute(['id' => $id]);
 
         if (false === ($result = $stmt->fetch())) {
@@ -36,10 +36,10 @@ final class SnapshotStoreDoctrine implements SnapshotStore
     {
         $id = $aggregateRoot->getAggregateRootId();
 
-        $stmt = $this->connection->prepare("DELETE FROM {$this->table} WHERE id = :id");
+        $stmt = $this->connection->prepare("DELETE FROM {$this->tableName} WHERE id = :id");
         $stmt->execute(['id' => $id]);
 
-        $stmt = $this->connection->prepare("INSERT INTO {$this->table} VALUES (:id, :playhead, :payload)");
+        $stmt = $this->connection->prepare("INSERT INTO {$this->tableName} VALUES (:id, :playhead, :payload)");
         $stmt->execute([
             'id' => $id,
             'playhead' => $aggregateRoot->getPlayhead(),

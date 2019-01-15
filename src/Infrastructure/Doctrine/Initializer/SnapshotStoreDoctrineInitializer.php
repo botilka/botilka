@@ -13,27 +13,27 @@ use Doctrine\DBAL\Schema\Table;
 final class SnapshotStoreDoctrineInitializer implements StoreInitializer
 {
     private $connection;
-    private $table;
+    private $tableName;
 
-    public function __construct(Connection $connection, string $table = 'snapshot')
+    public function __construct(Connection $connection, string $tableName)
     {
         $this->connection = $connection;
-        $this->table = $table;
+        $this->tableName = $tableName;
     }
 
     public function initialize(bool $force = false): void
     {
-        $table = $this->table;
+        $tableName = $this->tableName;
         $connection = $this->connection;
         $schemaManager = $connection->getSchemaManager();
         $schema = new Schema();
 
-        if (true === $force && $schemaManager->tablesExist([$table])) {
-            $schemaManager->dropTable($table);
+        if (true === $force && $schemaManager->tablesExist([$tableName])) {
+            $schemaManager->dropTable($tableName);
         }
 
         /** @var Table $table */
-        $table = $schema->createTable($table);
+        $table = $schema->createTable($tableName);
         $table->addColumn('id', 'uuid');
         $table->addColumn('playhead', 'integer', ['unsigned' => true]);
         $table->addColumn('payload', 'text');
