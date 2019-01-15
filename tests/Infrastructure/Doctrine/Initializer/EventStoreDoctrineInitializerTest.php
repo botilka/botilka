@@ -5,59 +5,16 @@ declare(strict_types=1);
 namespace Botilka\Tests\Infrastructure\Doctrine\Initializer;
 
 use Botilka\Infrastructure\Doctrine\Initializer\EventStoreDoctrineInitializer;
-use Botilka\Tests\AbstractKernelTestCase;
-use Botilka\Tests\Fixtures\Application\EventStore\EventStoreDoctrineSetup;
-use Doctrine\DBAL\Connection;
-use Symfony\Bridge\Doctrine\RegistryInterface;
 
-final class EventStoreDoctrineInitializerTest extends AbstractKernelTestCase
+final class EventStoreDoctrineInitializerTest extends AbstractDoctrineInitializerTest
 {
-    /** @var EventStoreDoctrineInitializer */
-    private $initializer;
+    protected $type = 'event';
 
-    use EventStoreDoctrineSetup;
-
-    private function resetEventStore(): void
+    protected function setUp()
     {
-        $kernel = static::bootKernel();
-        $this->setUpEventStore($kernel);
-        $container = self::$container;
+        $this->table = \getenv('POSTGRES_TABLE').'_test';
 
-        /** @var string $table */
-        $table = \getenv('POSTGRES_TABLE').'_test';
-
-        /** @var RegistryInterface $registry */
-        $registry = self::$container->get('doctrine');
-
-        /** @var Connection $connection */
-        $connection = $registry->getConnection();
-        $connection->getConfiguration()->setSQLLogger(null);
-        $connection->exec("DROP TABLE IF EXISTS {$table};");
-
-        $this->initializer = new EventStoreDoctrineInitializer($connection, $table);
-    }
-
-    /**
-     * @group functional
-     * @expectedException \RuntimeException
-     * @expectedExceptionMessageRegExp /Duplicate table:.*relation "event_store_test" already exists/
-     */
-    public function testInitialize(): void
-    {
-        $this->resetEventStore();
-        $this->initializer->initialize();
-        $this->assertTrue(true);
-
-        $this->initializer->initialize();
-    }
-
-    /** @group functional */
-    public function testInitializeForce(): void
-    {
-        $this->resetEventStore();
-        $this->initializer->initialize();
-        $this->initializer->initialize(true);
-        $this->initializer->initialize(true);
-        $this->assertTrue(true);
+        $this->resetStore();
+        $this->initializer = new EventStoreDoctrineInitializer($this->connection, $this->table);
     }
 }

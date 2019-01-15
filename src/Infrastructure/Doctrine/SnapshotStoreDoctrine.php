@@ -29,8 +29,6 @@ final class SnapshotStoreDoctrine implements SnapshotStore
             throw new SnapshotNotFoundException("No snapshot found for $id.");
         }
 
-        $this->connection->
-
         return \unserialize(\str_replace('__NULL_BYTE__', "\0", $result['payload']));
     }
 

@@ -10,9 +10,9 @@ use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\HttpKernel\KernelInterface;
 
-trait EventStoreDoctrineSetup
+trait DoctrineSetupTrait
 {
-    private function setUpEventStore(KernelInterface $kernel): void
+    private function setUpDatabase(KernelInterface $kernel): void
     {
         $application = new DropDatabaseDoctrineCommand();
         $application->setContainer(self::$container);
