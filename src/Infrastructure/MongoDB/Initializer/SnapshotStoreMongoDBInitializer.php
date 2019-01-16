@@ -5,36 +5,12 @@ declare(strict_types=1);
 namespace Botilka\Infrastructure\MongoDB\Initializer;
 
 use Botilka\Infrastructure\StoreInitializer;
-use MongoDB\Client;
 
-final class SnapshotStoreMongoDBInitializer implements StoreInitializer
+final class SnapshotStoreMongoDBInitializer extends AbstractMongoDBStoreInitializer implements StoreInitializer
 {
-    private $client;
-    private $database;
-    private $collection;
-
-    public function __construct(Client $client, string $database, string $collection)
-    {
-        $this->client = $client;
-        $this->database = $database;
-        $this->collection = $collection;
-    }
-
     public function initialize(bool $force = false): void
     {
-        $database = $this->client->selectDatabase($this->database);
-
-        if (true === $force) {
-            $database->dropCollection($this->collection);
-        }
-
-        try {
-            $database->createCollection($this->collection);
-        } catch (\MongoDB\Driver\Exception\CommandException $e) {
-            throw new \RuntimeException("Collection '{$this->collection}' already exists.");
-        }
-
-        $database->selectCollection($this->collection)->createIndex(['id' => 1], ['unique' => true]);
+        $this->doInitialize(['id' => 1], $force);
     }
 
     public function getType(): string
