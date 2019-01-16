@@ -19,7 +19,7 @@ abstract class AbstractMongoDBStoreInitializerTest extends AbstractKernelTestCas
     protected $database;
 
     /** @var string */
-    protected $collection;
+    protected $collectionName;
 
     /** @var string */
     protected $type;
@@ -43,9 +43,9 @@ abstract class AbstractMongoDBStoreInitializerTest extends AbstractKernelTestCas
 
         $database = $this->createMock(Database::class);
         $database->expects($this->once())->method('selectCollection')
-            ->with($this->collection)->willReturn($collection);
+            ->with($this->collectionName)->willReturn($collection);
         $database->expects($force ? $this->once() : $this->never())->method('dropCollection')
-            ->with($this->collection)->willReturn($collection);
+            ->with($this->collectionName)->willReturn($collection);
 
         $client = $this->createMock(Client::class);
         $client->expects($this->once())->method('selectDatabase')
@@ -64,12 +64,12 @@ abstract class AbstractMongoDBStoreInitializerTest extends AbstractKernelTestCas
         static::bootKernel();
         /** @var Client $client */
         $client = static::$container->get(Client::class);
-        $client->selectDatabase($this->database)->dropCollection($this->collection);
+        $client->selectDatabase($this->database)->dropCollection($this->collectionName);
         $initializer = $this->getInitializer($client);
         $initializer->initialize();
         $this->assertTrue(true);
 
-        $this->expectExceptionMessage("Collection '{$this->collection}' already exists.");
+        $this->expectExceptionMessage("Collection '{$this->collectionName}' already exists.");
         $initializer->initialize();
     }
 
@@ -79,7 +79,7 @@ abstract class AbstractMongoDBStoreInitializerTest extends AbstractKernelTestCas
         static::bootKernel();
         /** @var Client $client */
         $client = static::$container->get(Client::class);
-        $client->selectDatabase($this->database)->dropCollection($this->collection);
+        $client->selectDatabase($this->database)->dropCollection($this->collectionName);
         $initializer = $this->getInitializer($client);
         $initializer->initialize();
         $initializer->initialize(true);
@@ -94,13 +94,13 @@ abstract class AbstractMongoDBStoreInitializerTest extends AbstractKernelTestCas
     {
         $database = $this->createMock(Database::class);
         $database->expects($this->once())->method('createCollection')
-            ->willThrowException(new \MongoDB\Driver\Exception\CommandException("Collection '{$this->collection}' already exists."));
+            ->willThrowException(new \MongoDB\Driver\Exception\CommandException("Collection '{$this->collectionName}' already exists."));
 
         $client = $this->createMock(Client::class);
         $client->expects($this->once())->method('selectDatabase')
             ->willReturn($database);
 
-        $this->expectExceptionMessage("Collection '{$this->collection}' already exists.");
+        $this->expectExceptionMessage("Collection '{$this->collectionName}' already exists.");
 
         $initializer = $this->getInitializer($client);
         $initializer->initialize();

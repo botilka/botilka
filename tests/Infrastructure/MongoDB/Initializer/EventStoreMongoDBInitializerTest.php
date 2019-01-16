@@ -19,9 +19,9 @@ final class EventStoreMongoDBInitializerTest extends AbstractMongoDBStoreInitial
         /** @var string $database */
         $database = \getenv('MONGODB_DB').'_test';
         /** @var string $collection */
-        $collection = \getenv('MONGODB_COLLECTION').'_test';
+        $collectionName = \getenv('MONGODB_COLLECTION').'_test';
         $this->database = $database;
-        $this->collection = $collection;
+        $this->collectionName = $collectionName;
     }
 
     /** @dataProvider initializeProvider */
@@ -32,6 +32,6 @@ final class EventStoreMongoDBInitializerTest extends AbstractMongoDBStoreInitial
 
     protected function getInitializer(Client $client): StoreInitializer
     {
-        return new EventStoreMongoDBInitializer($client, $this->database, $this->collection);
+        return new EventStoreMongoDBInitializer($client, $this->database, $this->collectionName);
     }
 }

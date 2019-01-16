@@ -19,9 +19,9 @@ final class SnapshotStoreMongoDBInitializerTest extends AbstractMongoDBStoreInit
         /** @var string $database */
         $database = \getenv('MONGODB_DB').'_test';
         /** @var string $collection */
-        $collection = \getenv('SNAPSHOT_STORE_COLLECTION').'_test';
+        $collectionName = \getenv('SNAPSHOT_STORE_COLLECTION').'_test';
         $this->database = $database;
-        $this->collection = $collection;
+        $this->collectionName = $collectionName;
     }
 
     /** @dataProvider initializeProvider */
@@ -32,6 +32,6 @@ final class SnapshotStoreMongoDBInitializerTest extends AbstractMongoDBStoreInit
 
     protected function getInitializer(Client $client): StoreInitializer
     {
-        return new SnapshotStoreMongoDBInitializer($client, $this->database, $this->collection);
+        return new SnapshotStoreMongoDBInitializer($client, $this->database, $this->collectionName);
     }
 }

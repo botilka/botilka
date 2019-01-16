@@ -10,13 +10,13 @@ abstract class AbstractMongoDBStoreInitializer
 {
     private $client;
     private $database;
-    private $collection;
+    private $collectionName;
 
-    public function __construct(Client $client, string $database, string $collection)
+    public function __construct(Client $client, string $database, string $collectionName)
     {
         $this->client = $client;
         $this->database = $database;
-        $this->collection = $collection;
+        $this->collectionName = $collectionName;
     }
 
     protected function doInitialize(array $uniqueIndexKeys, bool $force): void
@@ -24,15 +24,15 @@ abstract class AbstractMongoDBStoreInitializer
         $database = $this->client->selectDatabase($this->database);
 
         if (true === $force) {
-            $database->dropCollection($this->collection);
+            $database->dropCollection($this->collectionName);
         }
 
         try {
-            $database->createCollection($this->collection);
+            $database->createCollection($this->collectionName);
         } catch (\MongoDB\Driver\Exception\CommandException $e) {
-            throw new \RuntimeException("Collection '{$this->collection}' already exists.");
+            throw new \RuntimeException("Collection '{$this->collectionName}' already exists.");
         }
 
-        $database->selectCollection($this->collection)->createIndex($uniqueIndexKeys, ['unique' => true]);
+        $database->selectCollection($this->collectionName)->createIndex($uniqueIndexKeys, ['unique' => true]);
     }
 }
