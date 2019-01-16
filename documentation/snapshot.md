@@ -1,12 +1,12 @@
 # Snapshot
 
-When you have a lot of event, it could became slow to retrieve an event sourced aggregate root.
-By using snapshot, you just have to replay a few event.
+When you have a lot of events, it could became slow to retrieve an event sourced aggregate root.
+By using snapshot, you just have to replay a few event on top of it.
 
 ## How it works
 
 For using snapshot, you need to declare a "standard" repository for an aggregate root then decorate it with
-the *snapshot-activated*  repository.
+the *snapshot-activated* repository.
 
 The repositories needs to be in a registry for the [`EventDispatcherMiddleware`](/src/Infrastructure/Symfony/Messenger/Middleware/EventDispatcherMiddleware.php) to be able to use it when saving an event.
 By implementing the `EventSourcedRepository` interface, it is transparent for `EventDispatcherMiddleware` that it's using

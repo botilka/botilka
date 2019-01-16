@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Botilka\Infrastructure\Doctrine\Initializer;
 
-use Doctrine\DBAL\Driver\Connection;
+use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception\TableExistsException;
 use Doctrine\DBAL\Schema\Schema;
 
