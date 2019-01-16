@@ -82,6 +82,7 @@ final class ApiPlatformDescriptionContainerPass implements CompilerPassInterface
 
     private function handleParameterWithClass(\ReflectionParameter $parameter, array $values): array
     {
+        /** @var \ReflectionClass $parameterClass */
         $parameterClass = $parameter->getClass();
         $parameterName = $parameter->getName();
 
