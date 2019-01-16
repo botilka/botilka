@@ -10,7 +10,7 @@ final class PlayheadValueSnapshotStrategist implements SnapshotStrategist
 {
     private $eachPlayhead;
 
-    public function __construct(int $eachPlayhead = 50)
+    public function __construct(int $eachPlayhead = 5)
     {
         $this->eachPlayhead = $eachPlayhead;
     }

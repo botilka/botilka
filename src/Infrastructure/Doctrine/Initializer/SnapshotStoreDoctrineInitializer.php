@@ -36,7 +36,8 @@ final class SnapshotStoreDoctrineInitializer implements StoreInitializer
         $table = $schema->createTable($tableName);
         $table->addColumn('id', 'uuid');
         $table->addColumn('playhead', 'integer', ['unsigned' => true]);
-        $table->addColumn('payload', 'text');
+        $table->addColumn('type', 'string', ['length' => 255]);
+        $table->addColumn('payload', 'json');
         $table->setPrimaryKey(['id']);
 
         $sql = $schema->toSql($connection->getDatabasePlatform());

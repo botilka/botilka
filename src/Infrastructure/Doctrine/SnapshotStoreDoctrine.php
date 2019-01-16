@@ -8,28 +8,33 @@ use Botilka\Domain\EventSourcedAggregateRoot;
 use Botilka\Snapshot\SnapshotNotFoundException;
 use Botilka\Snapshot\SnapshotStore;
 use Doctrine\DBAL\Driver\Connection;
+use Symfony\Component\Serializer\SerializerInterface;
 
 final class SnapshotStoreDoctrine implements SnapshotStore
 {
     private $connection;
     private $tableName;
+    private $serializer;
 
-    public function __construct(Connection $connection, string $tableName)
+    private const FORMAT = 'json';
+
+    public function __construct(Connection $connection, string $tableName, SerializerInterface $serializer)
     {
         $this->connection = $connection;
         $this->tableName = $tableName;
+        $this->serializer = $serializer;
     }
 
     public function load(string $id): EventSourcedAggregateRoot
     {
-        $stmt = $this->connection->prepare("SELECT payload FROM {$this->tableName} WHERE id = :id");
+        $stmt = $this->connection->prepare("SELECT type, payload FROM {$this->tableName} WHERE id = :id");
         $stmt->execute(['id' => $id]);
 
         if (false === ($result = $stmt->fetch())) {
             throw new SnapshotNotFoundException("No snapshot found for $id.");
         }
 
-        return \unserialize(\str_replace('__NULL_BYTE__', "\0", $result['payload']));
+        return $this->serializer->deserialize($result['payload'], $result['type'], self::FORMAT);
     }
 
     public function snapshot(EventSourcedAggregateRoot $aggregateRoot): void
@@ -39,11 +44,12 @@ final class SnapshotStoreDoctrine implements SnapshotStore
         $stmt = $this->connection->prepare("DELETE FROM {$this->tableName} WHERE id = :id");
         $stmt->execute(['id' => $id]);
 
-        $stmt = $this->connection->prepare("INSERT INTO {$this->tableName} VALUES (:id, :playhead, :payload)");
+        $stmt = $this->connection->prepare("INSERT INTO {$this->tableName} VALUES (:id, :playhead, :type, :payload)");
         $stmt->execute([
             'id' => $id,
+            'type' => \get_class($aggregateRoot),
             'playhead' => $aggregateRoot->getPlayhead(),
-            'payload' => \str_replace("\0", '__NULL_BYTE__', \serialize($aggregateRoot)),
+            'payload' => $this->serializer->serialize($aggregateRoot, self::FORMAT),
         ]);
     }
 }
