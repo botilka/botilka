@@ -12,6 +12,7 @@ It can leverage [API Platform](https://api-platform.com) to expose yours `Comman
 ## Features
 
 - EventStore implementation with [Doctrine](https://www.doctrine-project.org/) or [MongoDB](https://www.mongodb.com).
+- Snapshot store for performance (Doctrine & MongoDB).
 - Swagger commands & queries description (via API Platform UI).
 - REST API access to commands & queries.
 - Sync or async event handling is a matter of configuration.
@@ -40,7 +41,7 @@ bin/console botilka:store:initialize event doctrine # or mongodb
 ```
 You can force recreate, but be carefull, you will lost all the previous events:
 ```sh
-bin/console botilka:store:initialize event -f
+bin/console botilka:store:initialize event doctrine -f
 ```
 
 ## Usage
@@ -48,6 +49,11 @@ bin/console botilka:store:initialize event -f
 ### CQRS & EventSourcing
 
 You'll need to create Commands, Queries, Events and so on. [Read the documentation](/documentation/cqrs.md).
+
+### Snapshots
+
+When dealing with a lots of events, snapshotting is a good way to keep up on performance.
+[Read the documentation](/documentation/snapshot.md).
 
 ### Event replaying
 
@@ -139,7 +145,6 @@ Have a look [here](/documentation/internals.md) to better understand the design 
 
 ### todo
 
-- Snapshots.
 - Event upcasting.
 - (maybe) Saga / Process manager.
 - (maybe) Smart command retry on concurrency exception.
@@ -152,5 +157,6 @@ Have a look [here](/documentation/internals.md) to better understand the design 
 - https://github.com/jorge07/symfony-4-es-cqrs-boilerplate (uses Broadway)
 - https://github.com/CodelyTV/cqrs-ddd-php-example
 - https://github.com/mnavarrocarter/ddd
+- https://github.com/prooph/
 - https://www.youtube.com/watch?v=qBLtZN3p3FU \[french\]
 - https://www.youtube.com/watch?v=VpzSMz_XbqM \[french\]
