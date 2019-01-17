@@ -5,3 +5,5 @@
 
 /coverage/
 /*.phar
+
+/php-cs-fixer*

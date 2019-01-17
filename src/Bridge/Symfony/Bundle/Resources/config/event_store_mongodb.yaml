@@ -3,25 +3,47 @@ services:
         autowire: true
         autoconfigure: true
         public: false
+        bind:
+            $client: '@MongoDB\Client'
+            $database: '%env(MONGODB_DB)%'
 
     MongoDB\Client:
        arguments: ['%env(MONGODB_URL)%']
 
-    MongoDB\Collection:
+    # MongoDB collections
+    MongoDB\Collection.event_store:
+        class: MongoDB\Client
         factory: ['@MongoDB\Client', selectCollection]
         arguments: ['%env(MONGODB_DB)%', '%env(MONGODB_COLLECTION)%']
 
+    MongoDB\Collection.snapshot_store:
+        class: MongoDB\Client
+        factory: ['@MongoDB\Client', selectCollection]
+        arguments: ['%env(MONGODB_DB)%', '%env(SNAPSHOT_STORE_COLLECTION)%']
+
+    # Event store
     Botilka\Infrastructure\MongoDB\EventStoreMongoDB:
         arguments:
-           $collection: '@MongoDB\Collection'
-
+           $collection: '@MongoDB\Collection.event_store'
     Botilka\EventStore\EventStore: '@Botilka\Infrastructure\MongoDB\EventStoreMongoDB'
 
-    Botilka\Infrastructure\MongoDB\EventStoreManagerMongoDB: ~
+    # Snapshot store
+    Botilka\Infrastructure\MongoDB\SnapshotStoreMongoDB:
+        arguments:
+            $collection: '@MongoDB\Collection.snapshot_store'
+    Botilka\Snapshot\SnapshotStore: '@Botilka\Infrastructure\MongoDB\SnapshotStoreMongoDB'
+
+    # Event store manager
+    Botilka\Infrastructure\MongoDB\EventStoreManagerMongoDB:
+        arguments:
+            $collection: '@MongoDB\Collection.event_store'
     Botilka\EventStore\EventStoreManager: '@Botilka\Infrastructure\MongoDB\EventStoreManagerMongoDB'
 
-    Botilka\Infrastructure\MongoDB\EventStoreMongoDBInitializer:
+    # Initializers
+    Botilka\Infrastructure\MongoDB\Initializer\EventStoreMongoDBInitializer:
         arguments:
-            $client: '@MongoDB\Client'
-            $database: '%env(MONGODB_DB)%'
-            $collection: '%env(MONGODB_COLLECTION)%'
+            $collectionName: '%env(MONGODB_COLLECTION)%'
+
+    Botilka\Infrastructure\MongoDB\Initializer\SnapshotStoreMongoDBInitializer:
+        arguments:
+            $collectionName: '%env(SNAPSHOT_STORE_COLLECTION)%'

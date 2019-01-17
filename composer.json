@@ -20,7 +20,7 @@
         "doctrine/doctrine-bundle": "^1.9.1",
         "doctrine/orm": "^2.6.3",
         "jangregor/phpstan-prophecy": "^0.2.0",
-        "mongodb/mongodb": "^1.4",
+        "mongodb/mongodb": "^1.4.2",
         "phpstan/phpstan": "^0.10.3",
         "phpstan/phpstan-phpunit": "^0.10.0",
         "phpunit/phpunit": "7.3.*",
@@ -30,8 +30,16 @@
     },
     "scripts": {
         "analyze": "phpstan analyze",
-        "test": "phpunit",
-        "testcov": "phpunit --group default,functional --coverage-html=coverage"
+        "tests:unit": "phpunit",
+        "tests:functional": "phpunit --group functional",
+        "tests:coverage": "phpunit --group default,functional --coverage-html=coverage",
+        "csfix:dry": "./php-cs-fixer fix --allow-risky=yes --dry-run",
+        "csfix": "./php-cs-fixer fix --allow-risky=yes",
+        "tests": [
+            "@analyze",
+            "@tests:coverage",
+            "@csfix:dry"
+        ]
     },
     "suggest": {
         "doctrine/orm": "To use Doctrine as an EventStore",

@@ -17,6 +17,8 @@ env:
     - MONGODB_URL=mongodb://localhost:27017
     - MONGODB_DB=botilka
     - MONGODB_COLLECTION=event_store
+    - EVENT_STORE_COLLECTION=event_store
+    - SNAPSHOT_STORE_COLLECTION=snapshot_store
   matrix:
     - deps=low
     - deps=high

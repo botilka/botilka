@@ -6,18 +6,21 @@ namespace Botilka\Tests\Infrastructure\MongoDB;
 
 use Botilka\Infrastructure\MongoDB\EventStoreManagerMongoDB;
 use Botilka\Tests\AbstractKernelTestCase;
+use Botilka\Tests\Fixtures\Application\EventStore\EventStoreMongoDBSetup;
 use MongoDB\Collection;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
 final class EventStoreManagerMongoDBTest extends AbstractKernelTestCase
 {
+    use EventStoreMongoDBSetup;
+
     /**
      * @dataProvider loadByAggregateRootIdProviderFunctional
      * @group functional
      */
     public function testLoadByAggregateRootIdFunctional(int $shouldBeCount, string $id, ?int $from = null, ?int $to = null): void
     {
-        [$eventStore, $collection] = self::setUpMongoDb();
+        [$eventStore, $collection] = $this->setUpEventStore();
 
         /** @var DenormalizerInterface $denormalizer */
         $denormalizer = self::$container->get('serializer');
@@ -46,7 +49,7 @@ final class EventStoreManagerMongoDBTest extends AbstractKernelTestCase
      */
     public function testLoadByDomainFunctional(int $shouldBeCount, string $domain): void
     {
-        [$eventStore, $collection] = self::setUpMongoDb();
+        [$eventStore, $collection] = self::setUpEventStore();
 
         /** @var DenormalizerInterface $denormalizer */
         $denormalizer = self::$container->get('serializer');

@@ -2,26 +2,35 @@
 
 declare(strict_types=1);
 
-namespace Botilka\Tests\Infrastructure\Doctrine;
+namespace Botilka\Tests\Infrastructure\Doctrine\Initializer;
 
-use Botilka\Infrastructure\Doctrine\EventStoreDoctrineInitializer;
+use Botilka\Infrastructure\StoreInitializer;
 use Botilka\Tests\AbstractKernelTestCase;
+use Botilka\Tests\Fixtures\Application\EventStore\DoctrineSetupTrait;
 use Doctrine\DBAL\Connection;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
-final class EventStoreDoctrineInitializerTest extends AbstractKernelTestCase
+abstract class AbstractDoctrineInitializerTest extends AbstractKernelTestCase
 {
-    /** @var EventStoreDoctrineInitializer */
-    private $initializer;
+    /** @var Connection */
+    protected $connection;
 
-    private function resetEventStore(): void
+    /** @var StoreInitializer */
+    protected $initializer;
+
+    /** @var string */
+    protected $tableName;
+
+    /** @var string */
+    protected $type;
+
+    use DoctrineSetupTrait;
+
+    protected function resetStore(): void
     {
         $kernel = static::bootKernel();
-        static::setUpDoctrine($kernel);
+        $this->setUpDatabase($kernel);
         $container = self::$container;
-
-        /** @var string $table */
-        $table = \getenv('POSTGRES_TABLE').'_test';
 
         /** @var RegistryInterface $registry */
         $registry = self::$container->get('doctrine');
@@ -29,21 +38,20 @@ final class EventStoreDoctrineInitializerTest extends AbstractKernelTestCase
         /** @var Connection $connection */
         $connection = $registry->getConnection();
         $connection->getConfiguration()->setSQLLogger(null);
-        $connection->exec("DROP TABLE IF EXISTS {$table};");
-
-        $this->initializer = new EventStoreDoctrineInitializer($connection, $table);
+        $connection->exec("DROP TABLE IF EXISTS {$this->tableName};");
+        $this->connection = $connection;
     }
 
     /**
      * @group functional
      * @expectedException \RuntimeException
-     * @expectedExceptionMessageRegExp /Duplicate table:.*relation "event_store_test" already exists/
      */
     public function testInitialize(): void
     {
-        $this->resetEventStore();
         $this->initializer->initialize();
         $this->assertTrue(true);
+
+        $this->expectExceptionMessageRegExp('/Duplicate table:.*relation "'.$this->tableName.'" already exists/');
 
         $this->initializer->initialize();
     }
@@ -51,10 +59,17 @@ final class EventStoreDoctrineInitializerTest extends AbstractKernelTestCase
     /** @group functional */
     public function testInitializeForce(): void
     {
-        $this->resetEventStore();
         $this->initializer->initialize();
         $this->initializer->initialize(true);
         $this->initializer->initialize(true);
         $this->assertTrue(true);
+    }
+
+    /**
+     * @group functional
+     */
+    public function testGetType(): void
+    {
+        $this->assertSame($this->type, $this->initializer->getType());
     }
 }

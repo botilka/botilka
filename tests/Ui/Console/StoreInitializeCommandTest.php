@@ -4,27 +4,27 @@ declare(strict_types=1);
 
 namespace Botilka\Tests\Ui\Console;
 
-use Botilka\Application\EventStore\EventStoreInitializer;
+use Botilka\Infrastructure\StoreInitializer;
 use Botilka\Tests\Fixtures\Application\EventStore\DummyEventStore;
-use Botilka\Ui\Console\EventStoreInitializeCommand;
+use Botilka\Ui\Console\StoreInitializeCommand;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 
-final class EventStoreInitializeCommandTest extends TestCase
+final class StoreInitializeCommandTest extends TestCase
 {
     public function testName(): void
     {
-        $command = new EventStoreInitializeCommand();
+        $command = new StoreInitializeCommand();
 
-        $this->assertSame('botilka:event_store:initialize', $command->getName());
+        $this->assertSame('botilka:store:initialize', $command->getName());
     }
 
     public function testExecuteNoInitializer(): void
     {
-        $command = new EventStoreInitializeCommand();
+        $command = new StoreInitializeCommand();
 
-        $input = new ArrayInput(['implementation' => 'foo']);
+        $input = new ArrayInput(['implementation' => 'foo', 'type' => 'bar']);
 
         $output = new BufferedOutput();
 
@@ -36,18 +36,19 @@ final class EventStoreInitializeCommandTest extends TestCase
     /** @dataProvider executeProvider */
     public function testExecuteSuccess(bool $force): void
     {
-        $initializer = $this->createMock(EventStoreInitializer::class);
+        $initializer = $this->createMock(StoreInitializer::class);
         $initializer->expects($this->once())->method('initialize');
+        $initializer->expects($this->once())->method('getType')->willReturn('foo');
 
-        $command = new EventStoreInitializeCommand([$initializer,  new DummyEventStore()]);
+        $command = new StoreInitializeCommand([$initializer,  new DummyEventStore()]);
 
-        $input = new ArrayInput(['implementation' => 'EventStoreInitializer', '--force' => $force]);
+        $input = new ArrayInput(['implementation' => 'StoreInitializer', 'type' => 'foo', '--force' => $force]);
 
         $output = new BufferedOutput();
 
         $command->run($input, $output);
         $stdout = $output->fetch();
-        $this->assertContains('Matched:', $stdout);
+        $this->assertContains('Using:', $stdout);
         $this->assertContains('[OK] Finished.', $stdout);
     }
 
@@ -62,13 +63,14 @@ final class EventStoreInitializeCommandTest extends TestCase
     /** @dataProvider executeProvider */
     public function testExecuteRuntimeException(bool $force): void
     {
-        $initializer = $this->createMock(EventStoreInitializer::class);
+        $initializer = $this->createMock(StoreInitializer::class);
         $initializer->expects($this->once())->method('initialize')
             ->willThrowException(new \RuntimeException('Cant\t touch this.'));
+        $initializer->expects($this->once())->method('getType')->willReturn('foo');
 
-        $command = new EventStoreInitializeCommand([$initializer]);
+        $command = new StoreInitializeCommand([$initializer]);
 
-        $input = new ArrayInput(['implementation' => 'event', '--force' => $force]);
+        $input = new ArrayInput(['implementation' => 'StoreInitializer', 'type' => 'foo', '--force' => $force]);
 
         $output = new BufferedOutput();
 

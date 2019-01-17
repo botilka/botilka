@@ -4,23 +4,40 @@ services:
         autoconfigure: true
         public: false
 
+    # Event store
     Botilka\Infrastructure\InMemory\EventStoreInMemory: ~
     Botilka\EventStore\EventStore: '@Botilka\Infrastructure\InMemory\EventStoreInMemory'
 
+    # Event store repository
+    Botilka\Repository\EventSourcedRepositoryRegistry: ~
+
+    # Event replayer
     Botilka\Event\EventReplayer:
         class: Botilka\Event\DefaultEventReplayer
 
+    # Event store manager
     Botilka\Infrastructure\InMemory\EventStoreManagerInMemory: ~
     Botilka\EventStore\EventStoreManager: '@Botilka\Infrastructure\InMemory\EventStoreManagerInMemory'
 
+    # Commands
     Botilka\Ui\Console\EventReplayCommand: ~
     Botilka\Ui\Console\ProjectorPlayCommand: ~
 
-    Botilka\Ui\Console\EventStoreInitializeCommand:
+    # Event store initializers
+    Botilka\Ui\Console\StoreInitializeCommand:
         arguments:
-            $initializers: !tagged botilka.event_store.initializer
+            $initializers: !tagged botilka.store.initializer
 
+    # Projectionist
     Botilka\Projector\Projectionist:
         class: Botilka\Projector\DefaultProjectionist
         arguments:
             $projectors: !tagged botilka.projector
+
+
+    # Snapshot
+    Botilka\Infrastructure\InMemory\SnapshotStoreInMemory: ~
+    Botilka\Snapshot\SnapshotStore: '@Botilka\Infrastructure\InMemory\SnapshotStoreInMemory'
+
+    Botilka\Snapshot\Strategist\PlayheadValueSnapshotStrategist: ~
+    Botilka\Snapshot\Strategist\SnapshotStrategist: '@Botilka\Snapshot\Strategist\PlayheadValueSnapshotStrategist'

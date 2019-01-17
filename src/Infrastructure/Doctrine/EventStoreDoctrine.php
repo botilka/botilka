@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Botilka\Infrastructure\Doctrine;
 
 use Botilka\Event\Event as DomainEvent;
+use Botilka\EventStore\AggregateRootNotFoundException;
 use Botilka\EventStore\EventStore;
 use Botilka\EventStore\EventStoreConcurrencyException;
 use Doctrine\DBAL\Driver\Connection;
@@ -17,35 +18,39 @@ final class EventStoreDoctrine implements EventStore
     private $connection;
     private $normalizer;
     private $denormalizer;
-    private $table;
+    private $tableName;
 
-    public function __construct(Connection $connection, NormalizerInterface $normalizer, DenormalizerInterface $denormalizer, string $table)
+    public function __construct(Connection $connection, NormalizerInterface $normalizer, DenormalizerInterface $denormalizer, string $tableName)
     {
         $this->connection = $connection;
         $this->normalizer = $normalizer;
         $this->denormalizer = $denormalizer;
-        $this->table = $table;
+        $this->tableName = $tableName;
     }
 
     public function load(string $id): array
     {
-        $stmt = $this->connection->prepare("SELECT type, payload FROM {$this->table} WHERE id = :id ORDER BY playhead");
+        $stmt = $this->connection->prepare("SELECT type, payload FROM {$this->tableName} WHERE id = :id ORDER BY playhead");
         $stmt->execute(['id' => $id]);
 
-        return $this->deserialize($stmt->fetchAll());
+        if (0 === \count($events = $stmt->fetchAll())) {
+            throw new AggregateRootNotFoundException("No aggregrate root found for $id.");
+        }
+
+        return $this->deserialize($events);
     }
 
     public function loadFromPlayhead(string $id, int $fromPlayhead): array
     {
-        $stmt = $this->connection->prepare("SELECT type, payload FROM {$this->table} WHERE id = :id AND playhead > :playhead ORDER BY playhead");
-        $stmt->execute(['id' => $id, 'playhead' => $fromPlayhead]);
+        $stmt = $this->connection->prepare("SELECT type, payload FROM {$this->tableName} WHERE id = :id AND playhead >= :from ORDER BY playhead");
+        $stmt->execute(['id' => $id, 'from' => $fromPlayhead]);
 
         return $this->deserialize($stmt->fetchAll());
     }
 
     public function loadFromPlayheadToPlayhead(string $id, int $fromPlayhead, int $toPlayhead): array
     {
-        $stmt = $this->connection->prepare("SELECT type, payload FROM {$this->table} WHERE id = :id AND playhead BETWEEN :from AND :to ORDER BY playhead");
+        $stmt = $this->connection->prepare("SELECT type, payload FROM {$this->tableName} WHERE id = :id AND playhead BETWEEN :from AND :to ORDER BY playhead");
         $stmt->execute(['id' => $id, 'from' => $fromPlayhead, 'to' => $toPlayhead]);
 
         return $this->deserialize($stmt->fetchAll());
@@ -53,7 +58,7 @@ final class EventStoreDoctrine implements EventStore
 
     public function append(string $id, int $playhead, string $type, DomainEvent $payload, ?array $metadata, \DateTimeImmutable $recordedOn, string $domain): void
     {
-        $stmt = $this->connection->prepare("INSERT INTO {$this->table} VALUES (:id, :playhead, :type, :payload, :metadata, :recordedOn, :domain)");
+        $stmt = $this->connection->prepare("INSERT INTO {$this->tableName} VALUES (:id, :playhead, :type, :payload, :metadata, :recordedOn, :domain)");
 
         $values = [
             'id' => $id,

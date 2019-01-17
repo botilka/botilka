@@ -62,26 +62,37 @@ final class ApiPlatformDescriptionContainerPass implements CompilerPassInterface
         }
         $constructorParameters = $constructor->getParameters();
         foreach ($constructorParameters as $parameter) {
-            $parameterClass = $parameter->getClass();
-            $parameterName = $parameter->getName();
-
-            if (null !== $parameterClass) {
-                if (\in_array($parameterClass->getName(), self::FORCE_PARAMETERS_AS_STRING, true)) {
-                    $values[$parameterName] = ($parameter->allowsNull() ? '?' : '').'string';
-                    continue;
-                }
-
-                $values[$parameterName] = $this->extractConstructorArgumentsUntilScalar($parameterClass);
+            if (null !== $parameter->getClass()) {
+                $values = $this->handleParameterWithClass($parameter, $values);
                 continue;
             }
 
             /** @var ?\ReflectionType $parameterType */
             $parameterType = $parameter->getType();
+            $parameterName = $parameter->getName();
+
             if (null === $parameterType) {
                 throw new \InvalidArgumentException("Parameter '$$parameterName' of class '{$class->getName()}' is not typed. Please type hint all Query & Command parameters.");
             }
             $values[$parameterName] = ($parameter->allowsNull() ? '?' : '').$parameterType->getName();
         }
+
+        return $values;
+    }
+
+    private function handleParameterWithClass(\ReflectionParameter $parameter, array $values): array
+    {
+        /** @var \ReflectionClass $parameterClass */
+        $parameterClass = $parameter->getClass();
+        $parameterName = $parameter->getName();
+
+        if (\in_array($parameterClass->getName(), self::FORCE_PARAMETERS_AS_STRING, true)) {
+            $values[$parameterName] = ($parameter->allowsNull() ? '?' : '').'string';
+
+            return $values;
+        }
+
+        $values[$parameterName] = $this->extractConstructorArgumentsUntilScalar($parameterClass);
 
         return $values;
     }

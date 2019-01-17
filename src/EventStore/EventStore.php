@@ -10,6 +10,8 @@ interface EventStore
 {
     /**
      * @return Event[]
+     *
+     * @throws AggregateRootNotFoundException
      */
     public function load(string $id): array;
 

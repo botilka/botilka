@@ -6,13 +6,14 @@ namespace Botilka\Bridge\Symfony\Bundle\DependencyInjection;
 
 use Botilka\Application\Command\Command;
 use Botilka\Application\Command\CommandHandler;
-use Botilka\Application\EventStore\EventStoreInitializer;
+use Botilka\Infrastructure\StoreInitializer;
 use Botilka\Event\EventHandler;
 use Botilka\Infrastructure\Doctrine\EventStoreDoctrine;
 use Botilka\Infrastructure\Symfony\Messenger\Middleware\EventDispatcherMiddleware;
 use Botilka\Application\Query\Query;
 use Botilka\Application\Query\QueryHandler;
 use Botilka\Projector\Projector;
+use Botilka\Repository\EventSourcedRepository;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -29,7 +30,8 @@ final class BotilkaExtension extends Extension implements PrependExtensionInterf
         Projector::class => ['botilka.projector'],
         Command::class => ['cqrs.command'],
         Query::class => ['cqrs.query'],
-        EventStoreInitializer::class => ['botilka.event_store.initializer'],
+        StoreInitializer::class => ['botilka.store.initializer'],
+        EventSourcedRepository::class => ['botilka.repository.event_sourced'],
     ];
 
     public function prepend(ContainerBuilder $container)

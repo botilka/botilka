@@ -2,56 +2,29 @@
 
 declare(strict_types=1);
 
-namespace Botilka\Tests\Infrastructure\MongoDB;
+namespace Botilka\Tests\Infrastructure\MongoDB\Initializer;
 
-use Botilka\Infrastructure\MongoDB\EventStoreMongoDBInitializer;
+use Botilka\Infrastructure\StoreInitializer;
 use Botilka\Tests\AbstractKernelTestCase;
 use MongoDB\Client;
 use MongoDB\Collection;
 use MongoDB\Database;
 
-final class EventStoreMongoDBInitializerTest extends AbstractKernelTestCase
+abstract class AbstractMongoDBStoreInitializerTest extends AbstractKernelTestCase
 {
-    /** @var EventStoreMongoDBInitializer */
-    private $initializer;
+    /** @var StoreInitializer */
+    protected $initializer;
 
     /** @var string */
-    private $database;
+    protected $database;
 
     /** @var string */
-    private $collection;
+    protected $collectionName;
 
-    protected function setUp()
-    {
-        /** @var string $database */
-        $database = \getenv('MONGODB_DB').'_test';
-        /** @var string $collection */
-        $collection = \getenv('MONGODB_COLLECTION').'_test';
-        $this->database = $database;
-        $this->collection = $collection;
-    }
+    /** @var string */
+    protected $type;
 
-    /** @dataProvider initializeProvider */
-    public function testInitialize(bool $force): void
-    {
-        $collection = $this->createMock(Collection::class);
-        $collection->expects($this->once())
-            ->method('createIndex')
-            ->with(['id' => 1, 'playhead' => 1], ['unique' => true]);
-
-        $database = $this->createMock(Database::class);
-        $database->expects($this->once())->method('selectCollection')
-            ->with($this->collection)->willReturn($collection);
-        $database->expects($force ? $this->once() : $this->never())->method('dropCollection')
-            ->with($this->collection)->willReturn($collection);
-
-        $client = $this->createMock(Client::class);
-        $client->expects($this->once())->method('selectDatabase')
-            ->willReturn($database);
-
-        $initializer = new EventStoreMongoDBInitializer($client, $this->database, $this->collection);
-        $initializer->initialize($force);
-    }
+    abstract protected function getInitializer(Client $client): StoreInitializer;
 
     public function initializeProvider(): array
     {
@@ -59,6 +32,27 @@ final class EventStoreMongoDBInitializerTest extends AbstractKernelTestCase
             [true],
             [false],
         ];
+    }
+
+    protected function assertInitialize(bool $force, array $createIndexParams): void
+    {
+        $collection = $this->createMock(Collection::class);
+        $collection->expects($this->once())
+            ->method('createIndex')
+            ->with($createIndexParams, ['unique' => true]);
+
+        $database = $this->createMock(Database::class);
+        $database->expects($this->once())->method('selectCollection')
+            ->with($this->collectionName)->willReturn($collection);
+        $database->expects($force ? $this->once() : $this->never())->method('dropCollection')
+            ->with($this->collectionName)->willReturn($collection);
+
+        $client = $this->createMock(Client::class);
+        $client->expects($this->once())->method('selectDatabase')
+            ->willReturn($database);
+
+        $initializer = $this->getInitializer($client);
+        $initializer->initialize($force);
     }
 
     /**
@@ -70,12 +64,12 @@ final class EventStoreMongoDBInitializerTest extends AbstractKernelTestCase
         static::bootKernel();
         /** @var Client $client */
         $client = static::$container->get(Client::class);
-        $client->selectDatabase($this->database)->dropCollection($this->collection);
-        $initializer = new EventStoreMongoDBInitializer($client, $this->database, $this->collection);
+        $client->selectDatabase($this->database)->dropCollection($this->collectionName);
+        $initializer = $this->getInitializer($client);
         $initializer->initialize();
         $this->assertTrue(true);
 
-        $this->expectExceptionMessage("Collection '{$this->collection}' already exists.");
+        $this->expectExceptionMessage("Collection '{$this->collectionName}' already exists.");
         $initializer->initialize();
     }
 
@@ -85,8 +79,8 @@ final class EventStoreMongoDBInitializerTest extends AbstractKernelTestCase
         static::bootKernel();
         /** @var Client $client */
         $client = static::$container->get(Client::class);
-        $client->selectDatabase($this->database)->dropCollection($this->collection);
-        $initializer = new EventStoreMongoDBInitializer($client, $this->database, $this->collection);
+        $client->selectDatabase($this->database)->dropCollection($this->collectionName);
+        $initializer = $this->getInitializer($client);
         $initializer->initialize();
         $initializer->initialize(true);
         $initializer->initialize(true);
@@ -100,15 +94,23 @@ final class EventStoreMongoDBInitializerTest extends AbstractKernelTestCase
     {
         $database = $this->createMock(Database::class);
         $database->expects($this->once())->method('createCollection')
-            ->willThrowException(new \MongoDB\Driver\Exception\CommandException("Collection '{$this->collection}' already exists."));
+            ->willThrowException(new \MongoDB\Driver\Exception\CommandException("Collection '{$this->collectionName}' already exists."));
 
         $client = $this->createMock(Client::class);
         $client->expects($this->once())->method('selectDatabase')
             ->willReturn($database);
 
-        $this->expectExceptionMessage("Collection '{$this->collection}' already exists.");
+        $this->expectExceptionMessage("Collection '{$this->collectionName}' already exists.");
 
-        $initializer = new EventStoreMongoDBInitializer($client, $this->database, $this->collection);
+        $initializer = $this->getInitializer($client);
         $initializer->initialize();
+    }
+
+    public function testGetType()
+    {
+        $client = $this->createMock(Client::class);
+        $initializer = $this->getInitializer($client);
+
+        $this->assertSame($this->type, $initializer->getType());
     }
 }

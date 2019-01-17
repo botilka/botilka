@@ -15,7 +15,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 final class ProjectorPlayCommand extends Command
 {
-    use HandleEventsFromEventStoreManagerCommandTrait;
+    use GetManagedEventsFromEventStoreTrait;
 
     private $eventStoreManager;
     private $projectionist;
