@@ -33,6 +33,9 @@ final class CommandDataProvider implements CollectionDataProviderInterface, Item
         return $descriptionContainer;
     }
 
+    /**
+     * @param string $id
+     */
     public function getItem(string $resourceClass, $id, string $operationName = null, array $context = [])
     {
         if (!$this->descriptionContainer->has($id)) {

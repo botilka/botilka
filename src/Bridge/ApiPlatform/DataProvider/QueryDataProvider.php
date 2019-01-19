@@ -33,6 +33,9 @@ final class QueryDataProvider implements CollectionDataProviderInterface, ItemDa
         return $collection;
     }
 
+    /**
+     * @param string $id
+     */
     public function getItem(string $resourceClass, $id, string $operationName = null, array $context = [])
     {
         if (!$this->descriptionContainer->has($id)) {

@@ -24,7 +24,7 @@ final class EventStoreDoctrineTest extends TestCase
     private $denormalizer;
     /** @var NormalizerInterface|MockObject */
     private $normalizer;
-    /** @var EventStoreDoctrine|MockObject */
+    /** @var EventStoreDoctrine */
     private $eventStore;
 
     protected function setUp()
@@ -78,7 +78,7 @@ final class EventStoreDoctrineTest extends TestCase
     public function testLoadSuccess(): void
     {
         $this->addLoadAssertions('SELECT type, payload FROM event_store WHERE id = :id ORDER BY playhead', ['id' => 'foo'], true);
-        $this->assertSame(['baz'], $this->eventStore->load('foo'));
+        $this->assertEquals(['baz'], $this->eventStore->load('foo'));
     }
 
     /**
@@ -94,13 +94,13 @@ final class EventStoreDoctrineTest extends TestCase
     public function testLoadFromPlayheadSuccess(): void
     {
         $this->addLoadAssertions('SELECT type, payload FROM event_store WHERE id = :id AND playhead >= :from ORDER BY playhead', ['id' => 'foo', 'from' => 2], true);
-        $this->assertSame(['baz'], $this->eventStore->loadFromPlayhead('foo', 2));
+        $this->assertEquals(['baz'], $this->eventStore->loadFromPlayhead('foo', 2));
     }
 
     public function testLoadFromPlayheadToPlayheadSuccess(): void
     {
         $this->addLoadAssertions('SELECT type, payload FROM event_store WHERE id = :id AND playhead BETWEEN :from AND :to ORDER BY playhead', ['id' => 'foo', 'from' => 2, 'to' => 4], true);
-        $this->assertSame(['baz'], $this->eventStore->loadFromPlayheadToPlayhead('foo', 2, 4));
+        $this->assertEquals(['baz'], $this->eventStore->loadFromPlayheadToPlayhead('foo', 2, 4));
     }
 
     public function testAppend(): void

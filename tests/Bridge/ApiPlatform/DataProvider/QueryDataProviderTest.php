@@ -44,6 +44,7 @@ final class QueryDataProviderTest extends TestCase
 
     public function testGetCollection(): void
     {
+        /** @var array $collection */
         $collection = $this->dataProvider->getCollection('whatever');
         $this->assertCount(1, $collection);
         $this->assertInstanceOf(Query::class, $collection[0]);
