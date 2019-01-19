@@ -12,7 +12,10 @@ final class SnapshotStoreDoctrineInitializerTest extends AbstractDoctrineInitial
 
     protected function setUp()
     {
-        $this->tableName = \getenv('SNAPSHOT_STORE_COLLECTION').'_test';
+        $kernel = static::bootKernel();
+        $container = static::$container;
+
+        $this->tableName = $container->getParameter('botilka.snapshot_store.collection').'_test';
 
         $this->resetStore();
         $this->initializer = new SnapshotStoreDoctrineInitializer($this->connection, $this->tableName);

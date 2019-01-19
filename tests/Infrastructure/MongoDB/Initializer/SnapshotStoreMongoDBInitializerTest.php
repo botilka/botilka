@@ -16,10 +16,12 @@ final class SnapshotStoreMongoDBInitializerTest extends AbstractMongoDBStoreInit
 
     protected function setUp()
     {
+        static::bootKernel();
+        $container = static::$container;
         /** @var string $database */
-        $database = \getenv('MONGODB_DB').'_test';
+        $database = $container->getParameter('botilka.mongodb.db').'_test';
         /** @var string $collection */
-        $collectionName = \getenv('SNAPSHOT_STORE_COLLECTION').'_test';
+        $collectionName = $container->getParameter('botilka.snapshot_store.collection').'_test';
         $this->database = $database;
         $this->collectionName = $collectionName;
     }

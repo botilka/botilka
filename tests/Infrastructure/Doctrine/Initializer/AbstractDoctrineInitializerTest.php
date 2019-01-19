@@ -28,8 +28,7 @@ abstract class AbstractDoctrineInitializerTest extends AbstractKernelTestCase
 
     protected function resetStore(): void
     {
-        $kernel = static::bootKernel();
-        $this->setUpDatabase($kernel);
+        $this->setUpDatabase(static::$kernel);
         $container = self::$container;
 
         /** @var RegistryInterface $registry */

@@ -61,7 +61,6 @@ abstract class AbstractMongoDBStoreInitializerTest extends AbstractKernelTestCas
      */
     public function testInitializeFunctional(): void
     {
-        static::bootKernel();
         /** @var Client $client */
         $client = static::$container->get(Client::class);
         $client->selectDatabase($this->database)->dropCollection($this->collectionName);
@@ -76,7 +75,6 @@ abstract class AbstractMongoDBStoreInitializerTest extends AbstractKernelTestCas
     /** @group functional */
     public function testInitializeForceFunctional(): void
     {
-        static::bootKernel();
         /** @var Client $client */
         $client = static::$container->get(Client::class);
         $client->selectDatabase($this->database)->dropCollection($this->collectionName);
