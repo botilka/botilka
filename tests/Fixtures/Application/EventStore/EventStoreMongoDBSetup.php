@@ -22,9 +22,9 @@ trait EventStoreMongoDBSetup
         /** @var Client $client */
         $client = $container->get(Client::class);
         /** @var string $database */
-        $database = \getenv('MONGODB_DB').'_test';
+        $database = $container->getParameter('botilka.mongodb.db').'_test';
         /** @var string $collectionName */
-        $collectionName = \getenv('MONGODB_COLLECTION').'_test';
+        $collectionName = $container->getParameter('botilka.event_store.collection').'_test';
 
         $initializer = new EventStoreMongoDBInitializer($client, $database, $collectionName);
         $initializer->initialize(true);

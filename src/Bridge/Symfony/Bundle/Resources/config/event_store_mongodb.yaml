@@ -5,21 +5,21 @@ services:
         public: false
         bind:
             $client: '@MongoDB\Client'
-            $database: '%env(MONGODB_DB)%'
+            $database: '%botilka.mongodb.db%'
 
     MongoDB\Client:
-       arguments: ['%env(MONGODB_URL)%']
+       arguments: ['%botilka.mongodb.url%']
 
     # MongoDB collections
     MongoDB\Collection.event_store:
         class: MongoDB\Client
         factory: ['@MongoDB\Client', selectCollection]
-        arguments: ['%env(MONGODB_DB)%', '%env(MONGODB_COLLECTION)%']
+        arguments: ['%botilka.mongodb.db%', '%botilka.event_store.collection%']
 
     MongoDB\Collection.snapshot_store:
         class: MongoDB\Client
         factory: ['@MongoDB\Client', selectCollection]
-        arguments: ['%env(MONGODB_DB)%', '%env(SNAPSHOT_STORE_COLLECTION)%']
+        arguments: ['%botilka.mongodb.db%', '%botilka.snapshot_store.collection%']
 
     # Event store
     Botilka\Infrastructure\MongoDB\EventStoreMongoDB:
@@ -42,8 +42,8 @@ services:
     # Initializers
     Botilka\Infrastructure\MongoDB\Initializer\EventStoreMongoDBInitializer:
         arguments:
-            $collectionName: '%env(MONGODB_COLLECTION)%'
+            $collectionName: '%botilka.event_store.collection%'
 
     Botilka\Infrastructure\MongoDB\Initializer\SnapshotStoreMongoDBInitializer:
         arguments:
-            $collectionName: '%env(SNAPSHOT_STORE_COLLECTION)%'
+            $collectionName: '%botilka.snapshot_store.collection%'

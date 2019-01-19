@@ -11,4 +11,4 @@ services:
         exclude: '../../../src/{Application/Command/*CommandResponse.php,Bridge,EventStore/ManagedEvent.php,Infrastructure,Projector/Projection.php,Repository,Snapshot,Ui}'
 
     MongoDB\Client:
-        arguments: ['%env(MONGODB_URL)%']
+        arguments: ['%botilka.mongodb.url%']

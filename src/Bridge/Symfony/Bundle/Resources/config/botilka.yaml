@@ -1,3 +1,11 @@
+parameters:
+
+    botilka.mongodb.url: '%env(MONGODB_URL)%'
+    botilka.mongodb.db: '%env(MONGODB_DB)%'
+    botilka.event_store.collection: '%env(EVENT_STORE_COLLECTION)%'
+    botilka.snapshot_store.collection: '%env(SNAPSHOT_STORE_COLLECTION)%'
+
+
 services:
     _defaults:
         autowire: true
