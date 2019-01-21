@@ -78,7 +78,7 @@ final class EventStoreDoctrine implements EventStore
     }
 
     /**
-     * @return Event[]
+     * @return DomainEvent[]
      */
     private function deserialize(array $storedEvents): array
     {

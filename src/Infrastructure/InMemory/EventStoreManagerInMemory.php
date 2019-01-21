@@ -66,6 +66,9 @@ final class EventStoreManagerInMemory implements EventStoreManager
 
     public function getAggregateRootIds(): array
     {
-        return \array_keys($this->eventStore->getStore());
+        /** @var string[] $keys */
+        $keys = \array_keys($this->eventStore->getStore());
+
+        return $keys;
     }
 }
