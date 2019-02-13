@@ -7,7 +7,6 @@ namespace Botilka\Bridge\ApiPlatform\Metadata\Resource\Factory;
 use ApiPlatform\Core\Exception\ResourceClassNotFoundException;
 use ApiPlatform\Core\Metadata\Resource\Factory\ResourceMetadataFactoryInterface;
 use ApiPlatform\Core\Metadata\Resource\ResourceMetadata;
-use Botilka\Bridge\ApiPlatform\Action\CommandHandlerAction;
 use Botilka\Bridge\ApiPlatform\Description\DescriptionContainerInterface;
 use Botilka\Bridge\ApiPlatform\Swagger\SwaggerPayloadNormalizerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -41,7 +40,6 @@ final class BotilkaCommandResourceMetadataFactory implements ResourceMetadataFac
 
             foreach ($this->descriptionContainer as $name => $descritpion) {
                 $collectionOperations[$name] = [
-                    'controller' => CommandHandlerAction::class,
                     'method' => Request::METHOD_POST,
                     'path' => '/commands/'.$name.'.{_format}',
                     'swagger_context' => [

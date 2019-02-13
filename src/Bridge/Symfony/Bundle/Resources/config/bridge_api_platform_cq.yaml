@@ -8,11 +8,9 @@ services:
     Botilka\Bridge\ApiPlatform\Description\DescriptionContainer: ~
     Botilka\Bridge\ApiPlatform\DataProvider\CommandDataProvider: ~
     Botilka\Bridge\ApiPlatform\DataProvider\QueryDataProvider: ~
+    Botilka\Bridge\ApiPlatform\DataPersister\CommandBusPersister: ~
 
     Botilka\Bridge\ApiPlatform\Action\CommandEntrypointAction:
-        public: true
-
-    Botilka\Bridge\ApiPlatform\Action\CommandHandlerAction:
         public: true
 
     Botilka\Bridge\ApiPlatform\EventListener\CommandResourceClassEventListener:
