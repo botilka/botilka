@@ -7,7 +7,6 @@ namespace Botilka\Tests\Bridge\ApiPlatform\Metadata\Resource\Factory;
 use ApiPlatform\Core\Exception\ResourceClassNotFoundException;
 use ApiPlatform\Core\Metadata\Resource\Factory\ResourceMetadataFactoryInterface;
 use ApiPlatform\Core\Metadata\Resource\ResourceMetadata;
-use Botilka\Bridge\ApiPlatform\Action\CommandHandlerAction;
 use Botilka\Bridge\ApiPlatform\Description\DescriptionContainerInterface;
 use Botilka\Bridge\ApiPlatform\Metadata\Resource\Factory\BotilkaCommandResourceMetadataFactory;
 use Botilka\Bridge\ApiPlatform\Swagger\SwaggerPayloadNormalizerInterface;
@@ -84,7 +83,6 @@ final class BotilkaCommandResourceMetadataFactoryTest extends TestCase
 
         $this->assertSame([
             'foo' => [
-                'controller' => CommandHandlerAction::class,
                 'method' => Request::METHOD_POST,
                 'path' => '/commands/foo.{_format}',
                 'swagger_context' => [

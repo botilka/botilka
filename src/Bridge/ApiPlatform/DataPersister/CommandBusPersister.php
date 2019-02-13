@@ -2,16 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Botilka\Bridge\ApiPlatform\Action;
+namespace Botilka\Bridge\ApiPlatform\DataPersister;
 
 use ApiPlatform\Core\Bridge\Symfony\Validator\Exception\ValidationException;
+use ApiPlatform\Core\DataPersister\DataPersisterInterface;
 use Botilka\Application\Command\Command;
 use Botilka\Application\Command\CommandBus;
-use Botilka\Bridge\ApiPlatform\Command\CommandResponseAdapter;
 use Botilka\Application\Command\CommandResponse;
+use Botilka\Bridge\ApiPlatform\Command\CommandResponseAdapter;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-final class CommandHandlerAction
+final class CommandBusPersister implements DataPersisterInterface
 {
     private $commandBus;
     private $validator;
@@ -22,7 +23,15 @@ final class CommandHandlerAction
         $this->validator = $validator;
     }
 
-    public function __invoke(Command $data): CommandResponseAdapter
+    public function supports($data): bool
+    {
+        return $data instanceof Command;
+    }
+
+    /**
+     * @return CommandResponseAdapter
+     */
+    public function persist($data)
     {
         $violations = $this->validator->validate($data);
 
@@ -34,5 +43,13 @@ final class CommandHandlerAction
         $response = $this->commandBus->dispatch($data);
 
         return new CommandResponseAdapter($response);
+    }
+
+    /**
+     * @throws \LogicException must not be called in an event-sourced application
+     */
+    public function remove($data)
+    {
+        throw new \LogicException('Remove must not be called in an event-sourced application.');
     }
 }

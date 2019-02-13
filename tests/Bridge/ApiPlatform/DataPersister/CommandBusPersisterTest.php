@@ -2,11 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Botilka\Tests\Bridge\ApiPlatform\Action;
+namespace Botilka\Tests\Bridge\ApiPlatform\DataPersister;
 
 use Botilka\Application\Command\CommandBus;
 use Botilka\Application\Command\CommandResponse;
-use Botilka\Bridge\ApiPlatform\Action\CommandHandlerAction;
+use Botilka\Bridge\ApiPlatform\Command\CommandResponseAdapter;
+use Botilka\Bridge\ApiPlatform\DataPersister\CommandBusPersister;
 use Botilka\Tests\Fixtures\Application\Command\SimpleCommand;
 use Botilka\Tests\Fixtures\Domain\StubEvent;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -15,9 +16,9 @@ use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-final class CommandHandlerActionTest extends TestCase
+final class CommandBusPersisterTest extends TestCase
 {
-    /** @var CommandHandlerAction */
+    /** @var CommandBusPersister */
     private $handler;
     /** @var CommandBus|MockObject */
     private $commandBus;
@@ -30,7 +31,7 @@ final class CommandHandlerActionTest extends TestCase
         $this->validator = $this->createMock(ValidatorInterface::class);
     }
 
-    public function testInvoke(): void
+    public function testPersist(): void
     {
         $command = new SimpleCommand('foo');
         $commandResponse = new CommandResponse('bar', new StubEvent(123));
@@ -44,14 +45,15 @@ final class CommandHandlerActionTest extends TestCase
             ->method('validate')->with($command)
             ->willReturn([]);
 
-        $handler = new CommandHandlerAction($this->commandBus, $this->validator);
-        $result = $handler($command);
+        $persister = new CommandBusPersister($this->commandBus, $this->validator);
+        $result = $persister->persist($command);
 
+        $this->assertInstanceOf(CommandResponseAdapter::class, $result);
         $this->assertSame('bar', $result->getId());
     }
 
     /** @expectedException \ApiPlatform\Core\Bridge\Symfony\Validator\Exception\ValidationException */
-    public function testInvokeViolation(): void
+    public function testPersistViolation(): void
     {
         $command = new SimpleCommand('foo');
 
@@ -64,7 +66,34 @@ final class CommandHandlerActionTest extends TestCase
             ->method('validate')->with($command)
             ->willReturn($violationList);
 
-        $handler = new CommandHandlerAction($this->commandBus, $this->validator);
-        $result = $handler($command);
+        $persister = new CommandBusPersister($this->commandBus, $this->validator);
+        $result = $persister->persist($command);
+    }
+
+    /**
+     * @expectedException \LogicException
+     * @expectedExceptionMessage Remove must not be called in an event-sourced application.
+     */
+    public function testRemove()
+    {
+        $command = new SimpleCommand('foo');
+        $persister = new CommandBusPersister($this->commandBus, $this->validator);
+
+        $persister->remove($command);
+    }
+
+    /** @dataProvider supportsProvider */
+    public function testSupports($data, bool $expected)
+    {
+        $persister = new CommandBusPersister($this->commandBus, $this->validator);
+        $this->assertSame($expected, $persister->supports($data));
+    }
+
+    public function supportsProvider(): array
+    {
+        return [
+            [new SimpleCommand('foo'), true],
+            [new \DateTime(), false],
+        ];
     }
 }
