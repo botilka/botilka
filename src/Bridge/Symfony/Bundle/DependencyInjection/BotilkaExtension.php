@@ -45,7 +45,7 @@ final class BotilkaExtension extends Extension implements PrependExtensionInterf
             $this->prependDefaultMessengerConfig($container, $botilkaConfig);
         }
 
-        $this->prependApliPlatformConfig($container, $botilkaConfig['api_platform'] ?? []);
+        $this->prependApliPlatformConfig($container, $botilkaConfig);
     }
 
     private function prependDefaultMessengerConfig(ContainerBuilder $container, array $config): void
@@ -72,11 +72,13 @@ final class BotilkaExtension extends Extension implements PrependExtensionInterf
         ]);
     }
 
-    private function prependApliPlatformConfig(ContainerBuilder $container, array $config): void
+    private function prependApliPlatformConfig(ContainerBuilder $container, array $botilkaConfig): void
     {
         if (!$container->hasExtension('api_platform')) {
             return;
         }
+
+        $config = $botilkaConfig['api_platform'];
 
         $paths = [];
         if ($config['expose_cq'] ?? true) {
@@ -84,7 +86,7 @@ final class BotilkaExtension extends Extension implements PrependExtensionInterf
             $container->setParameter('botilka.bridge.api_platform', true);
         }
 
-        if ($config['expose_event_store'] ?? true) {
+        if (($config['expose_event_store'] ?? true) && 'Botilka\\Infrastructure\\Doctrine\\EventStoreDoctrine' === $botilkaConfig['event_store']) {
             $paths[] = '%kernel.project_dir%/vendor/botilka/botilka/src/Infrastructure/Doctrine';
             $container->prependExtensionConfig('doctrine', [
                 'orm' => [
