@@ -39,6 +39,7 @@ final class BotilkaExtensionTest extends TestCase
             'api_platform' => [
                 'expose_cq' => true,
                 'expose_event_store' => true,
+                'endpoint_prefix' => 'cqrs',
             ],
         ],
     ];
@@ -70,6 +71,7 @@ final class BotilkaExtensionTest extends TestCase
                 'api_platform' => [
                     'expose_cq' => false,
                     'expose_event_store' => false,
+                    'endpoint_prefix' => 'cqrs',
                 ],
             ],
         ]))->shouldBeCalled();
@@ -125,6 +127,7 @@ final class BotilkaExtensionTest extends TestCase
                 'api_platform' => [
                     'expose_cq' => false,
                     'expose_event_store' => false,
+                    'endpoint_prefix' => 'cqrs',
                 ],
             ],
         ]))->shouldBeCalled();
@@ -133,26 +136,51 @@ final class BotilkaExtensionTest extends TestCase
         $this->extension->prepend($containerBuilderProphecy->reveal());
     }
 
-    public function testPrependApiPlatform(): void
+    /** @dataProvider prependApiPlatformWithDoctrineProvider */
+    public function testPrependApiPlatformWithDoctrine(bool $exposeCQ, bool $exposeEventStore): void
     {
         $containerBuilderProphecy = $this->prophesize(ContainerBuilder::class);
         $this->addContainerBuilderDefaultCalls($containerBuilderProphecy);
         $containerBuilderProphecy->hasExtension('api_platform')->willReturn(true)->shouldBeCalled();
         $containerBuilderProphecy->getExtensionConfig('botilka')->willReturn(\array_merge_recursive(self::DEFAULT_CONFIG, [
             [
+                'event_store' => EventStoreDoctrine::class,
                 'default_messenger_config' => false,
                 'doctrine_transaction_middleware' => false,
                 'api_platform' => [
-                    'expose_cq' => true,
-                    'expose_event_store' => true,
+                    'expose_cq' => $exposeCQ,
+                    'expose_event_store' => $exposeEventStore,
+                    'endpoint_prefix' => 'cqrs',
                 ],
             ],
         ]))->shouldBeCalled();
-        $containerBuilderProphecy->prependExtensionConfig('doctrine', ['orm' => ['mappings' => ['Botilka' => ['is_bundle' => false, 'type' => 'annotation', 'dir' => '%kernel.project_dir%/vendor/botilka/botilka/src/Infrastructure/Doctrine', 'prefix' => 'Botilka\Infrastructure\Doctrine', 'alias' => 'Botilka']]]])->shouldBeCalled();
-        $containerBuilderProphecy->prependExtensionConfig('api_platform', ['mapping' => ['paths' => ['%kernel.project_dir%/vendor/botilka/botilka/src/Bridge/ApiPlatform/Resource', '%kernel.project_dir%/vendor/botilka/botilka/src/Infrastructure/Doctrine']]])->shouldBeCalled();
-        $containerBuilderProphecy->setParameter('botilka.bridge.api_platform', true)->shouldBeCalled();
+
+        $paths = [];
+        if (true === $exposeCQ) {
+            $paths[] = '%kernel.project_dir%/vendor/botilka/botilka/src/Bridge/ApiPlatform/Resource';
+            $containerBuilderProphecy->setParameter('botilka.bridge.api_platform', true)->shouldBeCalled();
+        }
+
+        if (true === $exposeEventStore) {
+            $paths[] = '%kernel.project_dir%/vendor/botilka/botilka/src/Infrastructure/Doctrine';
+            $containerBuilderProphecy->prependExtensionConfig('doctrine', ['orm' => ['mappings' => ['Botilka' => ['is_bundle' => false, 'type' => 'annotation', 'dir' => '%kernel.project_dir%/vendor/botilka/botilka/src/Infrastructure/Doctrine', 'prefix' => 'Botilka\Infrastructure\Doctrine', 'alias' => 'Botilka']]]])->shouldBeCalled();
+        }
+
+        if (\count($paths) > 0) {
+            $containerBuilderProphecy->prependExtensionConfig('api_platform', ['mapping' => ['paths' => $paths]])->shouldBeCalled();
+        }
 
         $this->extension->prepend($containerBuilderProphecy->reveal());
+    }
+
+    public function prependApiPlatformWithDoctrineProvider(): array
+    {
+        return [
+            [true, true],
+            [false, true],
+            [true, false],
+            [false, false],
+        ];
     }
 
     /** @dataProvider loadProvider */
