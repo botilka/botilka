@@ -19,12 +19,14 @@ final class BotilkaCommandResourceMetadataFactory implements ResourceMetadataFac
     private $decorated;
     private $descriptionContainer;
     private $payloadNormalizer;
+    private $prefix;
 
-    public function __construct(ResourceMetadataFactoryInterface $decorated, DescriptionContainerInterface $descriptionContainer, SwaggerPayloadNormalizerInterface $payloadNormalizer)
+    public function __construct(ResourceMetadataFactoryInterface $decorated, DescriptionContainerInterface $descriptionContainer, SwaggerPayloadNormalizerInterface $payloadNormalizer, ?string $prefix)
     {
         $this->decorated = $decorated;
         $this->descriptionContainer = $descriptionContainer;
         $this->payloadNormalizer = $payloadNormalizer;
+        $this->prefix = $prefix;
     }
 
     public function create(string $resourceClass): ResourceMetadata
@@ -41,7 +43,7 @@ final class BotilkaCommandResourceMetadataFactory implements ResourceMetadataFac
             foreach ($this->descriptionContainer as $name => $descritpion) {
                 $collectionOperations[$name] = [
                     'method' => Request::METHOD_POST,
-                    'path' => '/commands/'.$name.'.{_format}',
+                    'path' => '/'.\trim($this->prefix.'/commands/'.$name.'.{_format}'),
                     'swagger_context' => [
                         'description' => "Execute $name",
                         'parameters' => [

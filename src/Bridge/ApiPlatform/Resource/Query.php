@@ -9,7 +9,6 @@ use ApiPlatform\Core\Annotation\ApiResource;
 
 /**
  * @ApiResource(
- *     routePrefix="/cqrs",
  *     itemOperations={
  *         "get"={"path"="/description/queries/{id}"}
  *     },

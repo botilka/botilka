@@ -17,14 +17,16 @@ final class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
-                ->scalarNode('event_store')->defaultValue(EventStoreInMemory::class)->info('Event store implementation. Default: EventStoreInMemory')->end()
-                ->scalarNode('default_messenger_config')->defaultTrue()->info('Auto-configure Messenger buses')->end()
+                ->scalarNode('event_store')->defaultValue(EventStoreInMemory::class)->info('Event store implementation. Default: '.EventStoreInMemory::class)->end()
+                ->booleanNode('default_messenger_config')->defaultTrue()->info('Auto-configure Messenger buses')->end()
                 ->booleanNode('doctrine_transaction_middleware')->defaultTrue()->info('Add Doctrine transaction middleware')->end()
                 ->arrayNode('api_platform')
+                    ->info('API Platform bridge')
                     ->addDefaultsIfNotSet()
                     ->children()
-                        ->scalarNode('expose_cq')->defaultTrue()->info('Expose commands & queries')->end()
-                        ->scalarNode('expose_event_store')->defaultTrue()->info('Expose Event store (Doctrine only).')->end()
+                        ->booleanNode('expose_cq')->defaultTrue()->info('Expose commands & queries')->end()
+                        ->booleanNode('expose_event_store')->defaultTrue()->info('Expose event store (Doctrine only)')->end()
+                        ->scalarNode('endpoint_prefix')->defaultValue('cqrs')->info('Route prefix for endpoints')->end()
                     ->end()
             ->end();
 

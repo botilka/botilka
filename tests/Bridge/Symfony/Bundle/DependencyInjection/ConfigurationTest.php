@@ -40,6 +40,7 @@ final class ConfigurationTest extends TestCase
             'api_platform' => [
                 'expose_cq' => true,
                 'expose_event_store' => true,
+                'endpoint_prefix' => 'cqrs',
             ],
         ];
 

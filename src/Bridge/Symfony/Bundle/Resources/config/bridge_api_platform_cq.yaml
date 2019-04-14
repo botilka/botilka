@@ -4,6 +4,7 @@ services:
         autoconfigure: true
         public: false
 
+
     # API Platform bridge for commands & queries
     Botilka\Bridge\ApiPlatform\Description\DescriptionContainer: ~
     Botilka\Bridge\ApiPlatform\DataProvider\CommandDataProvider: ~
@@ -22,23 +23,25 @@ services:
             $descriptionContainer: '@Botilka\Bridge\ApiPlatform\Resource\Query.description_container'
 
     Botilka\Bridge\ApiPlatform\Hydrator\CommandHydratorInterface:
-        class: Botilka\Bridge\ApiPlatform\Hydrator\CommandHydrator
+        class: 'Botilka\Bridge\ApiPlatform\Hydrator\CommandHydrator'
 
     Botilka\Bridge\ApiPlatform\Hydrator\QueryHydratorInterface:
-        class: Botilka\Bridge\ApiPlatform\Hydrator\QueryHydrator
+        class: 'Botilka\Bridge\ApiPlatform\Hydrator\QueryHydrator'
 
     Botilka\Bridge\ApiPlatform\Metadata\Resource\Factory\BotilkaCommandResourceMetadataFactory:
-        decorates: api_platform.metadata.resource.metadata_factory
+        decorates: 'api_platform.metadata.resource.metadata_factory'
         arguments:
             $descriptionContainer: '@Botilka\Bridge\ApiPlatform\Resource\Command.description_container'
             $payloadNormalizer: '@Botilka\Bridge\ApiPlatform\Swagger\SwaggerCommandBodyNormalizer'
+            $prefix: '%botilka.api_platform.endpoint_prefix%'
 
     Botilka\Bridge\ApiPlatform\Metadata\Resource\Factory\BotilkaQueryResourceMetadataFactory:
-        decorates: api_platform.metadata.resource.metadata_factory
+        decorates: 'api_platform.metadata.resource.metadata_factory'
         arguments:
             $descriptionContainer: '@Botilka\Bridge\ApiPlatform\Resource\Query.description_container'
             $parameterNormalizer: '@Botilka\Bridge\ApiPlatform\Swagger\SwaggerQueryParameterNormalizer'
             $formats: '%api_platform.formats%'
+            $prefix: '%botilka.api_platform.endpoint_prefix%'
 
     Botilka\Bridge\ApiPlatform\Swagger\SwaggerQueryParameterNormalizer: ~
     Botilka\Bridge\ApiPlatform\Swagger\SwaggerCommandBodyNormalizer: ~

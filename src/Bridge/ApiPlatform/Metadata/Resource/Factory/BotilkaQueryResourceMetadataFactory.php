@@ -27,13 +27,15 @@ final class BotilkaQueryResourceMetadataFactory implements ResourceMetadataFacto
     private $descriptionContainer;
     private $parameterNormalizer;
     private $formats;
+    private $prefix;
 
-    public function __construct(ResourceMetadataFactoryInterface $decorated, DescriptionContainerInterface $descriptionContainer, SwaggerPayloadNormalizerInterface $parameterNormalizer, array $formats)
+    public function __construct(ResourceMetadataFactoryInterface $decorated, DescriptionContainerInterface $descriptionContainer, SwaggerPayloadNormalizerInterface $parameterNormalizer, array $formats, ?string $prefix)
     {
         $this->decorated = $decorated;
         $this->descriptionContainer = $descriptionContainer;
         $this->parameterNormalizer = $parameterNormalizer;
         $this->formats = $formats;
+        $this->prefix = $prefix;
     }
 
     public function create(string $resourceClass): ResourceMetadata
@@ -50,7 +52,7 @@ final class BotilkaQueryResourceMetadataFactory implements ResourceMetadataFacto
             foreach ($this->descriptionContainer as $name => $descritpion) {
                 $itemOperations[$name] = [
                     'method' => Request::METHOD_GET,
-                    'path' => '/queries/'.$name.'.{_format}',
+                    'path' => '/'.\trim($this->prefix.'/queries/'.$name.'.{_format}'),
                     'formats' => \array_intersect_key(self::SUPPORTED_FORMATS, $this->formats),
                     'swagger_context' => [
                         'description' => "Execute $name",
