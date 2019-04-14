@@ -25,7 +25,7 @@ final class MessengerCommandBusTest extends TestCase
         $messengerBus->expects($this->once())
             ->method('dispatch')
             ->with($command)
-            ->willReturn(new Envelope(new \stdClass(), $stamp));
+            ->willReturn(new Envelope($command, $stamp));
 
         $bus = new MessengerCommandBus($messengerBus);
         $this->assertSame($commandResponse, $bus->dispatch($command));
