@@ -10,7 +10,6 @@ use Botilka\Bridge\ApiPlatform\Action\CommandEntrypointAction;
 
 /**
  * @ApiResource(
- *     routePrefix="/cqrs",
  *     itemOperations={
  *         "get"={"path"="/description/commands/{id}"}
  *     },

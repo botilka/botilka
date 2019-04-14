@@ -135,6 +135,8 @@ final class BotilkaExtension extends Extension implements PrependExtensionInterf
         }
 
         $this->loadEventStoreConfig($loader, $config['event_store']);
+
+        $container->setParameter('botilka.api_platform.endpoint_prefix', $config['api_platform']['endpoint_prefix']);
     }
 
     private function loadEventStoreConfig(LoaderInterface $loader, string $eventStore): void

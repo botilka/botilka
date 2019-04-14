@@ -31,7 +31,7 @@ final class BotilkaCommandResourceMetadataFactoryTest extends TestCase
         $this->decorated = $this->createMock(ResourceMetadataFactoryInterface::class);
         $this->descriptionContainer = $this->createMock(DescriptionContainerInterface::class);
         $this->payloadNormalizer = $this->createMock(SwaggerPayloadNormalizerInterface::class);
-        $this->factory = new BotilkaCommandResourceMetadataFactory($this->decorated, $this->descriptionContainer, $this->payloadNormalizer);
+        $this->factory = new BotilkaCommandResourceMetadataFactory($this->decorated, $this->descriptionContainer, $this->payloadNormalizer, 'bazprefix');
     }
 
     public function testCreateResourceClassNotFoundException(): void
@@ -84,7 +84,7 @@ final class BotilkaCommandResourceMetadataFactoryTest extends TestCase
         $this->assertSame([
             'foo' => [
                 'method' => Request::METHOD_POST,
-                'path' => '/commands/foo.{_format}',
+                'path' => '/bazprefix/commands/foo.{_format}',
                 'swagger_context' => [
                     'description' => 'Execute foo',
                     'parameters' => [

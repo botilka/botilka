@@ -31,7 +31,7 @@ final class BotilkaQueryResourceMetadataFactoryTest extends TestCase
         $this->decorated = $this->createMock(ResourceMetadataFactoryInterface::class);
         $this->descriptionContainer = $this->createMock(DescriptionContainerInterface::class);
         $this->payloadNormalizer = $this->createMock(SwaggerPayloadNormalizerInterface::class);
-        $this->factory = new BotilkaQueryResourceMetadataFactory($this->decorated, $this->descriptionContainer, $this->payloadNormalizer, ['xml' => ['application/xml', 'text/xml'], 'foo' => 'application/foo']);
+        $this->factory = new BotilkaQueryResourceMetadataFactory($this->decorated, $this->descriptionContainer, $this->payloadNormalizer, ['xml' => ['application/xml', 'text/xml'], 'foo' => 'application/foo'], 'bazprefix');
     }
 
     public function testCreateResourceClassNotFoundException(): void
@@ -84,7 +84,7 @@ final class BotilkaQueryResourceMetadataFactoryTest extends TestCase
         $this->assertSame([
             'foo' => [
                 'method' => Request::METHOD_GET,
-                'path' => '/queries/foo.{_format}',
+                'path' => '/bazprefix/queries/foo.{_format}',
                 'formats' => [
                     'xml' => ['application/xml', 'text/xml'],
                 ],
