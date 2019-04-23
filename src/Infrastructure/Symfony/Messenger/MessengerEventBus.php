@@ -10,15 +10,15 @@ use Symfony\Component\Messenger\MessageBusInterface;
 
 final class MessengerEventBus implements EventBus
 {
-    private $bus;
+    private $messageBus;
 
-    public function __construct(MessageBusInterface $bus)
+    public function __construct(MessageBusInterface $messageBus)
     {
-        $this->bus = $bus;
+        $this->messageBus = $messageBus;
     }
 
     public function dispatch(Event $message): void
     {
-        $this->bus->dispatch($message);
+        $this->messageBus->dispatch($message);
     }
 }

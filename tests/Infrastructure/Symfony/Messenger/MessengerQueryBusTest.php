@@ -19,13 +19,13 @@ final class MessengerQueryBusTest extends TestCase
         $message = new \stdClass();
         $stamp = new HandledStamp($message, 'foo');
 
-        $messengerBus = $this->createMock(MessageBusInterface::class);
-        $messengerBus->expects($this->once())
+        $messageBus = $this->createMock(MessageBusInterface::class);
+        $messageBus->expects($this->once())
             ->method('dispatch')
             ->with($query)
             ->willReturn(new Envelope($message, $stamp));
 
-        $bus = new MessengerQueryBus($messengerBus);
+        $bus = new MessengerQueryBus($messageBus);
         $this->assertSame($message, $bus->dispatch($query));
     }
 }

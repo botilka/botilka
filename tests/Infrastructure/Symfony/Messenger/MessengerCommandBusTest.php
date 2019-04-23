@@ -21,13 +21,13 @@ final class MessengerCommandBusTest extends TestCase
         $commandResponse = new CommandResponse('foo', new StubEvent(123));
         $stamp = new HandledStamp($commandResponse, 'foo');
 
-        $messengerBus = $this->createMock(MessageBusInterface::class);
-        $messengerBus->expects($this->once())
+        $messageBus = $this->createMock(MessageBusInterface::class);
+        $messageBus->expects($this->once())
             ->method('dispatch')
             ->with($command)
             ->willReturn(new Envelope($command, $stamp));
 
-        $bus = new MessengerCommandBus($messengerBus);
+        $bus = new MessengerCommandBus($messageBus);
         $this->assertSame($commandResponse, $bus->dispatch($command));
     }
 }

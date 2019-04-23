@@ -60,10 +60,29 @@ final class BotilkaCommandResourceMetadataFactoryTest extends TestCase
 
     public function testCreate(): void
     {
+        $itemOperations = [
+            'get' => [
+                'path' => '/description/commands/{id}',
+                'input' => null,
+                'output' => null,
+                'method' => 'GET',
+            ],
+        ];
+
+        $collectionOperations = [
+            'get' => [
+                'path' => '/description/commands',
+                'pagination_enabled' => false,
+                'input' => null,
+                'output' => null,
+                'method' => 'GET',
+            ],
+        ];
+
         $this->decorated->expects($this->once())
             ->method('create')
             ->with('Foo\\Bar')
-            ->willReturn(new ResourceMetadata('Command'));
+            ->willReturn(new ResourceMetadata('Command', null, null, $itemOperations, $collectionOperations));
 
         $this->descriptionContainer->expects($this->once())
             ->method('getIterator')
@@ -79,9 +98,11 @@ final class BotilkaCommandResourceMetadataFactoryTest extends TestCase
             ->with(['some' => 'string'])
             ->willReturn(['foo_body']);
 
-        $metadata = $this->factory->create('Foo\\Bar');
+        $resourceMetadata = $this->factory->create('Foo\\Bar');
 
-        $this->assertSame([
+        $itemOperations['get']['path'] = '/bazprefix'.$itemOperations['get']['path'];
+        $collectionOperations['get']['path'] = '/bazprefix'.$collectionOperations['get']['path'];
+        $this->assertSame($collectionOperations + [
             'foo' => [
                 'method' => Request::METHOD_POST,
                 'path' => '/bazprefix/commands/foo.{_format}',
@@ -117,6 +138,7 @@ final class BotilkaCommandResourceMetadataFactoryTest extends TestCase
                     ],
                 ],
             ],
-        ], $metadata->getCollectionOperations());
+        ], $resourceMetadata->getCollectionOperations());
+        $this->assertSame($itemOperations, $resourceMetadata->getItemOperations());
     }
 }

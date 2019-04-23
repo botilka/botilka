@@ -13,12 +13,12 @@ services:
 
     Botilka\Infrastructure\Symfony\Messenger\MessengerCommandBus:
         arguments:
-            $bus: '@messenger.bus.commands'
+            $messageBus: '@messenger.bus.commands'
 
     Botilka\Infrastructure\Symfony\Messenger\MessengerQueryBus:
         arguments:
-            $bus: '@messenger.bus.queries'
+            $messageBus: '@messenger.bus.queries'
 
     Botilka\Infrastructure\Symfony\Messenger\MessengerEventBus:
         arguments:
-            $bus: '@messenger.bus.events'
+            $messageBus: '@messenger.bus.events'
