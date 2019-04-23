@@ -14,6 +14,10 @@ trait DoctrineSetupTrait
 {
     private function setUpDatabase(KernelInterface $kernel): void
     {
+        if ('true' !== \getenv('BOTILKA_TEST_FORCE_RECREATE_DB')) {
+            return;
+        }
+
         $application = new DropDatabaseDoctrineCommand();
         $application->setContainer(self::$container);
         $application->run(new ArrayInput(['--force' => true]), new NullOutput());

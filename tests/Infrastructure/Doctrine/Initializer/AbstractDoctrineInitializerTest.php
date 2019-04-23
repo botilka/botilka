@@ -24,6 +24,8 @@ abstract class AbstractDoctrineInitializerTest extends AbstractKernelTestCase
     /** @var string */
     protected $type;
 
+    private $needDropTable = false;
+
     use DoctrineSetupTrait;
 
     protected function resetStore(): void
@@ -37,8 +39,22 @@ abstract class AbstractDoctrineInitializerTest extends AbstractKernelTestCase
         /** @var Connection $connection */
         $connection = $registry->getConnection();
         $connection->getConfiguration()->setSQLLogger(null);
-        $connection->exec("DROP TABLE IF EXISTS {$this->tableName};");
         $this->connection = $connection;
+        $this->needDropTable = true;
+    }
+
+    protected function tearDown(): void
+    {
+        if ($this->needDropTable) {
+            $container = self::$container;
+
+            /** @var RegistryInterface $registry */
+            $registry = self::$container->get('doctrine');
+
+            /** @var Connection $connection */
+            $connection = $registry->getConnection();
+            $connection->exec("DROP TABLE IF EXISTS {$this->tableName};");
+        }
     }
 
     /**
