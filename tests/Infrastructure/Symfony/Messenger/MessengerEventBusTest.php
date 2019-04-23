@@ -16,13 +16,13 @@ final class MessengerEventBusTest extends TestCase
     {
         $event = new StubEvent(42);
 
-        $messengerBus = $this->createMock(MessageBusInterface::class);
-        $messengerBus->expects($this->once())
+        $messageBus = $this->createMock(MessageBusInterface::class);
+        $messageBus->expects($this->once())
             ->method('dispatch')
             ->with($event)
             ->willReturn(new Envelope(new \stdClass()));
 
-        $bus = new MessengerEventBus($messengerBus);
+        $bus = new MessengerEventBus($messageBus);
         $bus->dispatch($event);
     }
 }

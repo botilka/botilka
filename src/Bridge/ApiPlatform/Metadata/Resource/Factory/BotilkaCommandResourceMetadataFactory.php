@@ -38,7 +38,13 @@ final class BotilkaCommandResourceMetadataFactory implements ResourceMetadataFac
                 return $resourceMetadata;
             }
 
+            $itemOperations = $resourceMetadata->getItemOperations() ?? [];
+            $itemOperations['get']['path'] = '/'.$this->prefix.$itemOperations['get']['path'];
+
+            $resourceMetadata = $resourceMetadata->withItemOperations($itemOperations);
+
             $collectionOperations = $resourceMetadata->getCollectionOperations() ?? [];
+            $collectionOperations['get']['path'] = '/'.$this->prefix.$collectionOperations['get']['path'];
 
             foreach ($this->descriptionContainer as $name => $descritpion) {
                 $collectionOperations[$name] = [

@@ -60,10 +60,29 @@ final class BotilkaQueryResourceMetadataFactoryTest extends TestCase
 
     public function testCreate(): void
     {
+        $itemOperations = [
+            'get' => [
+                'path' => '/description/queries/{id}',
+                'input' => null,
+                'output' => null,
+                'method' => 'GET',
+            ],
+        ];
+
+        $collectionOperations = [
+            'get' => [
+                'path' => '/description/queries',
+                'pagination_enabled' => false,
+                'input' => null,
+                'output' => null,
+                'method' => 'GET',
+            ],
+        ];
+
         $this->decorated->expects($this->once())
             ->method('create')
             ->with('Foo\\Bar')
-            ->willReturn(new ResourceMetadata('Query'));
+            ->willReturn(new ResourceMetadata('Query', null, null, $itemOperations, $collectionOperations));
 
         $this->descriptionContainer->expects($this->once())
             ->method('getIterator')
@@ -79,9 +98,11 @@ final class BotilkaQueryResourceMetadataFactoryTest extends TestCase
             ->with(['some' => 'string'])
             ->willReturn(['foo_params']);
 
-        $metadata = $this->factory->create('Foo\\Bar');
+        $resourceMetadata = $this->factory->create('Foo\\Bar');
 
-        $this->assertSame([
+        $itemOperations['get']['path'] = '/bazprefix'.$itemOperations['get']['path'];
+        $collectionOperations['get']['path'] = '/bazprefix'.$collectionOperations['get']['path'];
+        $this->assertSame($itemOperations + [
             'foo' => [
                 'method' => Request::METHOD_GET,
                 'path' => '/bazprefix/queries/foo.{_format}',
@@ -115,6 +136,7 @@ final class BotilkaQueryResourceMetadataFactoryTest extends TestCase
                     ],
                 ],
             ],
-        ], $metadata->getItemOperations());
+        ], $resourceMetadata->getItemOperations());
+        $this->assertSame($collectionOperations, $resourceMetadata->getCollectionOperations());
     }
 }

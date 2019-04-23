@@ -47,7 +47,13 @@ final class BotilkaQueryResourceMetadataFactory implements ResourceMetadataFacto
                 return $resourceMetadata;
             }
 
+            $collectionOperations = $resourceMetadata->getCollectionOperations() ?? [];
+            $collectionOperations['get']['path'] = '/'.$this->prefix.$collectionOperations['get']['path'];
+
+            $resourceMetadata = $resourceMetadata->withCollectionOperations($collectionOperations);
+
             $itemOperations = $resourceMetadata->getItemOperations() ?? [];
+            $itemOperations['get']['path'] = '/'.$this->prefix.$itemOperations['get']['path'];
 
             foreach ($this->descriptionContainer as $name => $descritpion) {
                 $itemOperations[$name] = [
