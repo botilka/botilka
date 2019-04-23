@@ -6,8 +6,12 @@ namespace Botilka\Tests\Infrastructure\Doctrine\Initializer;
 
 use Botilka\Infrastructure\StoreInitializer;
 use Botilka\Tests\AbstractKernelTestCase;
+use Doctrine\Bundle\DoctrineBundle\Command\CreateDatabaseDoctrineCommand;
+use Doctrine\Bundle\DoctrineBundle\Command\DropDatabaseDoctrineCommand;
 use Doctrine\DBAL\Connection;
 use Symfony\Bridge\Doctrine\RegistryInterface;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\HttpKernel\KernelInterface;
 
 abstract class AbstractDoctrineInitializerTest extends AbstractKernelTestCase
