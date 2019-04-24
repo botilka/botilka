@@ -6,9 +6,13 @@ namespace Botilka\Tests\Infrastructure\Doctrine\Initializer;
 
 use Botilka\Infrastructure\StoreInitializer;
 use Botilka\Tests\AbstractKernelTestCase;
-use Botilka\Tests\Fixtures\Application\EventStore\DoctrineSetupTrait;
+use Doctrine\Bundle\DoctrineBundle\Command\CreateDatabaseDoctrineCommand;
+use Doctrine\Bundle\DoctrineBundle\Command\DropDatabaseDoctrineCommand;
 use Doctrine\DBAL\Connection;
 use Symfony\Bridge\Doctrine\RegistryInterface;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Output\NullOutput;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 abstract class AbstractDoctrineInitializerTest extends AbstractKernelTestCase
 {
@@ -24,7 +28,7 @@ abstract class AbstractDoctrineInitializerTest extends AbstractKernelTestCase
     /** @var string */
     protected $type;
 
-    use DoctrineSetupTrait;
+    private $needDropTable = false;
 
     protected function resetStore(): void
     {
@@ -37,8 +41,37 @@ abstract class AbstractDoctrineInitializerTest extends AbstractKernelTestCase
         /** @var Connection $connection */
         $connection = $registry->getConnection();
         $connection->getConfiguration()->setSQLLogger(null);
-        $connection->exec("DROP TABLE IF EXISTS {$this->tableName};");
         $this->connection = $connection;
+        $this->needDropTable = true;
+    }
+
+    private function setUpDatabase(KernelInterface $kernel): void
+    {
+        if ('true' !== \getenv('BOTILKA_TEST_FORCE_RECREATE_DB')) {
+            return;
+        }
+
+        $application = new DropDatabaseDoctrineCommand();
+        $application->setContainer(self::$container);
+        $application->run(new ArrayInput(['--force' => true]), new NullOutput());
+
+        $application = new CreateDatabaseDoctrineCommand();
+        $application->setContainer(self::$container);
+        $application->run(new ArrayInput([]), new NullOutput());
+    }
+
+    protected function tearDown(): void
+    {
+        if ($this->needDropTable) {
+            $container = self::$container;
+
+            /** @var RegistryInterface $registry */
+            $registry = self::$container->get('doctrine');
+
+            /** @var Connection $connection */
+            $connection = $registry->getConnection();
+            $connection->exec("DROP TABLE IF EXISTS {$this->tableName};");
+        }
     }
 
     /**
