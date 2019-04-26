@@ -7,6 +7,8 @@ namespace Botilka\Bridge\ApiPlatform\Metadata\Resource\Factory;
 use ApiPlatform\Core\Exception\ResourceClassNotFoundException;
 use ApiPlatform\Core\Metadata\Resource\Factory\ResourceMetadataFactoryInterface;
 use ApiPlatform\Core\Metadata\Resource\ResourceMetadata;
+use Botilka\Application\Command\Command;
+use Botilka\Bridge\ApiPlatform\Command\CommandResponseAdapter;
 use Botilka\Bridge\ApiPlatform\Description\DescriptionContainerInterface;
 use Botilka\Bridge\ApiPlatform\Swagger\SwaggerPayloadNormalizerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -32,6 +34,12 @@ final class BotilkaCommandResourceMetadataFactory implements ResourceMetadataFac
     public function create(string $resourceClass): ResourceMetadata
     {
         try {
+            // Must change output class starting from API Platform 2.4 otherwise it try to create a route for an IRI.
+            // @see ApiPlatform\Core\EventListener\WriteListener
+            if (\is_subclass_of($resourceClass, Command::class, true)) {
+                return new ResourceMetadata(null, null, null, null, null, ['output' => ['class' => CommandResponseAdapter::class]]);
+            }
+
             $resourceMetadata = $this->decorated->create($resourceClass);
 
             if (self::SHORT_NAME_TO_EXTEND !== $resourceMetadata->getShortName()) {
