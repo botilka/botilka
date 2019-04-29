@@ -7,9 +7,11 @@ namespace Botilka\Tests\Bridge\ApiPlatform\Metadata\Resource\Factory;
 use ApiPlatform\Core\Exception\ResourceClassNotFoundException;
 use ApiPlatform\Core\Metadata\Resource\Factory\ResourceMetadataFactoryInterface;
 use ApiPlatform\Core\Metadata\Resource\ResourceMetadata;
+use Botilka\Bridge\ApiPlatform\Command\CommandResponseAdapter;
 use Botilka\Bridge\ApiPlatform\Description\DescriptionContainerInterface;
 use Botilka\Bridge\ApiPlatform\Metadata\Resource\Factory\BotilkaCommandResourceMetadataFactory;
 use Botilka\Bridge\ApiPlatform\Swagger\SwaggerPayloadNormalizerInterface;
+use Botilka\Tests\Fixtures\Application\Command\SimpleCommand;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
@@ -40,8 +42,8 @@ final class BotilkaCommandResourceMetadataFactoryTest extends TestCase
             ->method('create')
             ->willThrowException(new ResourceClassNotFoundException());
 
-        $metadata = $this->factory->create('Foo\\Bar');
-        $this->assertNull($metadata->getShortName());
+        $resourceMetadata = $this->factory->create('Foo\\Bar');
+        $this->assertNull($resourceMetadata->getShortName());
     }
 
     public function testCreateNotExtending(): void
@@ -140,5 +142,11 @@ final class BotilkaCommandResourceMetadataFactoryTest extends TestCase
             ],
         ], $resourceMetadata->getCollectionOperations());
         $this->assertSame($itemOperations, $resourceMetadata->getItemOperations());
+    }
+
+    public function testIsSubclassOfCommand()
+    {
+        $resourceMetadata = $this->factory->create(SimpleCommand::class);
+        $this->assertSame($resourceMetadata->getAttributes(), ['output' => ['class' => CommandResponseAdapter::class]]);
     }
 }
