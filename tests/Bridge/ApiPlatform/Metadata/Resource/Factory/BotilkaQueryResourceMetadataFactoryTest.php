@@ -40,22 +40,22 @@ final class BotilkaQueryResourceMetadataFactoryTest extends TestCase
             ->method('create')
             ->willThrowException(new ResourceClassNotFoundException());
 
-        $metadata = $this->factory->create('Foo\\Bar');
-        $this->assertNull($metadata->getShortName());
+        $resourceMetadata = $this->factory->create('Foo\\Bar');
+        $this->assertNull($resourceMetadata->getShortName());
     }
 
     public function testCreateNotExtending(): void
     {
-        $metadata = new ResourceMetadata('NotQuery');
+        $resourceMetadata = new ResourceMetadata('NotQuery');
         $this->decorated->expects($this->once())
             ->method('create')
             ->with('Foo\\Bar')
-            ->willReturn($metadata);
+            ->willReturn($resourceMetadata);
 
         $this->descriptionContainer->expects($this->never())
             ->method('getIterator');
 
-        $this->assertSame($metadata, $this->factory->create('Foo\\Bar'));
+        $this->assertSame($resourceMetadata, $this->factory->create('Foo\\Bar'));
     }
 
     public function testCreate(): void
