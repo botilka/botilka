@@ -7,7 +7,6 @@ namespace Botilka\Tests\Bridge\ApiPlatform\Metadata\Resource\Factory;
 use ApiPlatform\Core\Exception\ResourceClassNotFoundException;
 use ApiPlatform\Core\Metadata\Resource\Factory\ResourceMetadataFactoryInterface;
 use ApiPlatform\Core\Metadata\Resource\ResourceMetadata;
-use Botilka\Bridge\ApiPlatform\Command\CommandResponseAdapter;
 use Botilka\Bridge\ApiPlatform\Description\DescriptionContainerInterface;
 use Botilka\Bridge\ApiPlatform\Metadata\Resource\Factory\BotilkaCommandResourceMetadataFactory;
 use Botilka\Bridge\ApiPlatform\Swagger\SwaggerPayloadNormalizerInterface;
@@ -147,6 +146,6 @@ final class BotilkaCommandResourceMetadataFactoryTest extends TestCase
     public function testIsSubclassOfCommand()
     {
         $resourceMetadata = $this->factory->create(SimpleCommand::class);
-        $this->assertSame($resourceMetadata->getAttributes(), ['output' => ['class' => CommandResponseAdapter::class]]);
+        $this->assertSame($resourceMetadata->getAttributes(), ['output' => ['class' => '']]);
     }
 }
