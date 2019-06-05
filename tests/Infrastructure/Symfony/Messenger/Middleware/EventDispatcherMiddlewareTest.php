@@ -21,6 +21,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Exception\NoHandlerForMessageException;
 use Symfony\Component\Messenger\Stamp\HandledStamp;
+use Symfony\Component\Messenger\Stamp\SentStamp;
 use Symfony\Component\Messenger\Test\Middleware\MiddlewareTestCase;
 
 final class EventDispatcherMiddlewareTest extends MiddlewareTestCase
@@ -58,7 +59,7 @@ final class EventDispatcherMiddlewareTest extends MiddlewareTestCase
             ->method('play');
     }
 
-    public function testHandleCommandResponse(): void
+    public function testHandledCommandResponse(): void
     {
         $event = new StubEvent(123);
         $commandResponse = new CommandResponse('foo', $event);
@@ -72,8 +73,8 @@ final class EventDispatcherMiddlewareTest extends MiddlewareTestCase
         $middleware->handle($this->getEnvelopeWithHandledStamp($commandResponse), $this->getStackMock());
     }
 
-    /** @dataProvider handleEventSourcedCommandResponseProvider */
-    public function testHandleEventSourcedCommandResponse(EventSourcedCommandResponse $commandResponse, bool $registryHasRepository): void
+    /** @dataProvider handledEventSourcedCommandResponseProvider */
+    public function testHandledEventSourcedCommandResponse(EventSourcedCommandResponse $commandResponse, bool $registryHasRepository): void
     {
         $event = $commandResponse->getEvent();
         $eventStoreAppendExpected = EventSourcedCommandResponse::class === \get_class($commandResponse);
@@ -106,7 +107,7 @@ final class EventDispatcherMiddlewareTest extends MiddlewareTestCase
         $middleware->handle($this->getEnvelopeWithHandledStamp($commandResponse), $this->getStackMock());
     }
 
-    public function handleEventSourcedCommandResponseProvider(): array
+    public function handledEventSourcedCommandResponseProvider(): array
     {
         $event = new StubEvent(1337);
 
@@ -116,7 +117,7 @@ final class EventDispatcherMiddlewareTest extends MiddlewareTestCase
         ];
     }
 
-    public function testHandleNoHandlerForMessageException(): void
+    public function testHandledNoHandlerForMessageException(): void
     {
         $event = new StubEvent(1337);
 
@@ -142,7 +143,7 @@ final class EventDispatcherMiddlewareTest extends MiddlewareTestCase
      * @expectedException \Botilka\EventStore\EventStoreConcurrencyException
      * @expectedExceptionMessage bar message
      */
-    public function testHandleEventStoreConcurrencyException(): void
+    public function testHandledEventStoreConcurrencyException(): void
     {
         $event = new StubEvent(1337);
 
@@ -170,7 +171,7 @@ final class EventDispatcherMiddlewareTest extends MiddlewareTestCase
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Result must be an instance of Botilka\Application\Command\CommandResponse, stdClass given.
      */
-    public function testHandleNotCommandResponse(): void
+    public function testHandleddNotCommandResponse(): void
     {
         $this->eventStore->expects($this->never())
             ->method('append');
@@ -195,5 +196,26 @@ final class EventDispatcherMiddlewareTest extends MiddlewareTestCase
         $message->foo = 'bar';
 
         return new Envelope($message, [$stamp]);
+    }
+
+    public function testSent(): void
+    {
+        $stamp = new SentStamp(\get_class($this), 'this');
+        $message = new \stdClass();
+        $message->foo = 'bar';
+
+        $envelope = new Envelope($message, [$stamp]);
+
+        $this->eventStore->expects($this->never())
+            ->method('append');
+
+        $this->eventBus->expects($this->never())
+            ->method('dispatch');
+
+        $this->projectionist->expects($this->never())
+            ->method('play');
+
+        $middleware = new EventDispatcherMiddleware($this->eventStore, $this->repositoryRegistry, $this->eventBus, $this->logger, $this->projectionist);
+        $middleware->handle($envelope, $this->getStackMock());
     }
 }
