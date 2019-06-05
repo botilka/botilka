@@ -9,6 +9,7 @@ use Botilka\Application\Command\CommandBus;
 use Botilka\Application\Command\CommandResponse;
 use Symfony\Component\Messenger\HandleTrait;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Messenger\Stamp\HandledStamp;
 
 final class MessengerCommandBus implements CommandBus
 {
@@ -21,8 +22,17 @@ final class MessengerCommandBus implements CommandBus
         $this->messageBus = $messageBus;
     }
 
-    public function dispatch(Command $message): CommandResponse
+    public function dispatch(Command $message): ?CommandResponse
     {
-        return $this->handle($message);
+        $envelope = $this->messageBus->dispatch($message);
+        /** @var HandledStamp[] $handledStamps */
+        $handledStamps = $envelope->all(HandledStamp::class);
+
+        $countHandled = \count($handledStamps);
+        if (0 === $countHandled) {
+            return null;
+        }
+
+        return $handledStamps[0]->getResult();
     }
 }

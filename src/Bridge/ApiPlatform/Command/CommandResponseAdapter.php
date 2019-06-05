@@ -10,13 +10,13 @@ final class CommandResponseAdapter
 {
     private $commandResponse;
 
-    public function __construct(CommandResponse $commandResponse)
+    public function __construct(?CommandResponse $commandResponse)
     {
         $this->commandResponse = $commandResponse;
     }
 
-    public function getId(): string
+    public function getId(): ?string
     {
-        return $this->commandResponse->getId();
+        return null !== $this->commandResponse ? $this->commandResponse->getId() : null;
     }
 }

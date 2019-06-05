@@ -8,7 +8,6 @@ use ApiPlatform\Core\Bridge\Symfony\Validator\Exception\ValidationException;
 use ApiPlatform\Core\DataPersister\DataPersisterInterface;
 use Botilka\Application\Command\Command;
 use Botilka\Application\Command\CommandBus;
-use Botilka\Application\Command\CommandResponse;
 use Botilka\Bridge\ApiPlatform\Command\CommandResponseAdapter;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -39,7 +38,6 @@ final class CommandBusPersister implements DataPersisterInterface
             throw new ValidationException($violations);
         }
 
-        /** @var CommandResponse $response */
         $response = $this->commandBus->dispatch($data);
 
         return new CommandResponseAdapter($response);

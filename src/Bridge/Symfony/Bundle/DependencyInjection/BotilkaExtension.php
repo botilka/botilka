@@ -6,6 +6,7 @@ namespace Botilka\Bridge\Symfony\Bundle\DependencyInjection;
 
 use Botilka\Application\Command\Command;
 use Botilka\Application\Command\CommandHandler;
+use Botilka\Infrastructure\MongoDB\EventStoreMongoDB;
 use Botilka\Infrastructure\StoreInitializer;
 use Botilka\Event\EventHandler;
 use Botilka\Infrastructure\Doctrine\EventStoreDoctrine;
@@ -53,7 +54,7 @@ final class BotilkaExtension extends Extension implements PrependExtensionInterf
         $commandBusMiddlewares = [EventDispatcherMiddleware::class];
 
         // if EventStoreDoctrine is used, add doctrine_transaction middleware by default
-        if ('Botilka\\Infrastructure\\Doctrine\\EventStoreDoctrine' === ($config['event_store'] ?? '') && ($config['doctrine_transaction_middleware'] ?? true)) {
+        if (EventStoreDoctrine::class === ($config['event_store'] ?? null) && ($config['doctrine_transaction_middleware'] ?? true)) {
             $container->setParameter('botilka.messenger.doctrine_transaction_middleware', true);
             \array_unshift($commandBusMiddlewares, 'doctrine_transaction');
         }
@@ -99,7 +100,7 @@ final class BotilkaExtension extends Extension implements PrependExtensionInterf
 
     private function prependApliPlatformEventStoreConfig(ContainerBuilder $container, array $config, array $botilkaConfig, array $paths): array
     {
-        if (($config['expose_event_store'] ?? true) && 'Botilka\\Infrastructure\\Doctrine\\EventStoreDoctrine' === ($botilkaConfig['event_store'] ?? null)) {
+        if (($config['expose_event_store'] ?? true) && EventStoreDoctrine::class === ($botilkaConfig['event_store'] ?? null)) {
             $paths[] = '%kernel.project_dir%/vendor/botilka/botilka/src/Infrastructure/Doctrine';
             $container->prependExtensionConfig('doctrine', [
                 'orm' => [
@@ -151,10 +152,10 @@ final class BotilkaExtension extends Extension implements PrependExtensionInterf
     private function loadEventStoreConfig(LoaderInterface $loader, string $eventStore): void
     {
         switch ($eventStore) {
-            case 'Botilka\\Infrastructure\\Doctrine\\EventStoreDoctrine':
+            case EventStoreDoctrine::class:
                 $loader->load('event_store_doctrine.yaml');
                 break;
-            case 'Botilka\\Infrastructure\\MongoDB\\EventStoreMongoDB':
+            case EventStoreMongoDB::class:
                 $loader->load('event_store_mongodb.yaml');
                 break;
         }

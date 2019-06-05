@@ -43,9 +43,14 @@ final class EventDispatcherMiddleware implements MiddlewareInterface
     public function handle(Envelope $envelope, StackInterface $stack): Envelope
     {
         $envelope = $stack->next()->handle($envelope, $stack); // execute the handler first
-        /** @var HandledStamp $handledStamp */
-        $handledStamp = $envelope->all(HandledStamp::class)[0];
-        $commandResponse = $handledStamp->getResult();
+        /** @var HandledStamp[] $handledStamps */
+        $handledStamps = $envelope->all(HandledStamp::class);
+
+        if (1 !== \count($handledStamps)) {
+            return $envelope;
+        }
+
+        $commandResponse = $handledStamps[0]->getResult();
 
         if (!$commandResponse instanceof CommandResponse) {
             throw new \InvalidArgumentException(\sprintf('Result must be an instance of %s, %s given.', CommandResponse::class, \is_object($commandResponse) ? \get_class($commandResponse) : \gettype($commandResponse)));
