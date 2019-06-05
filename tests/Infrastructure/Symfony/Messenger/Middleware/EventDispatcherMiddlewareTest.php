@@ -194,6 +194,6 @@ final class EventDispatcherMiddlewareTest extends MiddlewareTestCase
         $message = new \stdClass();
         $message->foo = 'bar';
 
-        return new Envelope($message, $stamp);
+        return new Envelope($message, [$stamp]);
     }
 }
