@@ -10,7 +10,7 @@
         "ramsey/uuid": "^3.8",
         "symfony/console": "^4.2",
         "symfony/dependency-injection": "^4.2",
-        "symfony/messenger": "~4.2.0",
+        "symfony/messenger": "^4.3",
         "symfony/monolog-bundle": "^3.3",
         "symfony/serializer": "^4.2",
         "symfony/translation": "^4.2",

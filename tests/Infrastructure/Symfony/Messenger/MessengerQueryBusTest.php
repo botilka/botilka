@@ -23,7 +23,7 @@ final class MessengerQueryBusTest extends TestCase
         $messageBus->expects($this->once())
             ->method('dispatch')
             ->with($query)
-            ->willReturn(new Envelope($message, $stamp));
+            ->willReturn(new Envelope($message, [$stamp]));
 
         $bus = new MessengerQueryBus($messageBus);
         $this->assertSame($message, $bus->dispatch($query));
