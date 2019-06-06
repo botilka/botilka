@@ -39,8 +39,8 @@ final class AppKernel extends Kernel
     protected function configureContainer(ContainerBuilder $c, LoaderInterface $loader)
     {
         $c->setParameter('kernel.project_dir', __DIR__);
-        $loader->load($this->getRootDir().'/config/config.yaml');
-        $loader->load("{$this->getRootDir()}/config/services_test.yaml");
+        $loader->load(__DIR__.'/config/config.yaml');
+        $loader->load(__DIR__.'/config/services_test.yaml');
     }
 
     public function registerBundles()
