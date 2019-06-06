@@ -7,14 +7,12 @@ namespace Botilka\Infrastructure\Symfony\Messenger;
 use Botilka\Application\Command\Command;
 use Botilka\Application\Command\CommandBus;
 use Botilka\Application\Command\CommandResponse;
-use Symfony\Component\Messenger\HandleTrait;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Messenger\Stamp\HandledStamp;
+use Symfony\Component\Messenger\Stamp\SentStamp;
 
 final class MessengerCommandBus implements CommandBus
 {
-    use HandleTrait;
-
     private $messageBus;
 
     public function __construct(MessageBusInterface $messageBus)
@@ -28,11 +26,15 @@ final class MessengerCommandBus implements CommandBus
         /** @var HandledStamp[] $handledStamps */
         $handledStamps = $envelope->all(HandledStamp::class);
 
-        $countHandled = \count($handledStamps);
-        if (0 === $countHandled) {
+        if (1 === \count($handledStamps)) {
+            return $handledStamps[0]->getResult();
+        }
+
+        // async handling, message has been sent
+        if (\count($envelope->all(SentStamp::class)) > 0) {
             return null;
         }
 
-        return $handledStamps[0]->getResult();
+        throw new \LogicException(\sprintf('Message of type "%s" was handled 0 or too many times, or was not sent.', \get_class($envelope->getMessage())));
     }
 }

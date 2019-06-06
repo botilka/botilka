@@ -18,13 +18,13 @@ use Symfony\Component\Messenger\Stamp\StampInterface;
 
 final class MessengerCommandBusTest extends TestCase
 {
-    private function getMessengerCommandBus(Command $command, ?CommandResponse $commandResponse, StampInterface $stamp): MessengerCommandBus
+    private function getMessengerCommandBus(Command $command, ?CommandResponse $commandResponse, StampInterface ...$stamps): MessengerCommandBus
     {
         $messageBus = $this->createMock(MessageBusInterface::class);
         $messageBus->expects($this->once())
             ->method('dispatch')
             ->with($command)
-            ->willReturn(new Envelope($command, [$stamp]));
+            ->willReturn(new Envelope($command, \array_values($stamps)));
 
         return new MessengerCommandBus($messageBus);
     }
@@ -52,5 +52,27 @@ final class MessengerCommandBusTest extends TestCase
 
         $result = $bus->dispatch($command);
         $this->assertNull($result);
+    }
+
+    /** @dataProvider dispatchLogicExceptionProvider */
+    public function testDispatchLogicException(StampInterface ...$stamps): void
+    {
+        $command = new SimpleCommand('foo', 132);
+
+        $this->expectException(\LogicException::class);
+        $this->expectExceptionMessage('Message of type "Botilka\Tests\Fixtures\Application\Command\SimpleCommand" was handled 0 or too many times, or was not sent.');
+
+        $bus = $this->getMessengerCommandBus($command, null, ...$stamps);
+
+        $result = $bus->dispatch($command);
+    }
+
+    public function dispatchLogicExceptionProvider(): array
+    {
+        return [
+            'not handled or sent' => [new class() implements StampInterface {
+            }],
+            'too many handlers' => [new HandledStamp('FooFoo', 'foo'), new HandledStamp('BarBar', 'bar')],
+        ];
     }
 }
