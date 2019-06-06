@@ -6,5 +6,8 @@ namespace Botilka\Application\Command;
 
 interface CommandBus
 {
-    public function dispatch(Command $command): CommandResponse;
+    /**
+     * @throws \LogicException if message was not or too many times handled or not sent
+     */
+    public function dispatch(Command $command): ?CommandResponse;
 }

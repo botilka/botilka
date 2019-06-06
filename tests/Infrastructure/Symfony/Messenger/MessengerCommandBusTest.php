@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Botilka\Tests\Infrastructure\Symfony\Messenger;
 
+use Botilka\Application\Command\Command;
 use Botilka\Application\Command\CommandResponse;
 use Botilka\Infrastructure\Symfony\Messenger\MessengerCommandBus;
 use Botilka\Tests\Fixtures\Application\Command\SimpleCommand;
@@ -12,22 +13,66 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Messenger\Stamp\HandledStamp;
+use Symfony\Component\Messenger\Stamp\SentStamp;
+use Symfony\Component\Messenger\Stamp\StampInterface;
 
 final class MessengerCommandBusTest extends TestCase
 {
-    public function testDispatch(): void
+    private function getMessengerCommandBus(Command $command, ?CommandResponse $commandResponse, StampInterface ...$stamps): MessengerCommandBus
+    {
+        $messageBus = $this->createMock(MessageBusInterface::class);
+        $messageBus->expects($this->once())
+            ->method('dispatch')
+            ->with($command)
+            ->willReturn(new Envelope($command, \array_values($stamps)));
+
+        return new MessengerCommandBus($messageBus);
+    }
+
+    public function testDispatchHandled(): void
     {
         $command = new SimpleCommand('foo', 132);
         $commandResponse = new CommandResponse('foo', new StubEvent(123));
         $stamp = new HandledStamp($commandResponse, 'foo');
 
-        $messageBus = $this->createMock(MessageBusInterface::class);
-        $messageBus->expects($this->once())
-            ->method('dispatch')
-            ->with($command)
-            ->willReturn(new Envelope($command, [$stamp]));
+        $bus = $this->getMessengerCommandBus($command, $commandResponse, $stamp);
 
-        $bus = new MessengerCommandBus($messageBus);
-        $this->assertSame($commandResponse, $bus->dispatch($command));
+        $result = $bus->dispatch($command);
+        $this->assertSame($commandResponse, $result);
+        $this->assertSame($commandResponse->getId(), $result->getId());
+    }
+
+    public function testDispatchSent(): void
+    {
+        $command = new SimpleCommand('foo', 132);
+        $commandResponse = null;
+        $stamp = new SentStamp(\get_class($this), 'this');
+
+        $bus = $this->getMessengerCommandBus($command, null, $stamp);
+
+        $result = $bus->dispatch($command);
+        $this->assertNull($result);
+    }
+
+    /** @dataProvider dispatchLogicExceptionProvider */
+    public function testDispatchLogicException(StampInterface ...$stamps): void
+    {
+        $command = new SimpleCommand('foo', 132);
+
+        $this->expectException(\LogicException::class);
+        $this->expectExceptionMessage('Message of type "Botilka\Tests\Fixtures\Application\Command\SimpleCommand" was handled 0 or too many times, or was not sent.');
+
+        $bus = $this->getMessengerCommandBus($command, null, ...$stamps);
+
+        $result = $bus->dispatch($command);
+    }
+
+    public function dispatchLogicExceptionProvider(): array
+    {
+        return [
+            'not handled or sent' => [new class() implements StampInterface {
+            }],
+            'too many handlers' => [new HandledStamp('FooFoo', 'foo'), new HandledStamp('BarBar', 'bar')],
+        ];
     }
 }

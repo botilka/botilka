@@ -50,6 +50,20 @@ bin/console botilka:store:initialize event doctrine -f
 
 You'll need to create Commands, Queries, Events and so on. [Read the documentation](/documentation/cqrs.md).
 
+### Async command handling
+
+You may need to handle some or all commands asychonously. Using [Symfony Messenger](https://symfony.com/doc/current/messenger.html#transports-async-queued-messages), you'll need to configure it:
+
+```yml
+# config/packages/messenger.yaml
+framework:
+    messenger:
+        transports:
+            async: "%env(MESSENGER_TRANSPORT_DSN)%"
+        routing:
+            'Botilka\Application\Command\Command': async
+```
+
 ### Snapshots
 
 When dealing with a lots of events, snapshotting is a good way to keep up on performance.
