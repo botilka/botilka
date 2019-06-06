@@ -11,7 +11,7 @@ use Botilka\Bridge\ApiPlatform\EventListener\CommandResourceClassEventListener;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\HttpKernel\KernelInterface;
@@ -87,11 +87,11 @@ final class CommandResourceClassEventListenerTest extends TestCase
         $this->assertSame('Foo\\Bar', $event->getRequest()->attributes->get('_api_resource_class'));
     }
 
-    private function getEvent(array $attributes = [], string $method = Request::METHOD_POST): GetResponseEvent
+    private function getEvent(array $attributes = [], string $method = Request::METHOD_POST): RequestEvent
     {
         $request = new Request([], [], $attributes);
         $request->setMethod($method);
 
-        return new GetResponseEvent($this->createMock(KernelInterface::class), $request, HttpKernelInterface::MASTER_REQUEST);
+        return new RequestEvent($this->createMock(KernelInterface::class), $request, HttpKernelInterface::MASTER_REQUEST);
     }
 }

@@ -16,7 +16,7 @@ use Botilka\Tests\Fixtures\Application\Query\SimpleQuery;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\HttpKernel\KernelInterface;
@@ -141,10 +141,10 @@ final class QueryResourceClassEventListenerTest extends TestCase
         ], QueryResourceClassEventListener::getSubscribedEvents());
     }
 
-    private function getEvent(array $attributes, array $query = []): GetResponseEvent
+    private function getEvent(array $attributes, array $query = []): RequestEvent
     {
         $request = new Request($query, [], $attributes + ['_api_receive' => true]);
 
-        return new GetResponseEvent($this->createMock(KernelInterface::class), $request, HttpKernelInterface::MASTER_REQUEST);
+        return new RequestEvent($this->createMock(KernelInterface::class), $request, HttpKernelInterface::MASTER_REQUEST);
     }
 }

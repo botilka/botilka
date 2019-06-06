@@ -9,6 +9,7 @@ use Botilka\Tests\AbstractKernelTestCase;
 use Doctrine\Bundle\DoctrineBundle\Command\CreateDatabaseDoctrineCommand;
 use Doctrine\Bundle\DoctrineBundle\Command\DropDatabaseDoctrineCommand;
 use Doctrine\DBAL\Connection;
+use Symfony\Bridge\Doctrine\ManagerRegistry;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
@@ -51,12 +52,12 @@ abstract class AbstractDoctrineInitializerTest extends AbstractKernelTestCase
             return;
         }
 
-        $application = new DropDatabaseDoctrineCommand();
-        $application->setContainer(self::$container);
+        /** @var ManagerRegistry $doctrine */
+        $doctrine = self::$container->get('doctrine');
+        $application = new DropDatabaseDoctrineCommand($doctrine);
         $application->run(new ArrayInput(['--force' => true]), new NullOutput());
 
-        $application = new CreateDatabaseDoctrineCommand();
-        $application->setContainer(self::$container);
+        $application = new CreateDatabaseDoctrineCommand($doctrine);
         $application->run(new ArrayInput([]), new NullOutput());
     }
 
