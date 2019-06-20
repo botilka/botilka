@@ -68,4 +68,18 @@ final class DefaultProjectionistTest extends TestCase
 
         $projectionist->play($projection);
     }
+
+    public function testPlayForEvent()
+    {
+        $event = new StubEvent(42);
+
+        $projector = new StubProjector();
+        $this->assertFalse($projector->onStubEventPlayed);
+
+        $projectionist = new DefaultProjectionist([$projector], $this->logger);
+
+        $projectionist->playForEvent($event);
+
+        $this->assertTrue($projector->onStubEventPlayed);
+    }
 }

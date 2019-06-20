@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Botilka\Projector;
 
+use Botilka\Event\Event;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -50,5 +51,11 @@ final class DefaultProjectionist implements Projectionist
         if (false === $found) {
             $this->logger->notice(\sprintf('No projector handler for %s.', $eventClass));
         }
+    }
+
+    public function playForEvent(Event $event, ?array $context = []): void
+    {
+        $projection = new Projection($event, $context);
+        $this->play($projection);
     }
 }
