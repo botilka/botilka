@@ -56,7 +56,7 @@ final class BotilkaCommandResourceMetadataFactory implements ResourceMetadataFac
             foreach ($this->descriptionContainer as $name => $descritpion) {
                 $collectionOperations[$name] = [
                     'method' => Request::METHOD_POST,
-                    'path' => '/'.\trim($this->prefix.'/commands/'.$name.'.{_format}'),
+                    'path' => '/'.$this->prefix.'/commands/'.$name.'.{_format}',
                     'swagger_context' => [
                         'description' => "Execute $name",
                         'parameters' => [

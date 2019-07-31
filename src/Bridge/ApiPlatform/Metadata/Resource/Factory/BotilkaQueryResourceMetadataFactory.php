@@ -58,7 +58,7 @@ final class BotilkaQueryResourceMetadataFactory implements ResourceMetadataFacto
             foreach ($this->descriptionContainer as $name => $descritpion) {
                 $itemOperations[$name] = [
                     'method' => Request::METHOD_GET,
-                    'path' => '/'.\trim($this->prefix.'/queries/'.$name.'.{_format}'),
+                    'path' => '/'.$this->prefix.'/queries/'.$name.'.{_format}',
                     'formats' => \array_intersect_key(self::SUPPORTED_FORMATS, $this->formats),
                     'swagger_context' => [
                         'description' => "Execute $name",

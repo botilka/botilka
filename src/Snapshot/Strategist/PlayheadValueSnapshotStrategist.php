@@ -15,6 +15,11 @@ final class PlayheadValueSnapshotStrategist implements SnapshotStrategist
         $this->eachPlayhead = $eachPlayhead;
     }
 
+    public function getEachPlayhead(): int
+    {
+        return $this->eachPlayhead;
+    }
+
     public function mustSnapshot(EventSourcedAggregateRoot $aggregateRoot): bool
     {
         return 0 === ($aggregateRoot->getPlayhead() + 1) % $this->eachPlayhead;

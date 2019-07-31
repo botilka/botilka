@@ -15,4 +15,5 @@ return PhpCsFixer\Config::create()
         'declare_strict_types' => true,
     ])
     ->setFinder($finder)
+    ->setRiskyAllowed(true)
 ;

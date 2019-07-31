@@ -57,8 +57,6 @@ final class SnapshotStoreMongoDBTest extends TestCase
             ->with(['id' => 'foo'])
             ->willReturn(0);
 
-        $result = new BSONDocument(['data' => \serialize($aggregateRoot)]);
-
         $this->collection->expects($this->never())
             ->method('findOne');
 

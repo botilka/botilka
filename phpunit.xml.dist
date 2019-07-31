@@ -5,8 +5,6 @@
          backupGlobals="false"
          colors="true"
          bootstrap="vendor/autoload.php"
-         failOnRisky="true"
-         failOnWarning="true"
 >
     <php>
         <ini name="error_reporting" value="-1" />
@@ -16,8 +14,10 @@
     </php>
 
     <testsuites>
-        <testsuite name="Symfony Messenger Component Test Suite">
+        <testsuite name="Botilka Test Suite">
             <directory>tests/</directory>
+            <exclude>tests/app</exclude>
+            <exclude>tests/Fixtures</exclude>
         </testsuite>
     </testsuites>
 
