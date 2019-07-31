@@ -10,8 +10,8 @@ use Doctrine\DBAL\Schema\Schema;
 
 abstract class AbstractDoctrineStoreInitializer
 {
-    private $connection;
     protected $tableName;
+    private $connection;
 
     public function __construct(Connection $connection, string $tableName)
     {

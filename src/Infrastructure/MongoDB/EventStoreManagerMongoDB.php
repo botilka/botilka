@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Botilka\Infrastructure\MongoDB;
 
-use Botilka\EventStore\ManagedEvent;
 use Botilka\EventStore\EventStoreManager;
+use Botilka\EventStore\ManagedEvent;
 use MongoDB\Collection;
 use MongoDB\Driver\Cursor;
 use MongoDB\Model\BSONDocument;

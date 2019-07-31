@@ -15,7 +15,7 @@ final class DefaultProjectionist implements Projectionist
     private $projectors;
     private $logger;
 
-    public function __construct(iterable $projectors = [], LoggerInterface $logger)
+    public function __construct(iterable $projectors, LoggerInterface $logger)
     {
         $this->projectors = $projectors;
         $this->logger = $logger;
@@ -44,7 +44,7 @@ final class DefaultProjectionist implements Projectionist
                 continue;
             }
 
-            $projector->$method($event);
+            $projector->{$method}($event);
             $found = true;
         }
 

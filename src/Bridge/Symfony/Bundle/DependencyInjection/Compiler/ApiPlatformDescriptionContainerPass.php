@@ -6,8 +6,8 @@ namespace Botilka\Bridge\Symfony\Bundle\DependencyInjection\Compiler;
 
 use Botilka\Bridge\ApiPlatform\Description\DescriptionContainer;
 use Botilka\Bridge\ApiPlatform\Identifier\IdentifierGenerator;
-use Botilka\Bridge\ApiPlatform\Resource\Query;
 use Botilka\Bridge\ApiPlatform\Resource\Command;
+use Botilka\Bridge\ApiPlatform\Resource\Query;
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -72,7 +72,7 @@ final class ApiPlatformDescriptionContainerPass implements CompilerPassInterface
             $parameterName = $parameter->getName();
 
             if (null === $parameterType) {
-                throw new \InvalidArgumentException("Parameter '$$parameterName' of class '{$class->getName()}' is not typed. Please type hint all Query & Command parameters.");
+                throw new \InvalidArgumentException("Parameter '${$parameterName}' of class '{$class->getName()}' is not typed. Please type hint all Query & Command parameters.");
             }
             $values[$parameterName] = ($parameter->allowsNull() ? '?' : '').$parameterType->getName();
         }

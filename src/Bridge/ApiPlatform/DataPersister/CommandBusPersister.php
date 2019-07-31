@@ -29,6 +29,8 @@ final class CommandBusPersister implements DataPersisterInterface
     }
 
     /**
+     * @param mixed $data
+     *
      * @return CommandResponseAdapter
      */
     public function persist($data)
@@ -46,6 +48,8 @@ final class CommandBusPersister implements DataPersisterInterface
     }
 
     /**
+     * @param mixed $data
+     *
      * @throws \LogicException must not be called in an event-sourced application
      */
     public function remove($data)

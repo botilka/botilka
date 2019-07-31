@@ -28,7 +28,8 @@ final class Configuration implements ConfigurationInterface
                         ->booleanNode('expose_event_store')->defaultTrue()->info('Expose event store (Doctrine only)')->end()
                         ->scalarNode('endpoint_prefix')->defaultValue('cqrs')->info('Route prefix for endpoints')->end()
                     ->end()
-            ->end();
+            ->end()
+        ;
 
         return $treeBuilder;
     }

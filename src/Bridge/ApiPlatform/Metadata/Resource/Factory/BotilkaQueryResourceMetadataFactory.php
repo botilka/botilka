@@ -14,7 +14,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 final class BotilkaQueryResourceMetadataFactory implements ResourceMetadataFactoryInterface
 {
-    private const SHORT_NAME_TO_EXTEND = 'Query';
     const SUPPORTED_FORMATS = [
         'jsonld' => ['application/ld+json'],
         'json' => ['application/json'],
@@ -22,6 +21,7 @@ final class BotilkaQueryResourceMetadataFactory implements ResourceMetadataFacto
         'yaml' => ['application/x-yaml'],
         'csv' => ['text/csv'],
     ];
+    private const SHORT_NAME_TO_EXTEND = 'Query';
 
     private $decorated;
     private $descriptionContainer;
@@ -61,11 +61,11 @@ final class BotilkaQueryResourceMetadataFactory implements ResourceMetadataFacto
                     'path' => '/'.$this->prefix.'/queries/'.$name.'.{_format}',
                     'formats' => \array_intersect_key(self::SUPPORTED_FORMATS, $this->formats),
                     'swagger_context' => [
-                        'description' => "Execute $name",
+                        'description' => "Execute {$name}",
                         'parameters' => $this->parameterNormalizer->normalize($descritpion['payload']),
                         'responses' => [
                             Response::HTTP_OK => [
-                                'description' => "$name response",
+                                'description' => "{$name} response",
                                 'content' => [
                                     'application/json' => [
                                         'schema' => [
@@ -75,7 +75,7 @@ final class BotilkaQueryResourceMetadataFactory implements ResourceMetadataFacto
                                 ],
                             ],
                             Response::HTTP_BAD_REQUEST => [
-                                'description' => "$name error",
+                                'description' => "{$name} error",
                                 'content' => [
                                     'application/json' => [
                                         'schema' => [

@@ -6,12 +6,12 @@ namespace Botilka\Bridge\Symfony\Bundle\DependencyInjection;
 
 use Botilka\Application\Command\Command;
 use Botilka\Application\Command\CommandHandler;
-use Botilka\Infrastructure\StoreInitializer;
-use Botilka\Event\EventHandler;
-use Botilka\Infrastructure\Doctrine\EventStoreDoctrine;
-use Botilka\Infrastructure\Symfony\Messenger\Middleware\EventDispatcherMiddleware;
 use Botilka\Application\Query\Query;
 use Botilka\Application\Query\QueryHandler;
+use Botilka\Event\EventHandler;
+use Botilka\Infrastructure\Doctrine\EventStoreDoctrine;
+use Botilka\Infrastructure\StoreInitializer;
+use Botilka\Infrastructure\Symfony\Messenger\Middleware\EventDispatcherMiddleware;
 use Botilka\Projector\Projector;
 use Botilka\Repository\EventSourcedRepository;
 use Symfony\Component\Config\FileLocator;
@@ -46,6 +46,36 @@ final class BotilkaExtension extends Extension implements PrependExtensionInterf
         }
 
         $this->prependApliPlatformConfig($container, $botilkaConfig);
+    }
+
+    public function load(array $configs, ContainerBuilder $container)
+    {
+        $configuration = new Configuration();
+        $config = $this->processConfiguration($configuration, $configs);
+        $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
+
+        $loader->load('botilka.yaml');
+
+        if (true === $container->getParameter('botilka.bridge.api_platform')) {
+            $loader->load('bridge_api_platform_cq.yaml');
+        }
+
+        if (true === $container->getParameter('botilka.messenger.doctrine_transaction_middleware')) {
+            $loader->load('messenger_doctrine_transaction_middleware.yaml');
+        }
+
+        if (true === $config['default_messenger_config']) {
+            $loader->load('messenger_default_config.yaml');
+            foreach (self::AUTOCONFIGURAION_CLASSES_TAG as $className => $tag) {
+                $container->registerForAutoconfiguration($className)
+                    ->addTag($tag[0], $tag[1] ?? [])
+                ;
+            }
+        }
+
+        $this->loadEventStoreConfig($loader, $config['event_store']);
+
+        $container->setParameter('botilka.api_platform.endpoint_prefix', $config['api_platform']['endpoint_prefix']);
     }
 
     private function prependDefaultMessengerConfig(ContainerBuilder $container, array $config): void
@@ -117,35 +147,6 @@ final class BotilkaExtension extends Extension implements PrependExtensionInterf
         }
 
         return $paths;
-    }
-
-    public function load(array $configs, ContainerBuilder $container)
-    {
-        $configuration = new Configuration();
-        $config = $this->processConfiguration($configuration, $configs);
-        $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
-
-        $loader->load('botilka.yaml');
-
-        if (true === $container->getParameter('botilka.bridge.api_platform')) {
-            $loader->load('bridge_api_platform_cq.yaml');
-        }
-
-        if (true === $container->getParameter('botilka.messenger.doctrine_transaction_middleware')) {
-            $loader->load('messenger_doctrine_transaction_middleware.yaml');
-        }
-
-        if (true === $config['default_messenger_config']) {
-            $loader->load('messenger_default_config.yaml');
-            foreach (self::AUTOCONFIGURAION_CLASSES_TAG as $className => $tag) {
-                $container->registerForAutoconfiguration($className)
-                    ->addTag($tag[0], $tag[1] ?? []);
-            }
-        }
-
-        $this->loadEventStoreConfig($loader, $config['event_store']);
-
-        $container->setParameter('botilka.api_platform.endpoint_prefix', $config['api_platform']['endpoint_prefix']);
     }
 
     private function loadEventStoreConfig(LoaderInterface $loader, string $eventStore): void

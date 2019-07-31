@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Botilka\Infrastructure\Doctrine;
 
-use Botilka\EventStore\ManagedEvent;
 use Botilka\EventStore\EventStoreManager;
+use Botilka\EventStore\ManagedEvent;
 use Doctrine\DBAL\Driver\Connection;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
@@ -38,7 +38,7 @@ final class EventStoreManagerDoctrine implements EventStoreManager
             $parameters['to'] = $to;
         }
 
-        $stmt = $this->connection->prepare("$query ORDER BY playhead");
+        $stmt = $this->connection->prepare("{$query} ORDER BY playhead");
         $stmt->execute($parameters);
 
         return $this->deserialize($stmt->fetchAll());
@@ -48,7 +48,7 @@ final class EventStoreManagerDoctrine implements EventStoreManager
     {
         $query = "SELECT * FROM {$this->tableName} WHERE domain = :domain";
 
-        $stmt = $this->connection->prepare("$query ORDER BY playhead");
+        $stmt = $this->connection->prepare("{$query} ORDER BY playhead");
         $stmt->execute(['domain' => $domain]);
 
         return $this->deserialize($stmt->fetchAll());
@@ -66,11 +66,11 @@ final class EventStoreManagerDoctrine implements EventStoreManager
 
     private function getDistinct(string $column): array
     {
-        $query = "SELECT DISTINCT $column FROM {$this->tableName}";
+        $query = "SELECT DISTINCT {$column} FROM {$this->tableName}";
         $stmt = $this->connection->prepare($query);
         $stmt->execute();
 
-        return \array_map(function ($row) use ($column) {
+        return \array_map(static function ($row) use ($column) {
             return $row[$column];
         }, $stmt->fetchAll());
     }

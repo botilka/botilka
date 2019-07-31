@@ -12,11 +12,10 @@ use Symfony\Component\Serializer\SerializerInterface;
 
 final class SnapshotStoreDoctrine implements SnapshotStore
 {
+    private const FORMAT = 'json';
     private $connection;
     private $tableName;
     private $serializer;
-
-    private const FORMAT = 'json';
 
     public function __construct(Connection $connection, string $tableName, SerializerInterface $serializer)
     {
@@ -31,7 +30,7 @@ final class SnapshotStoreDoctrine implements SnapshotStore
         $stmt->execute(['id' => $id]);
 
         if (false === ($result = $stmt->fetch())) {
-            throw new SnapshotNotFoundException("No snapshot found for $id.");
+            throw new SnapshotNotFoundException("No snapshot found for {$id}.");
         }
 
         return $this->serializer->deserialize($result['payload'], $result['type'], self::FORMAT);

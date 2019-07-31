@@ -32,7 +32,7 @@ final class EventStoreMongoDB implements EventStore
     {
         $criteria = ['id' => $id];
         if (0 === $this->collection->countDocuments($criteria)) {
-            throw new AggregateRootNotFoundException("No aggregrate root found for $id.");
+            throw new AggregateRootNotFoundException("No aggregrate root found for {$id}.");
         }
 
         $events = $this->collection->find(['id' => $id], ['sort' => ['playhead' => 1]]);

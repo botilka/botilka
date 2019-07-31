@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Botilka\Infrastructure\InMemory;
 
-use Botilka\EventStore\ManagedEvent;
 use Botilka\EventStore\EventStoreManager;
+use Botilka\EventStore\ManagedEvent;
 
 final class EventStoreManagerInMemory implements EventStoreManager
 {
