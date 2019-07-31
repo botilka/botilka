@@ -12,13 +12,13 @@ use Psr\Log\LoggerInterface;
  */
 final class DefaultProjectionist implements Projectionist
 {
-    private $projectors;
     private $logger;
+    private $projectors;
 
-    public function __construct(iterable $projectors, LoggerInterface $logger)
+    public function __construct(LoggerInterface $logger, iterable $projectors = [])
     {
-        $this->projectors = $projectors;
         $this->logger = $logger;
+        $this->projectors = $projectors;
     }
 
     public function play(Projection $projection): void

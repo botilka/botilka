@@ -115,7 +115,7 @@ final class ApiPlatformDescriptionContainerPassTest extends TestCase
         $container->setDefinition($className, (new Definition($className))->addTag($tagName));
 
         $this->expectException(\LogicException::class);
-        $this->expectExceptionMessage("Parameter '\$bar' of class '$className' is not typed. Please type hint all Query & Command parameters.");
+        $this->expectExceptionMessage("Parameter 'bar' of class '$className' is not typed. Please type hint all Query & Command parameters.");
 
         $this->compilerPass->process($container);
     }

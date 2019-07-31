@@ -72,7 +72,7 @@ final class ApiPlatformDescriptionContainerPass implements CompilerPassInterface
             $parameterName = $parameter->getName();
 
             if (null === $parameterType) {
-                throw new \InvalidArgumentException("Parameter '${$parameterName}' of class '{$class->getName()}' is not typed. Please type hint all Query & Command parameters.");
+                throw new \InvalidArgumentException("Parameter '{$parameterName}' of class '{$class->getName()}' is not typed. Please type hint all Query & Command parameters.");
             }
             $values[$parameterName] = ($parameter->allowsNull() ? '?' : '').$parameterType->getName();
         }
