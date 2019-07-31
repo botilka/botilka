@@ -35,7 +35,9 @@ script:
 after_script:
   - wget https://scrutinizer-ci.com/ocular.phar
   - php ocular.phar code-coverage:upload --format=php-clover coverage.clover
-  - if [[ $deps = high && $TRAVIS_BRANCH = master ]] then; infection; fi
+  - if [[ $deps = 'high' && $TRAVIS_BRANCH = master ]]; then
+      infection
+    fi
 
 install:
   - pecl -q install mongodb || true
