@@ -56,9 +56,9 @@ final class BotilkaCommandResourceMetadataFactory implements ResourceMetadataFac
             foreach ($this->descriptionContainer as $name => $descritpion) {
                 $collectionOperations[$name] = [
                     'method' => Request::METHOD_POST,
-                    'path' => '/'.\trim($this->prefix.'/commands/'.$name.'.{_format}'),
+                    'path' => '/'.$this->prefix.'/commands/'.$name.'.{_format}',
                     'swagger_context' => [
-                        'description' => "Execute $name",
+                        'description' => "Execute {$name}",
                         'parameters' => [
                             [
                                 'in' => 'body',
@@ -67,7 +67,7 @@ final class BotilkaCommandResourceMetadataFactory implements ResourceMetadataFac
                         ],
                         'responses' => [
                             Response::HTTP_OK => [
-                                'description' => "$name response",
+                                'description' => "{$name} response",
                                 'content' => [
                                     'application/json' => [
                                         'schema' => [
@@ -77,7 +77,7 @@ final class BotilkaCommandResourceMetadataFactory implements ResourceMetadataFac
                                 ],
                             ],
                             Response::HTTP_BAD_REQUEST => [
-                                'description' => "$name error",
+                                'description' => "{$name} error",
                                 'content' => [
                                     'application/json' => [
                                         'schema' => [

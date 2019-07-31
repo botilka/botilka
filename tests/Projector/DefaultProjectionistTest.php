@@ -32,7 +32,7 @@ final class DefaultProjectionistTest extends TestCase
         $projector = new StubProjector();
         $this->assertFalse($projector->onStubEventPlayed);
 
-        $projectionist = new DefaultProjectionist([$projector], $this->logger);
+        $projectionist = new DefaultProjectionist($this->logger, [$projector]);
         $this->assertInstanceOf(Projectionist::class, $projectionist);
 
         $projection = new Projection($event, $context);
@@ -62,7 +62,7 @@ final class DefaultProjectionistTest extends TestCase
             ->method('notice')
             ->with(\sprintf('No projector handler for %s.', \get_class($event)));
 
-        $projectionist = new DefaultProjectionist([new StubProjector()], $this->logger);
+        $projectionist = new DefaultProjectionist($this->logger, [new StubProjector()]);
 
         $projection = new Projection($event);
 
@@ -76,7 +76,7 @@ final class DefaultProjectionistTest extends TestCase
         $projector = new StubProjector();
         $this->assertFalse($projector->onStubEventPlayed);
 
-        $projectionist = new DefaultProjectionist([$projector], $this->logger);
+        $projectionist = new DefaultProjectionist($this->logger, [$projector]);
 
         $projectionist->playForEvent($event);
 

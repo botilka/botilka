@@ -23,7 +23,7 @@ final class SnapshotStoreMongoDB implements SnapshotStore
     {
         $criteria = ['id' => $id];
         if (0 === $this->collection->countDocuments($criteria)) {
-            throw new SnapshotNotFoundException("No snapshot found for $id.");
+            throw new SnapshotNotFoundException("No snapshot found for {$id}.");
         }
 
         /** @var BSONDocument $snapshot */

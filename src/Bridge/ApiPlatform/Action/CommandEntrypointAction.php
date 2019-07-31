@@ -31,7 +31,7 @@ final class CommandEntrypointAction
         $name = $data->getName();
 
         if (!$this->descriptionContainer->has($name)) {
-            throw new NotFoundHttpException("Command '$name' not found.");
+            throw new NotFoundHttpException("Command '{$name}' not found.");
         }
 
         $description = $this->descriptionContainer->get($name);

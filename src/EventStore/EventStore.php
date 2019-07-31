@@ -9,9 +9,9 @@ use Botilka\Event\Event;
 interface EventStore
 {
     /**
-     * @return Event[]
-     *
      * @throws AggregateRootNotFoundException
+     *
+     * @return Event[]
      */
     public function load(string $id): array;
 

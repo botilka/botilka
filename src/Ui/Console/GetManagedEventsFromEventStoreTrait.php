@@ -16,15 +16,6 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 trait GetManagedEventsFromEventStoreTrait
 {
-    private function configureCommon(Command $self): Command
-    {
-        return $self->addArgument('value', InputArgument::REQUIRED, 'The id or the domain')
-            ->addOption('id', 'i', InputOption::VALUE_NONE, 'Aggregate root id')
-            ->addOption('domain', 'd', InputOption::VALUE_NONE, 'Domain')
-            ->addOption('from', 'f', InputOption::VALUE_OPTIONAL, 'From playhead (included)')
-            ->addOption('to', 't', InputOption::VALUE_OPTIONAL, 'To playhead (included)');
-    }
-
     protected function initialize(InputInterface $input, OutputInterface $output)
     {
         /** @var bool $id */
@@ -35,6 +26,16 @@ trait GetManagedEventsFromEventStoreTrait
         if ((true === $id && true === $domain) || (false === $id && false === $domain)) {
             throw new \InvalidArgumentException('You must set a domain or an id.');
         }
+    }
+
+    private function configureCommon(Command $self): Command
+    {
+        return $self->addArgument('value', InputArgument::REQUIRED, 'The id or the domain')
+            ->addOption('id', 'i', InputOption::VALUE_NONE, 'Aggregate root id')
+            ->addOption('domain', 'd', InputOption::VALUE_NONE, 'Domain')
+            ->addOption('from', 'f', InputOption::VALUE_OPTIONAL, 'From playhead (included)')
+            ->addOption('to', 't', InputOption::VALUE_OPTIONAL, 'To playhead (included)')
+        ;
     }
 
     /**

@@ -27,7 +27,8 @@ final class StoreInitializeCommand extends Command
         $this->setDescription('Initialize an store implementation (create, unique index, ...).')
             ->addArgument('type', InputArgument::REQUIRED, \sprintf('Type of store (%s)', \implode(', ', StoreInitializer::TYPES)))
             ->addArgument('implementation', InputArgument::REQUIRED, 'Implementation name')
-            ->addOption('force', 'f', InputOption::VALUE_NONE, 'Force to recreate the event store. ⚠ You will lost all the data, don\'t use it in production.');
+            ->addOption('force', 'f', InputOption::VALUE_NONE, 'Force to recreate the event store. ⚠ You will lost all the data, don\'t use it in production.')
+        ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -49,7 +50,7 @@ final class StoreInitializeCommand extends Command
                 continue;
             }
 
-            $io->text("Using: $className");
+            $io->text("Using: {$className}");
             try {
                 $initializer->initialize($force);
                 $found = true;

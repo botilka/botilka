@@ -16,7 +16,7 @@ trait EventSourcedAggregateRootApplier
 
         $applier = $this->eventMap[\get_class($event)];
 
-        return $this->$applier($event);
+        return $this->{$applier}($event);
     }
 
     public function getPlayhead(): int

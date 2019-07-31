@@ -10,6 +10,12 @@ use PHPUnit\Framework\TestCase;
 
 final class PlayheadValueSnapshotStrategistTest extends TestCase
 {
+    public function tesGetEachPlayheadDefault()
+    {
+        $strategist = new PlayheadValueSnapshotStrategist();
+        $this->assertSame(5, $strategist->getEachPlayhead());
+    }
+
     /** @dataProvider mustSnapshotProvider */
     public function testMustSnapshot(bool $expected, int $playhead, int $eachPlayhead): void
     {

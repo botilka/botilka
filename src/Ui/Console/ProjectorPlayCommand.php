@@ -31,7 +31,8 @@ final class ProjectorPlayCommand extends Command
     {
         $this->setDescription('Play projections for an aggregate or a domain')
             ->configureCommon($this)
-            ->addOption('matching', 'm', InputOption::VALUE_OPTIONAL, 'Use projector FQCN that matches (regex)');
+            ->addOption('matching', 'm', InputOption::VALUE_OPTIONAL, 'Use projector FQCN that matches (regex)')
+        ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)

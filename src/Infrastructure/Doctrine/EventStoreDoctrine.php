@@ -34,7 +34,7 @@ final class EventStoreDoctrine implements EventStore
         $stmt->execute(['id' => $id]);
 
         if (0 === \count($events = $stmt->fetchAll())) {
-            throw new AggregateRootNotFoundException("No aggregrate root found for $id.");
+            throw new AggregateRootNotFoundException("No aggregrate root found for {$id}.");
         }
 
         return $this->deserialize($events);

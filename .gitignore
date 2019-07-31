@@ -7,3 +7,5 @@
 /*.phar
 
 /php-cs-fixer*
+
+/infection.log
