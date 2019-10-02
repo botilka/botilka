@@ -36,20 +36,22 @@ final class CommandBusPersisterTest extends TestCase
         $command = new SimpleCommand('foo');
         $commandResponse = new CommandResponse('bar', new StubEvent(123));
 
-        $this->commandBus->expects($this->once())
+        $this->commandBus->expects(self::once())
             ->method('dispatch')
             ->with($command)
-            ->willReturn($commandResponse);
+            ->willReturn($commandResponse)
+        ;
 
-        $this->validator->expects($this->once())
+        $this->validator->expects(self::once())
             ->method('validate')->with($command)
-            ->willReturn([]);
+            ->willReturn([])
+        ;
 
         $persister = new CommandBusPersister($this->commandBus, $this->validator);
         $result = $persister->persist($command);
 
-        $this->assertInstanceOf(CommandResponseAdapter::class, $result);
-        $this->assertSame('bar', $result->getId());
+        self::assertInstanceOf(CommandResponseAdapter::class, $result);
+        self::assertSame('bar', $result->getId());
     }
 
     /** @expectedException \ApiPlatform\Core\Bridge\Symfony\Validator\Exception\ValidationException */
@@ -59,12 +61,14 @@ final class CommandBusPersisterTest extends TestCase
 
         $violationList = new ConstraintViolationList([$this->createMock(ConstraintViolationInterface::class)]);
 
-        $this->commandBus->expects($this->never())
-            ->method('dispatch');
+        $this->commandBus->expects(self::never())
+            ->method('dispatch')
+        ;
 
-        $this->validator->expects($this->once())
+        $this->validator->expects(self::once())
             ->method('validate')->with($command)
-            ->willReturn($violationList);
+            ->willReturn($violationList)
+        ;
 
         $persister = new CommandBusPersister($this->commandBus, $this->validator);
         $result = $persister->persist($command);
@@ -86,7 +90,7 @@ final class CommandBusPersisterTest extends TestCase
     public function testSupports($data, bool $expected)
     {
         $persister = new CommandBusPersister($this->commandBus, $this->validator);
-        $this->assertSame($expected, $persister->supports($data));
+        self::assertSame($expected, $persister->supports($data));
     }
 
     public function supportsProvider(): array

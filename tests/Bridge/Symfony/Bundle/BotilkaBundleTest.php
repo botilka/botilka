@@ -19,16 +19,17 @@ final class BotilkaBundleTest extends TestCase
         $container = $this->createMock(ContainerBuilder::class);
 
         $bundle = new BotilkaBundle();
-        $container->expects($this->once())
+        $container->expects(self::once())
             ->method('hasExtension')->willReturn($hasExtension);
 
-        $container->expects($hasExtension ? $this->exactly(3) : $this->never())
+        $container->expects($hasExtension ? self::exactly(3) : self::never())
             ->method('addCompilerPass')
             ->withConsecutive(
-                [$this->isInstanceOf(ApiPlatformDescriptionContainerPass::class)],
-                [$this->isInstanceOf(ApiPlatformDataProviderPass::class)],
-                [$this->isInstanceOf(ApiPlatformCommandEntrypointActionPass::class)]
-            );
+                [self::isInstanceOf(ApiPlatformDescriptionContainerPass::class)],
+                [self::isInstanceOf(ApiPlatformDataProviderPass::class)],
+                [self::isInstanceOf(ApiPlatformCommandEntrypointActionPass::class)]
+            )
+        ;
 
         $bundle->build($container);
     }

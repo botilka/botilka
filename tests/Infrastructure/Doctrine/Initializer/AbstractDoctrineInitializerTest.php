@@ -31,36 +31,6 @@ abstract class AbstractDoctrineInitializerTest extends AbstractKernelTestCase
 
     private $needDropTable = false;
 
-    protected function resetStore(): void
-    {
-        $this->setUpDatabase(static::$kernel);
-        $container = self::$container;
-
-        /** @var RegistryInterface $registry */
-        $registry = self::$container->get('doctrine');
-
-        /** @var Connection $connection */
-        $connection = $registry->getConnection();
-        $connection->getConfiguration()->setSQLLogger(null);
-        $this->connection = $connection;
-        $this->needDropTable = true;
-    }
-
-    private function setUpDatabase(KernelInterface $kernel): void
-    {
-        if ('true' !== \getenv('BOTILKA_TEST_FORCE_RECREATE_DB')) {
-            return;
-        }
-
-        /** @var ManagerRegistry $doctrine */
-        $doctrine = self::$container->get('doctrine');
-        $application = new DropDatabaseDoctrineCommand($doctrine);
-        $application->run(new ArrayInput(['--force' => true]), new NullOutput());
-
-        $application = new CreateDatabaseDoctrineCommand($doctrine);
-        $application->run(new ArrayInput([]), new NullOutput());
-    }
-
     protected function tearDown(): void
     {
         if ($this->needDropTable) {
@@ -94,7 +64,7 @@ abstract class AbstractDoctrineInitializerTest extends AbstractKernelTestCase
         $this->initializer->initialize();
         $this->initializer->initialize(true);
         $this->initializer->initialize(true);
-        $this->assertTrue(true);
+        self::assertTrue(true);
     }
 
     /**
@@ -102,6 +72,36 @@ abstract class AbstractDoctrineInitializerTest extends AbstractKernelTestCase
      */
     public function testGetType(): void
     {
-        $this->assertSame($this->type, $this->initializer->getType());
+        self::assertSame($this->type, $this->initializer->getType());
+    }
+
+    protected function resetStore(): void
+    {
+        $this->setUpDatabase(static::$kernel);
+        $container = self::$container;
+
+        /** @var RegistryInterface $registry */
+        $registry = self::$container->get('doctrine');
+
+        /** @var Connection $connection */
+        $connection = $registry->getConnection();
+        $connection->getConfiguration()->setSQLLogger(null);
+        $this->connection = $connection;
+        $this->needDropTable = true;
+    }
+
+    private function setUpDatabase(KernelInterface $kernel): void
+    {
+        if ('true' !== \getenv('BOTILKA_TEST_FORCE_RECREATE_DB')) {
+            return;
+        }
+
+        /** @var ManagerRegistry $doctrine */
+        $doctrine = self::$container->get('doctrine');
+        $application = new DropDatabaseDoctrineCommand($doctrine);
+        $application->run(new ArrayInput(['--force' => true]), new NullOutput());
+
+        $application = new CreateDatabaseDoctrineCommand($doctrine);
+        $application->run(new ArrayInput([]), new NullOutput());
     }
 }

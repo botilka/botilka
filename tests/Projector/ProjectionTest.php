@@ -15,8 +15,8 @@ final class ProjectionTest extends TestCase
         $event = new StubEvent(42);
         $projection = new Projection($event, ['foo' => 'bar']);
 
-        $this->assertInstanceOf(Projection::class, $projection);
-        $this->assertSame($event, $projection->getEvent());
-        $this->assertSame(['foo' => 'bar'], $projection->getContext());
+        self::assertInstanceOf(Projection::class, $projection);
+        self::assertSame($event, $projection->getEvent());
+        self::assertSame(['foo' => 'bar'], $projection->getContext());
     }
 }

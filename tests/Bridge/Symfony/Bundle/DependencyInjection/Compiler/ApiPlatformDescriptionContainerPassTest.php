@@ -8,14 +8,14 @@ use Botilka\Bridge\ApiPlatform\Description\DescriptionContainer;
 use Botilka\Bridge\ApiPlatform\Resource\Command;
 use Botilka\Bridge\ApiPlatform\Resource\Query;
 use Botilka\Bridge\Symfony\Bundle\DependencyInjection\Compiler\ApiPlatformDescriptionContainerPass;
+use Botilka\Tests\Fixtures\Application\Command\ComplexCommand;
 use Botilka\Tests\Fixtures\Application\Command\ParameterNotTypedCommand;
 use Botilka\Tests\Fixtures\Application\Command\SimpleCommand;
 use Botilka\Tests\Fixtures\Application\Command\WithoutConstructorCommand;
-use Botilka\Tests\Fixtures\Application\Command\ComplexCommand;
+use Botilka\Tests\Fixtures\Application\Query\ComplexQuery;
 use Botilka\Tests\Fixtures\Application\Query\ParameterNotTypedQuery;
 use Botilka\Tests\Fixtures\Application\Query\SimpleQuery;
 use Botilka\Tests\Fixtures\Application\Query\WithoutConstructorQuery;
-use Botilka\Tests\Fixtures\Application\Query\ComplexQuery;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -69,7 +69,7 @@ final class ApiPlatformDescriptionContainerPassTest extends TestCase
             ],
         ];
 
-        $this->assertSame($expected, $descriptionContainerDefinition->getArgument('$data'));
+        self::assertSame($expected, $descriptionContainerDefinition->getArgument('$data'));
     }
 
     public function testProcessQuery(): void
@@ -105,7 +105,7 @@ final class ApiPlatformDescriptionContainerPassTest extends TestCase
             ],
         ];
 
-        $this->assertSame($expected, $descriptionContainerDefinition->getArgument('$data'));
+        self::assertSame($expected, $descriptionContainerDefinition->getArgument('$data'));
     }
 
     /** @dataProvider parameterNotTypedProvider */
@@ -115,7 +115,7 @@ final class ApiPlatformDescriptionContainerPassTest extends TestCase
         $container->setDefinition($className, (new Definition($className))->addTag($tagName));
 
         $this->expectException(\LogicException::class);
-        $this->expectExceptionMessage("Parameter 'bar' of class '$className' is not typed. Please type hint all Query & Command parameters.");
+        $this->expectExceptionMessage("Parameter 'bar' of class '{$className}' is not typed. Please type hint all Query & Command parameters.");
 
         $this->compilerPass->process($container);
     }
@@ -135,7 +135,7 @@ final class ApiPlatformDescriptionContainerPassTest extends TestCase
         $container->setDefinition($className, (new Definition($className))->addTag($tagName));
 
         $this->expectException(\LogicException::class);
-        $this->expectExceptionMessage("Class '$className' must have a constructor.");
+        $this->expectExceptionMessage("Class '{$className}' must have a constructor.");
 
         $this->compilerPass->process($container);
     }
@@ -151,13 +151,15 @@ final class ApiPlatformDescriptionContainerPassTest extends TestCase
     public function testNoProcess(): void
     {
         $container = $this->createMock(ContainerBuilder::class);
-        $container->expects($this->once())
+        $container->expects(self::once())
             ->method('hasDefinition')
             ->with(DescriptionContainer::class)
-            ->willReturn(false);
+            ->willReturn(false)
+        ;
 
-        $container->expects($this->never())
-            ->method('getDefinition');
+        $container->expects(self::never())
+            ->method('getDefinition')
+        ;
 
         $this->compilerPass->process($container);
     }

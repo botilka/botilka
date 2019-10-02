@@ -41,49 +41,55 @@ final class SnapshotedEventSourcedRepositoryTest extends TestCase
 
     public function testLoadNotFound(): void
     {
-        $this->snapshotStore->expects($this->once())
+        $this->snapshotStore->expects(self::once())
             ->method('load')
             ->with('foo')
-            ->willThrowException(new SnapshotNotFoundException());
+            ->willThrowException(new SnapshotNotFoundException())
+        ;
 
         $aggregateRoot = new StubEventSourcedAggregateRoot();
 
-        $this->eventSourcedRepository->expects($this->once())
+        $this->eventSourcedRepository->expects(self::once())
             ->method('load')
             ->with('foo')
-            ->willReturn($aggregateRoot);
+            ->willReturn($aggregateRoot)
+        ;
 
-        $this->assertSame($aggregateRoot, $this->repository->load('foo'));
+        self::assertSame($aggregateRoot, $this->repository->load('foo'));
     }
 
     public function testLoad(): void
     {
         $aggregateRoot = $this->createMock(EventSourcedAggregateRoot::class);
-        $aggregateRoot->expects($this->once())
+        $aggregateRoot->expects(self::once())
             ->method('getPlayhead')
-            ->willReturn(51);
+            ->willReturn(51)
+        ;
 
-        $this->snapshotStore->expects($this->once())
+        $this->snapshotStore->expects(self::once())
             ->method('load')
             ->with('foo')
-            ->willReturn($aggregateRoot);
+            ->willReturn($aggregateRoot)
+        ;
 
         $events = [new StubEvent(1), new StubEvent(2)];
-        $this->eventStore->expects($this->once())
+        $this->eventStore->expects(self::once())
             ->method('loadFromPlayhead')
             ->with('foo', 52)
-            ->willReturn($events);
+            ->willReturn($events)
+        ;
 
         $instances = [$aggregateRoot];
         for ($i = 0; $i < \count($events); ++$i) {
             $instances[$i + 1] = $this->createMock(EventSourcedAggregateRoot::class);
-            $instances[$i]->expects($this->once())
+            $instances[$i]->expects(self::once())
                 ->method('apply')
                 ->with($events[$i])
-                ->willReturn($instances[$i + 1]);
+                ->willReturn($instances[$i + 1])
+            ;
         }
 
-        $this->assertSame(\end($instances), $this->repository->load('foo'));
+        self::assertSame(\end($instances), $this->repository->load('foo'));
     }
 
     /** @dataProvider saveProvider */
@@ -94,18 +100,21 @@ final class SnapshotedEventSourcedRepositoryTest extends TestCase
 
         $commandResponse = new EventSourcedCommandResponse('foo', $event, $aggregateRoot->getPlayhead(), 'foomain', $aggregateRoot);
 
-        $this->strategist->expects($this->once())
+        $this->strategist->expects(self::once())
             ->method('mustSnapshot')
             ->with($aggregateRoot)
-            ->willReturn($mustSnapshot);
+            ->willReturn($mustSnapshot)
+        ;
 
-        $this->snapshotStore->expects($mustSnapshot ? $this->once() : $this->never())
+        $this->snapshotStore->expects($mustSnapshot ? self::once() : self::never())
             ->method('snapshot')
-            ->with($aggregateRoot);
+            ->with($aggregateRoot)
+        ;
 
-        $this->eventSourcedRepository->expects($this->once())
+        $this->eventSourcedRepository->expects(self::once())
             ->method('save')
-            ->with($commandResponse);
+            ->with($commandResponse)
+        ;
 
         $this->repository->save($commandResponse);
     }

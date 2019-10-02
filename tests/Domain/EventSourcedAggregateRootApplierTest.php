@@ -19,7 +19,7 @@ final class EventSourcedAggregateRootApplierTest extends TestCase
 
     public function testGetPlayhead(): void
     {
-        $this->assertSame(-1, $this->eventSourcedAggregateRoot->getPlayhead());
+        self::assertSame(-1, $this->eventSourcedAggregateRoot->getPlayhead());
     }
 
     public function testApply(): void
@@ -28,8 +28,8 @@ final class EventSourcedAggregateRootApplierTest extends TestCase
 
         $result = $aggregateRoot->apply(new StubEvent(321));
 
-        $this->assertInstanceOf(StubEventSourcedAggregateRoot::class, $result);
-        $this->assertSame(0, $result->getPlayhead());
-        $this->assertSame(321, $result->getFoo());
+        self::assertInstanceOf(StubEventSourcedAggregateRoot::class, $result);
+        self::assertSame(0, $result->getPlayhead());
+        self::assertSame(321, $result->getFoo());
     }
 }

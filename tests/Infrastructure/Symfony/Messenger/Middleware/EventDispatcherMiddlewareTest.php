@@ -46,26 +46,14 @@ final class EventDispatcherMiddlewareTest extends MiddlewareTestCase
         $this->projectionist = $this->createMock(Projectionist::class);
     }
 
-    private function addHandleAssertions(Event $event): void
-    {
-        $this->eventBus->expects($this->once())
-            ->method('dispatch')
-            ->with($event);
-
-        $this->logger->expects($this->never())
-            ->method('error');
-
-        $this->projectionist->expects($this->once())
-            ->method('play');
-    }
-
     public function testHandledCommandResponse(): void
     {
         $event = new StubEvent(123);
         $commandResponse = new CommandResponse('foo', $event);
 
-        $this->eventStore->expects($this->never())
-            ->method('append');
+        $this->eventStore->expects(self::never())
+            ->method('append')
+        ;
 
         $this->addHandleAssertions($event);
 
@@ -79,27 +67,31 @@ final class EventDispatcherMiddlewareTest extends MiddlewareTestCase
         $event = $commandResponse->getEvent();
         $eventStoreAppendExpected = EventSourcedCommandResponse::class === \get_class($commandResponse);
 
-        $this->eventStore->expects(!$registryHasRepository ? $this->once() : $this->never())
+        $this->eventStore->expects(!$registryHasRepository ? self::once() : self::never())
             ->method('append')
-            ->with('foo', 51, \get_class($event), $event, null, $this->isInstanceOf(\DateTimeImmutable::class), 'FooBar\\Domain');
+            ->with('foo', 51, \get_class($event), $event, null, self::isInstanceOf(\DateTimeImmutable::class), 'FooBar\\Domain')
+        ;
 
         $aggregateRootClassName = \get_class($commandResponse->getAggregateRoot());
-        $this->repositoryRegistry->expects($this->once())
+        $this->repositoryRegistry->expects(self::once())
             ->method('has')
             ->with($aggregateRootClassName)
-            ->willReturn($registryHasRepository);
+            ->willReturn($registryHasRepository)
+        ;
 
         $repository = $this->createMock(EventSourcedRepository::class);
         if ($registryHasRepository) {
-            $repository->expects($this->once())
+            $repository->expects(self::once())
                 ->method('save')
-                ->with($commandResponse);
+                ->with($commandResponse)
+            ;
         }
 
-        $this->repositoryRegistry->expects($registryHasRepository ? $this->once() : $this->never())
+        $this->repositoryRegistry->expects($registryHasRepository ? self::once() : self::never())
             ->method('get')
             ->with($aggregateRootClassName)
-            ->willReturn($repository);
+            ->willReturn($repository)
+        ;
 
         $this->addHandleAssertions($event);
 
@@ -121,17 +113,20 @@ final class EventDispatcherMiddlewareTest extends MiddlewareTestCase
     {
         $event = new StubEvent(1337);
 
-        $this->eventBus->expects($this->once())
+        $this->eventBus->expects(self::once())
             ->method('dispatch')
             ->with($event)
-            ->willThrowException(new NoHandlerForMessageException());
+            ->willThrowException(new NoHandlerForMessageException())
+        ;
 
-        $this->logger->expects($this->once())
+        $this->logger->expects(self::once())
             ->method('notice')
-            ->with(\sprintf('No event handler for %s.', \get_class($event)));
+            ->with(\sprintf('No event handler for %s.', \get_class($event)))
+        ;
 
-        $this->projectionist->expects($this->once())
-            ->method('play');
+        $this->projectionist->expects(self::once())
+            ->method('play')
+        ;
 
         $commandResponse = new CommandResponse('foo', $event);
 
@@ -147,19 +142,23 @@ final class EventDispatcherMiddlewareTest extends MiddlewareTestCase
     {
         $event = new StubEvent(1337);
 
-        $this->eventStore->expects($this->once())
+        $this->eventStore->expects(self::once())
             ->method('append')
-            ->willThrowException(new EventStoreConcurrencyException('bar message'));
+            ->willThrowException(new EventStoreConcurrencyException('bar message'))
+        ;
 
-        $this->eventBus->expects($this->never())
-            ->method('dispatch');
+        $this->eventBus->expects(self::never())
+            ->method('dispatch')
+        ;
 
-        $this->projectionist->expects($this->never())
-            ->method('play');
+        $this->projectionist->expects(self::never())
+            ->method('play')
+        ;
 
-        $this->logger->expects($this->once())
+        $this->logger->expects(self::once())
             ->method('error')
-            ->with('bar message');
+            ->with('bar message')
+        ;
 
         $commandResponse = new EventSourcedCommandResponse('foo', $event, 51, 'FooBar\\Domain', $this->createMock(EventSourcedAggregateRoot::class));
 
@@ -173,17 +172,60 @@ final class EventDispatcherMiddlewareTest extends MiddlewareTestCase
      */
     public function testHandleddNotCommandResponse(): void
     {
-        $this->eventStore->expects($this->never())
-            ->method('append');
+        $this->eventStore->expects(self::never())
+            ->method('append')
+        ;
 
-        $this->eventBus->expects($this->never())
-            ->method('dispatch');
+        $this->eventBus->expects(self::never())
+            ->method('dispatch')
+        ;
 
-        $this->projectionist->expects($this->never())
-            ->method('play');
+        $this->projectionist->expects(self::never())
+            ->method('play')
+        ;
 
         $middleware = new EventDispatcherMiddleware($this->eventStore, $this->repositoryRegistry, $this->eventBus, $this->logger, $this->projectionist);
         $middleware->handle($this->getEnvelopeWithHandledStamp(new \stdClass()), $this->getStackMock());
+    }
+
+    public function testSent(): void
+    {
+        $stamp = new SentStamp(\get_class($this), 'this');
+        $message = new \stdClass();
+        $message->foo = 'bar';
+
+        $envelope = new Envelope($message, [$stamp]);
+
+        $this->eventStore->expects(self::never())
+            ->method('append')
+        ;
+
+        $this->eventBus->expects(self::never())
+            ->method('dispatch')
+        ;
+
+        $this->projectionist->expects(self::never())
+            ->method('play')
+        ;
+
+        $middleware = new EventDispatcherMiddleware($this->eventStore, $this->repositoryRegistry, $this->eventBus, $this->logger, $this->projectionist);
+        $middleware->handle($envelope, $this->getStackMock());
+    }
+
+    private function addHandleAssertions(Event $event): void
+    {
+        $this->eventBus->expects(self::once())
+            ->method('dispatch')
+            ->with($event)
+        ;
+
+        $this->logger->expects(self::never())
+            ->method('error')
+        ;
+
+        $this->projectionist->expects(self::once())
+            ->method('play')
+        ;
     }
 
     /**
@@ -196,26 +238,5 @@ final class EventDispatcherMiddlewareTest extends MiddlewareTestCase
         $message->foo = 'bar';
 
         return new Envelope($message, [$stamp]);
-    }
-
-    public function testSent(): void
-    {
-        $stamp = new SentStamp(\get_class($this), 'this');
-        $message = new \stdClass();
-        $message->foo = 'bar';
-
-        $envelope = new Envelope($message, [$stamp]);
-
-        $this->eventStore->expects($this->never())
-            ->method('append');
-
-        $this->eventBus->expects($this->never())
-            ->method('dispatch');
-
-        $this->projectionist->expects($this->never())
-            ->method('play');
-
-        $middleware = new EventDispatcherMiddleware($this->eventStore, $this->repositoryRegistry, $this->eventBus, $this->logger, $this->projectionist);
-        $middleware->handle($envelope, $this->getStackMock());
     }
 }

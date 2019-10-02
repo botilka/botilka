@@ -36,26 +36,29 @@ final class BotilkaQueryResourceMetadataFactoryTest extends TestCase
 
     public function testCreateResourceClassNotFoundException(): void
     {
-        $this->decorated->expects($this->once())
+        $this->decorated->expects(self::once())
             ->method('create')
-            ->willThrowException(new ResourceClassNotFoundException());
+            ->willThrowException(new ResourceClassNotFoundException())
+        ;
 
         $resourceMetadata = $this->factory->create('Foo\\Bar');
-        $this->assertNull($resourceMetadata->getShortName());
+        self::assertNull($resourceMetadata->getShortName());
     }
 
     public function testCreateNotExtending(): void
     {
         $resourceMetadata = new ResourceMetadata('NotQuery');
-        $this->decorated->expects($this->once())
+        $this->decorated->expects(self::once())
             ->method('create')
             ->with('Foo\\Bar')
-            ->willReturn($resourceMetadata);
+            ->willReturn($resourceMetadata)
+        ;
 
-        $this->descriptionContainer->expects($this->never())
-            ->method('getIterator');
+        $this->descriptionContainer->expects(self::never())
+            ->method('getIterator')
+        ;
 
-        $this->assertSame($resourceMetadata, $this->factory->create('Foo\\Bar'));
+        self::assertSame($resourceMetadata, $this->factory->create('Foo\\Bar'));
     }
 
     public function testCreate(): void
@@ -79,30 +82,33 @@ final class BotilkaQueryResourceMetadataFactoryTest extends TestCase
             ],
         ];
 
-        $this->decorated->expects($this->once())
+        $this->decorated->expects(self::once())
             ->method('create')
             ->with('Foo\\Bar')
-            ->willReturn(new ResourceMetadata('Query', null, null, $itemOperations, $collectionOperations));
+            ->willReturn(new ResourceMetadata('Query', null, null, $itemOperations, $collectionOperations))
+        ;
 
-        $this->descriptionContainer->expects($this->once())
+        $this->descriptionContainer->expects(self::once())
             ->method('getIterator')
             ->willReturn(new \ArrayIterator([
                 'foo' => [
                     'class' => 'Foo\\Bar',
                     'payload' => ['some' => 'string'],
                 ],
-            ]));
+            ]))
+        ;
 
-        $this->payloadNormalizer->expects($this->once())
+        $this->payloadNormalizer->expects(self::once())
             ->method('normalize')
             ->with(['some' => 'string'])
-            ->willReturn(['foo_params']);
+            ->willReturn(['foo_params'])
+        ;
 
         $resourceMetadata = $this->factory->create('Foo\\Bar');
 
         $itemOperations['get']['path'] = '/bazprefix'.$itemOperations['get']['path'];
         $collectionOperations['get']['path'] = '/bazprefix'.$collectionOperations['get']['path'];
-        $this->assertSame($itemOperations + [
+        self::assertSame($itemOperations + [
             'foo' => [
                 'method' => Request::METHOD_GET,
                 'path' => '/bazprefix/queries/foo.{_format}',
@@ -137,6 +143,6 @@ final class BotilkaQueryResourceMetadataFactoryTest extends TestCase
                 ],
             ],
         ], $resourceMetadata->getItemOperations());
-        $this->assertSame($collectionOperations, $resourceMetadata->getCollectionOperations());
+        self::assertSame($collectionOperations, $resourceMetadata->getCollectionOperations());
     }
 }

@@ -28,7 +28,7 @@ final class EventStoreManagerMongoDBTest extends AbstractKernelTestCase
 
         $events = $manager->loadByAggregateRootId($id, $from, $to);
 
-        $this->assertCount($shouldBeCount, $events);
+        self::assertCount($shouldBeCount, $events);
     }
 
     public function loadByAggregateRootIdProviderFunctional(): array
@@ -57,7 +57,7 @@ final class EventStoreManagerMongoDBTest extends AbstractKernelTestCase
 
         $events = $manager->loadByDomain($domain);
 
-        $this->assertCount($shouldBeCount, $events);
+        self::assertCount($shouldBeCount, $events);
     }
 
     public function loadByDomainFunctionalProvider(): array
@@ -77,14 +77,15 @@ final class EventStoreManagerMongoDBTest extends AbstractKernelTestCase
 
         $expected = ['bar', 'bar'];
 
-        $collection->expects($this->once())
+        $collection->expects(self::once())
             ->method('distinct')
             ->with($key)
-            ->willReturn($expected);
+            ->willReturn($expected)
+        ;
 
         $manager = new EventStoreManagerMongoDB($collection, $denormalizer);
 
-        $this->assertSame($expected, $manager->$method());
+        self::assertSame($expected, $manager->{$method}());
     }
 
     public function getProvider(): array

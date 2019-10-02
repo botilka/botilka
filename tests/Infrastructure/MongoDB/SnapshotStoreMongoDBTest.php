@@ -29,19 +29,21 @@ final class SnapshotStoreMongoDBTest extends TestCase
     {
         $aggregateRoot = new StubEventSourcedAggregateRoot();
 
-        $this->collection->expects($this->once())
+        $this->collection->expects(self::once())
             ->method('countDocuments')
             ->with(['id' => 'foo'])
-            ->willReturn(1);
+            ->willReturn(1)
+        ;
 
         $result = new BSONDocument(['data' => \serialize($aggregateRoot)]);
 
-        $this->collection->expects($this->once())
+        $this->collection->expects(self::once())
             ->method('findOne')
             ->with(['id' => 'foo'])
-            ->willReturn($result);
+            ->willReturn($result)
+        ;
 
-        $this->assertSame($aggregateRoot->getAggregateRootId(), $this->snapshotStore->load('foo')->getAggregateRootId());
+        self::assertSame($aggregateRoot->getAggregateRootId(), $this->snapshotStore->load('foo')->getAggregateRootId());
     }
 
     /**
@@ -52,13 +54,15 @@ final class SnapshotStoreMongoDBTest extends TestCase
     {
         $aggregateRoot = new StubEventSourcedAggregateRoot();
 
-        $this->collection->expects($this->once())
+        $this->collection->expects(self::once())
             ->method('countDocuments')
             ->with(['id' => 'foo'])
-            ->willReturn(0);
+            ->willReturn(0)
+        ;
 
-        $this->collection->expects($this->never())
-            ->method('findOne');
+        $this->collection->expects(self::never())
+            ->method('findOne')
+        ;
 
         $this->snapshotStore->load('foo');
     }
@@ -67,12 +71,13 @@ final class SnapshotStoreMongoDBTest extends TestCase
     {
         $aggregateRoot = new StubEventSourcedAggregateRoot();
 
-        $this->collection->expects($this->once())
+        $this->collection->expects(self::once())
             ->method('updateOne')
             ->with(['id' => $aggregateRoot->getAggregateRootId()],
                 ['$set' => ['data' => \serialize($aggregateRoot)]],
                 ['upsert' => true]
-            );
+            )
+        ;
 
         $this->snapshotStore->snapshot($aggregateRoot);
     }

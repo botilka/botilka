@@ -28,9 +28,9 @@ final class CommandDataProviderTest extends TestCase
     {
         $item = $this->dataProvider->getItem('whatever', 'foo');
 
-        $this->assertInstanceOf(Command::class, $item);
-        $this->assertSame('foo', $item->getName());
-        $this->assertSame(['some' => 'string'], $item->getPayload());
+        self::assertInstanceOf(Command::class, $item);
+        self::assertSame('foo', $item->getName());
+        self::assertSame(['some' => 'string'], $item->getPayload());
     }
 
     /**
@@ -46,14 +46,14 @@ final class CommandDataProviderTest extends TestCase
     {
         /** @var array $collection */
         $collection = $this->dataProvider->getCollection('whatever');
-        $this->assertCount(1, $collection);
-        $this->assertInstanceOf(Command::class, $collection[0]);
+        self::assertCount(1, $collection);
+        self::assertInstanceOf(Command::class, $collection[0]);
     }
 
     /** @dataProvider supportsDataProvider */
     public function testSupports(bool $expected, string $resourceClass): void
     {
-        $this->assertSame($expected, $this->dataProvider->supports($resourceClass));
+        self::assertSame($expected, $this->dataProvider->supports($resourceClass));
     }
 
     public function supportsDataProvider()

@@ -37,26 +37,29 @@ final class BotilkaCommandResourceMetadataFactoryTest extends TestCase
 
     public function testCreateResourceClassNotFoundException(): void
     {
-        $this->decorated->expects($this->once())
+        $this->decorated->expects(self::once())
             ->method('create')
-            ->willThrowException(new ResourceClassNotFoundException());
+            ->willThrowException(new ResourceClassNotFoundException())
+        ;
 
         $resourceMetadata = $this->factory->create('Foo\\Bar');
-        $this->assertNull($resourceMetadata->getShortName());
+        self::assertNull($resourceMetadata->getShortName());
     }
 
     public function testCreateNotExtending(): void
     {
         $metadata = new ResourceMetadata('NotCommand');
-        $this->decorated->expects($this->once())
+        $this->decorated->expects(self::once())
             ->method('create')
             ->with('Foo\\Bar')
-            ->willReturn($metadata);
+            ->willReturn($metadata)
+        ;
 
-        $this->descriptionContainer->expects($this->never())
-            ->method('getIterator');
+        $this->descriptionContainer->expects(self::never())
+            ->method('getIterator')
+        ;
 
-        $this->assertSame($metadata, $this->factory->create('Foo\\Bar'));
+        self::assertSame($metadata, $this->factory->create('Foo\\Bar'));
     }
 
     public function testCreate(): void
@@ -80,30 +83,33 @@ final class BotilkaCommandResourceMetadataFactoryTest extends TestCase
             ],
         ];
 
-        $this->decorated->expects($this->once())
+        $this->decorated->expects(self::once())
             ->method('create')
             ->with('Foo\\Bar')
-            ->willReturn(new ResourceMetadata('Command', null, null, $itemOperations, $collectionOperations));
+            ->willReturn(new ResourceMetadata('Command', null, null, $itemOperations, $collectionOperations))
+        ;
 
-        $this->descriptionContainer->expects($this->once())
+        $this->descriptionContainer->expects(self::once())
             ->method('getIterator')
             ->willReturn(new \ArrayIterator([
                 'foo' => [
                     'class' => 'Foo\\Bar',
                     'payload' => ['some' => 'string'],
                 ],
-            ]));
+            ]))
+        ;
 
-        $this->payloadNormalizer->expects($this->once())
+        $this->payloadNormalizer->expects(self::once())
             ->method('normalize')
             ->with(['some' => 'string'])
-            ->willReturn(['foo_body']);
+            ->willReturn(['foo_body'])
+        ;
 
         $resourceMetadata = $this->factory->create('Foo\\Bar');
 
         $itemOperations['get']['path'] = '/bazprefix'.$itemOperations['get']['path'];
         $collectionOperations['get']['path'] = '/bazprefix'.$collectionOperations['get']['path'];
-        $this->assertSame($collectionOperations + [
+        self::assertSame($collectionOperations + [
             'foo' => [
                 'method' => Request::METHOD_POST,
                 'path' => '/bazprefix/commands/foo.{_format}',
@@ -140,12 +146,12 @@ final class BotilkaCommandResourceMetadataFactoryTest extends TestCase
                 ],
             ],
         ], $resourceMetadata->getCollectionOperations());
-        $this->assertSame($itemOperations, $resourceMetadata->getItemOperations());
+        self::assertSame($itemOperations, $resourceMetadata->getItemOperations());
     }
 
     public function testIsSubclassOfCommand()
     {
         $resourceMetadata = $this->factory->create(SimpleCommand::class);
-        $this->assertSame($resourceMetadata->getAttributes(), ['output' => ['class' => '']]);
+        self::assertSame($resourceMetadata->getAttributes(), ['output' => ['class' => '']]);
     }
 }

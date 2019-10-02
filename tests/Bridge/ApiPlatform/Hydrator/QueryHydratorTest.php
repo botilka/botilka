@@ -33,17 +33,19 @@ final class QueryHydratorTest extends TestCase
     {
         $Query = new SimpleQuery('foo');
 
-        $this->denormalizer->expects($this->once())
+        $this->denormalizer->expects(self::once())
             ->method('denormalize')
             ->with(['bar' => 'baz'], 'Foo\\Bar')
-            ->willReturn($Query);
+            ->willReturn($Query)
+        ;
 
-        $this->validator->expects($this->once())
+        $this->validator->expects(self::once())
             ->method('validate')
             ->with($Query)
-            ->willReturn([]);
+            ->willReturn([])
+        ;
 
-        $this->assertSame($Query, $this->hydrator->hydrate(['bar' => 'baz'], 'Foo\\Bar'));
+        self::assertSame($Query, $this->hydrator->hydrate(['bar' => 'baz'], 'Foo\\Bar'));
     }
 
     /** @expectedException \ApiPlatform\Core\Bridge\Symfony\Validator\Exception\ValidationException */
@@ -51,17 +53,19 @@ final class QueryHydratorTest extends TestCase
     {
         $query = new SimpleQuery('foo');
 
-        $this->denormalizer->expects($this->once())
+        $this->denormalizer->expects(self::once())
             ->method('denormalize')
             ->with(['bar' => 'baz'], 'Foo\\Bar')
-            ->willReturn($query);
+            ->willReturn($query)
+        ;
 
         $violationList = new ConstraintViolationList([$this->createMock(ConstraintViolationInterface::class)]);
 
-        $this->validator->expects($this->once())
+        $this->validator->expects(self::once())
             ->method('validate')
             ->with($query)
-            ->willReturn($violationList);
+            ->willReturn($violationList)
+        ;
 
         $this->hydrator->hydrate(['bar' => 'baz'], 'Foo\\Bar');
     }

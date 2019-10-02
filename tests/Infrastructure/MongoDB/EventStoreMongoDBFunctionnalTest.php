@@ -21,7 +21,7 @@ final class EventStoreMongoDBFunctionnalTest extends AbstractKernelTestCase
     {
         /** @var EventStore $eventStore */
         [$eventStore, $collection] = $this->setUpEventStore();
-        $this->assertCount($expectedCount, $eventStore->load($id));
+        self::assertCount($expectedCount, $eventStore->load($id));
     }
 
     public function loadFunctionalProvider(): array
@@ -52,7 +52,7 @@ final class EventStoreMongoDBFunctionnalTest extends AbstractKernelTestCase
     {
         /** @var EventStore $eventStore */
         [$eventStore, $collection] = $this->setUpEventStore();
-        $this->assertCount($expectedCount, $eventStore->loadFromPlayhead($id, $fromPlayhead));
+        self::assertCount($expectedCount, $eventStore->loadFromPlayhead($id, $fromPlayhead));
     }
 
     public function loadFromPlayheadFunctionalProvider(): array
@@ -74,7 +74,7 @@ final class EventStoreMongoDBFunctionnalTest extends AbstractKernelTestCase
     {
         /** @var EventStore $eventStore */
         [$eventStore, $collection] = $this->setUpEventStore();
-        $this->assertCount($expectedCount, $eventStore->loadFromPlayheadToPlayhead($id, $fromPlayhead, $toPlayhead));
+        self::assertCount($expectedCount, $eventStore->loadFromPlayheadToPlayhead($id, $fromPlayhead, $toPlayhead));
     }
 
     public function loadFromPlayheadToPlayheadFunctionalProvider(): array

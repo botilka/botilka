@@ -24,19 +24,19 @@ final class CommandResponseTest extends TestCase
 
     public function testGetEvent(): void
     {
-        $this->assertSame($this->event, $this->commandResponse->getEvent());
+        self::assertSame($this->event, $this->commandResponse->getEvent());
     }
 
     public function testGetId(): void
     {
-        $this->assertSame('foo', $this->commandResponse->getId());
+        self::assertSame('foo', $this->commandResponse->getId());
     }
 
     public function testFromValues(): void
     {
         $commandResponse = CommandResponse::fromValues('bar', $this->event);
-        $this->assertInstanceOf(CommandResponse::class, $commandResponse);
-        $this->assertSame('bar', $commandResponse->getId());
-        $this->assertSame($this->event, $commandResponse->getEvent());
+        self::assertInstanceOf(CommandResponse::class, $commandResponse);
+        self::assertSame('bar', $commandResponse->getId());
+        self::assertSame($this->event, $commandResponse->getEvent());
     }
 }

@@ -28,17 +28,18 @@ final class ApiPlatformDataProviderPassTest extends TestCase
     {
         $container = $this->createMock(ContainerBuilder::class);
 
-        $this->assertInstanceOf(CompilerPassInterface::class, $this->compilerPass);
+        self::assertInstanceOf(CompilerPassInterface::class, $this->compilerPass);
 
-        $container->expects($this->exactly(2))
+        $container->expects(self::exactly(2))
             ->method('hasDefinition')
             ->withConsecutive([CommandDataProvider::class], [QueryDataProvider::class])
-            ->willReturn(true);
+            ->willReturn(true)
+        ;
 
         $commandDataProviderDefinition = $this->createMock(Definition::class);
         $queryDataProviderDefinition = $this->createMock(Definition::class);
 
-        $container->expects($this->exactly(4))
+        $container->expects(self::exactly(4))
             ->method('getDefinition')
             ->withConsecutive(
                 [CommandDataProvider::class],
@@ -46,27 +47,32 @@ final class ApiPlatformDataProviderPassTest extends TestCase
                 [QueryDataProvider::class],
                 [Query::class.'.description_container']
             )
-            ->willReturnOnConsecutiveCalls($commandDataProviderDefinition, 'foo', $queryDataProviderDefinition, 'bar');
+            ->willReturnOnConsecutiveCalls($commandDataProviderDefinition, 'foo', $queryDataProviderDefinition, 'bar')
+        ;
 
         // command
-        $commandDataProviderDefinition->expects($this->once())
+        $commandDataProviderDefinition->expects(self::once())
             ->method('setArgument')
-            ->with('$descriptionContainer', 'foo');
+            ->with('$descriptionContainer', 'foo')
+        ;
 
-        $commandDataProviderDefinition->expects($this->exactly(2))
+        $commandDataProviderDefinition->expects(self::exactly(2))
             ->method('addTag')
             ->withConsecutive(['api_platform.collection_data_provider'], ['api_platform.item_data_provider'])
-            ->willReturn($commandDataProviderDefinition);
+            ->willReturn($commandDataProviderDefinition)
+        ;
 
         // query
-        $queryDataProviderDefinition->expects($this->once())
+        $queryDataProviderDefinition->expects(self::once())
             ->method('setArgument')
-            ->with('$descriptionContainer', 'bar');
+            ->with('$descriptionContainer', 'bar')
+        ;
 
-        $queryDataProviderDefinition->expects($this->exactly(2))
+        $queryDataProviderDefinition->expects(self::exactly(2))
             ->method('addTag')
             ->withConsecutive(['api_platform.collection_data_provider'], ['api_platform.item_data_provider'])
-            ->willReturn($queryDataProviderDefinition);
+            ->willReturn($queryDataProviderDefinition)
+        ;
 
         $this->compilerPass->process($container);
     }
@@ -75,14 +81,16 @@ final class ApiPlatformDataProviderPassTest extends TestCase
     {
         $container = $this->createMock(ContainerBuilder::class);
 
-        $container->expects($this->exactly(2))
+        $container->expects(self::exactly(2))
             ->method('hasDefinition')
             ->withConsecutive([CommandDataProvider::class], [QueryDataProvider::class])
-            ->willReturn(false);
+            ->willReturn(false)
+        ;
 
-        $container->expects($this->never())
+        $container->expects(self::never())
             ->method('getDefinition')
-            ->withConsecutive([CommandDataProvider::class], [QueryDataProvider::class]);
+            ->withConsecutive([CommandDataProvider::class], [QueryDataProvider::class])
+        ;
 
         $this->compilerPass->process($container);
     }

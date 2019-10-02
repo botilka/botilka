@@ -45,11 +45,11 @@ final class QueryResourceClassEventListenerTest extends TestCase
     {
         $event = $this->getEvent(['_api_resource_class' => \stdClass::class]);
 
-        $this->queryBus->expects($this->never())->method('dispatch');
+        $this->queryBus->expects(self::never())->method('dispatch');
 
         $this->listener->onKernelRequest($event);
-        $this->assertNull($event->getRequest()->attributes->get('data'));
-        $this->assertTrue($event->getRequest()->attributes->get('_api_receive'));
+        self::assertNull($event->getRequest()->attributes->get('data'));
+        self::assertTrue($event->getRequest()->attributes->get('_api_receive'));
     }
 
     /** @dataProvider onKernelRequestQueryNotExistingProvider */
@@ -58,17 +58,18 @@ final class QueryResourceClassEventListenerTest extends TestCase
         $event = $this->getEvent(['_api_resource_class' => Query::class, '_api_item_operation_name' => $queryName]);
 
         if (null !== $queryName) {
-            $this->descriptionContainer->expects($this->once())
+            $this->descriptionContainer->expects(self::once())
                 ->method('has')
                 ->with($queryName)
-                ->willReturn(false);
+                ->willReturn(false)
+            ;
         }
 
-        $this->queryBus->expects($this->never())->method('dispatch');
+        $this->queryBus->expects(self::never())->method('dispatch');
 
         $this->listener->onKernelRequest($event);
-        $this->assertNull($event->getRequest()->attributes->get('data'));
-        $this->assertTrue($event->getRequest()->attributes->get('_api_receive'));
+        self::assertNull($event->getRequest()->attributes->get('data'));
+        self::assertTrue($event->getRequest()->attributes->get('_api_receive'));
     }
 
     public function onKernelRequestQueryNotExistingProvider(): array
@@ -90,21 +91,23 @@ final class QueryResourceClassEventListenerTest extends TestCase
 
         $query = new SimpleQuery('foo');
 
-        $this->hydrator->expects($this->once())
+        $this->hydrator->expects(self::once())
             ->method('hydrate')
             ->with(['foo' => 'bar'], 'Foo\\Bar')
-            ->willReturn($query);
+            ->willReturn($query)
+        ;
 
-        $this->queryBus->expects($this->once())
+        $this->queryBus->expects(self::once())
             ->method('dispatch')
             ->with($query)
-            ->willReturn('baz');
+            ->willReturn('baz')
+        ;
 
         $listener = new QueryResourceClassEventListener($this->queryBus, $descriptionContainer, $this->hydrator);
         $listener->onKernelRequest($event);
 
-        $this->assertSame('baz', $event->getRequest()->attributes->get('data'));
-        $this->assertFalse($event->getRequest()->attributes->get('_api_receive'));
+        self::assertSame('baz', $event->getRequest()->attributes->get('data'));
+        self::assertFalse($event->getRequest()->attributes->get('_api_receive'));
     }
 
     public function testOnKernelRequestValidationException(): void
@@ -118,23 +121,24 @@ final class QueryResourceClassEventListenerTest extends TestCase
 
         $exception = new ValidationException($this->createMock(ConstraintViolationListInterface::class));
 
-        $this->hydrator->expects($this->once())
+        $this->hydrator->expects(self::once())
             ->method('hydrate')
             ->with(['foo' => 'bar'], 'Foo\\Bar')
-            ->willThrowException($exception);
+            ->willThrowException($exception)
+        ;
 
-        $this->queryBus->expects($this->never())->method('dispatch');
+        $this->queryBus->expects(self::never())->method('dispatch');
 
         $listener = new QueryResourceClassEventListener($this->queryBus, $descriptionContainer, $this->hydrator);
         $listener->onKernelRequest($event);
 
-        $this->assertSame($exception->getConstraintViolationList(), $event->getRequest()->attributes->get('data'));
-        $this->assertFalse($event->getRequest()->attributes->get('_api_receive'));
+        self::assertSame($exception->getConstraintViolationList(), $event->getRequest()->attributes->get('data'));
+        self::assertFalse($event->getRequest()->attributes->get('_api_receive'));
     }
 
     public function testGetSubscribedEvents(): void
     {
-        $this->assertSame([
+        self::assertSame([
             KernelEvents::REQUEST => [
                 ['onKernelRequest', EventPriorities::PRE_READ],
             ],

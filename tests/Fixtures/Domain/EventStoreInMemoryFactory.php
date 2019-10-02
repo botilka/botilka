@@ -19,7 +19,7 @@ final class EventStoreInMemoryFactory
             [5, 1, 'baz', 'FazBaz\\Domain'],
         ];
 
-        foreach ($rules as list($count, $factor, $id, $domain)) {
+        foreach ($rules as [$count, $factor, $id, $domain]) {
             for ($i = 0; $i < $count; ++$i) {
                 $event = new StubEvent($i * $factor);
                 $eventStore->append($id, $i, StubEvent::class, $event, null, new \DateTimeImmutable('2018-11-14 19:42:'.($i * $factor).'.1234'), $domain);

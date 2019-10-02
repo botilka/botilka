@@ -19,11 +19,11 @@ final class CommandTest extends TestCase
 
     public function testGetName(): void
     {
-        $this->assertSame('foo_bar', $this->command->getName());
+        self::assertSame('foo_bar', $this->command->getName());
     }
 
     public function testGetPayload(): void
     {
-        $this->assertSame(['foo' => 'baz'], $this->command->getPayload());
+        self::assertSame(['foo' => 'baz'], $this->command->getPayload());
     }
 }

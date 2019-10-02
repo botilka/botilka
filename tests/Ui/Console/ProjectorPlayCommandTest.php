@@ -39,28 +39,30 @@ final class ProjectorPlayCommandTest extends TestCase
 
     public function testName(): void
     {
-        $this->assertSame('botilka:projectors:play', $this->command->getName());
+        self::assertSame('botilka:projectors:play', $this->command->getName());
     }
 
     /** @dataProvider executeIdProvider */
     public function testExecuteId(string $value, ?int $from, ?int $to): void
     {
-        $this->eventStoreManager->expects($this->once())
+        $this->eventStoreManager->expects(self::once())
             ->method('loadByAggregateRootId')
             ->with($value, $from, $to)
-            ->willReturn($this->events);
+            ->willReturn($this->events)
+        ;
 
-        $this->projectionist->expects($this->exactly(\count($this->events)))
+        $this->projectionist->expects(self::exactly(\count($this->events)))
             ->method('play')
-            ->withConsecutive(...$this->events);
+            ->withConsecutive(...$this->events)
+        ;
 
         $input = new ArrayInput(['--id' => true, 'value' => $value, '--from' => $from, '--to' => $to]);
         $output = new BufferedOutput();
         $this->command->run($input, $output);
         $stdout = $output->fetch();
-        $this->assertContains('[NOTE] 2 events found.', $stdout);
-        $this->assertContains('(     0): Botilka\Tests\Fixtures\Domain\StubEvent (null)', $stdout);
-        $this->assertContains('(     1): Botilka\Tests\Fixtures\Domain\StubEvent ({"foo":"bar"})', $stdout);
+        self::assertContains('[NOTE] 2 events found.', $stdout);
+        self::assertContains('(     0): Botilka\Tests\Fixtures\Domain\StubEvent (null)', $stdout);
+        self::assertContains('(     1): Botilka\Tests\Fixtures\Domain\StubEvent ({"foo":"bar"})', $stdout);
     }
 
     public function executeIdProvider(): array
@@ -74,14 +76,16 @@ final class ProjectorPlayCommandTest extends TestCase
 
     public function testExecuteDomain(): void
     {
-        $this->eventStoreManager->expects($this->once())
+        $this->eventStoreManager->expects(self::once())
             ->method('loadByDomain')
             ->with('Foo\\Domain')
-            ->willReturn($this->events);
+            ->willReturn($this->events)
+        ;
 
-        $this->projectionist->expects($this->exactly(\count($this->events)))
+        $this->projectionist->expects(self::exactly(\count($this->events)))
             ->method('play')
-            ->withConsecutive(...$this->events);
+            ->withConsecutive(...$this->events)
+        ;
 
         $input = new ArrayInput(['--domain' => true, 'value' => 'Foo\\Domain']);
         $this->command->run($input, new BufferedOutput());

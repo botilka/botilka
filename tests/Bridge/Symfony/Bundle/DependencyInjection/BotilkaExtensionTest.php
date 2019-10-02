@@ -16,15 +16,15 @@ use Botilka\Bridge\Symfony\Bundle\DependencyInjection\BotilkaExtension;
 use Botilka\Event\EventHandler;
 use Botilka\EventStore\EventStore;
 use Botilka\Infrastructure\Doctrine\EventStoreDoctrine;
+use Botilka\Infrastructure\InMemory\EventStoreInMemory;
 use Botilka\Infrastructure\MongoDB\EventStoreMongoDB;
 use Botilka\Infrastructure\StoreInitializer;
 use Botilka\Infrastructure\Symfony\Messenger\Middleware\EventDispatcherMiddleware;
-use Botilka\Infrastructure\InMemory\EventStoreInMemory;
 use Botilka\Projector\Projector;
 use Botilka\Repository\EventSourcedRepository;
 use Botilka\Ui\Console\EventReplayCommand;
-use Botilka\Ui\Console\StoreInitializeCommand;
 use Botilka\Ui\Console\ProjectorPlayCommand;
+use Botilka\Ui\Console\StoreInitializeCommand;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Prophecy\ObjectProphecy;
 use Symfony\Component\DependencyInjection\ChildDefinition;
@@ -50,12 +50,6 @@ final class BotilkaExtensionTest extends TestCase
     protected function setUp()
     {
         $this->extension = new BotilkaExtension();
-    }
-
-    private function addContainerBuilderDefaultCalls(ObjectProphecy $containerBuilderProphecy): void
-    {
-        $containerBuilderProphecy->setParameter('botilka.bridge.api_platform', false)->shouldBeCalled();
-        $containerBuilderProphecy->setParameter('botilka.messenger.doctrine_transaction_middleware', false)->shouldBeCalled();
     }
 
     /** @dataProvider prependWithDefaultMessengerProvider */
@@ -199,17 +193,17 @@ final class BotilkaExtensionTest extends TestCase
 
         $this->extension->load($configs, $container);
 
-        $this->assertSame($eventStore, (string) $container->getAlias(EventStore::class));
-        $this->assertTrue($container->hasDefinition(StoreInitializeCommand::class));
-        $this->assertTrue($container->hasDefinition(EventReplayCommand::class));
-        $this->assertTrue($container->hasDefinition(ProjectorPlayCommand::class));
+        self::assertSame($eventStore, (string) $container->getAlias(EventStore::class));
+        self::assertTrue($container->hasDefinition(StoreInitializeCommand::class));
+        self::assertTrue($container->hasDefinition(EventReplayCommand::class));
+        self::assertTrue($container->hasDefinition(ProjectorPlayCommand::class));
 
-        $this->assertSame((bool) $container->getParameter('botilka.messenger.doctrine_transaction_middleware'), $container->hasDefinition('messenger.middleware.doctrine_transaction'));
-        $this->assertSame($defaultMessengerConfig, $container->hasDefinition(EventDispatcherMiddleware::class));
-        $this->assertSame($hasApiPlatformBridge, $container->hasDefinition(DescriptionContainer::class));
-        $this->assertSame($hasApiPlatformBridge, $container->hasDefinition(CommandDataProvider::class));
-        $this->assertSame($hasApiPlatformBridge, $container->hasDefinition(QueryDataProvider::class));
-        $this->assertSame($hasApiPlatformBridge, $container->hasDefinition(CommandEntrypointAction::class));
+        self::assertSame((bool) $container->getParameter('botilka.messenger.doctrine_transaction_middleware'), $container->hasDefinition('messenger.middleware.doctrine_transaction'));
+        self::assertSame($defaultMessengerConfig, $container->hasDefinition(EventDispatcherMiddleware::class));
+        self::assertSame($hasApiPlatformBridge, $container->hasDefinition(DescriptionContainer::class));
+        self::assertSame($hasApiPlatformBridge, $container->hasDefinition(CommandDataProvider::class));
+        self::assertSame($hasApiPlatformBridge, $container->hasDefinition(QueryDataProvider::class));
+        self::assertSame($hasApiPlatformBridge, $container->hasDefinition(CommandEntrypointAction::class));
     }
 
     public function loadProvider(): array
@@ -254,16 +248,18 @@ final class BotilkaExtensionTest extends TestCase
         ]);
 
         $definition = $this->createMock(ChildDefinition::class);
-        $definition->expects($this->exactly($count))
+        $definition->expects(self::exactly($count))
             ->method('addTag')
-            ->withConsecutive(...\array_values($tags));
+            ->withConsecutive(...\array_values($tags))
+        ;
 
-        $container->expects($this->exactly($count))
+        $container->expects(self::exactly($count))
             ->method('registerForAutoconfiguration')
-            ->withConsecutive(...\array_values(\array_map(function ($item) {
+            ->withConsecutive(...\array_values(\array_map(static function ($item) {
                 return [$item];
             }, \array_keys($tags))))
-            ->willReturn($definition);
+            ->willReturn($definition)
+        ;
 
         $this->extension->load($configs, $container);
     }
@@ -277,9 +273,16 @@ final class BotilkaExtensionTest extends TestCase
                 'default_messenger_config' => false,
             ],
         ]);
-        $container->expects($this->never())
-            ->method('registerForAutoconfiguration');
+        $container->expects(self::never())
+            ->method('registerForAutoconfiguration')
+        ;
 
         $this->extension->load($configs, $container);
+    }
+
+    private function addContainerBuilderDefaultCalls(ObjectProphecy $containerBuilderProphecy): void
+    {
+        $containerBuilderProphecy->setParameter('botilka.bridge.api_platform', false)->shouldBeCalled();
+        $containerBuilderProphecy->setParameter('botilka.messenger.doctrine_transaction_middleware', false)->shouldBeCalled();
     }
 }

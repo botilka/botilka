@@ -22,7 +22,7 @@ final class UuidDenormalizerTest extends TestCase
     /** @dataProvider supportsDenormalizationProvider */
     public function testSupportsDenormalization(bool $expected, string $type): void
     {
-        $this->assertSame($expected, $this->denormalizer->supportsDenormalization('foo', $type));
+        self::assertSame($expected, $this->denormalizer->supportsDenormalization('foo', $type));
     }
 
     public function supportsDenormalizationProvider(): array
@@ -35,13 +35,13 @@ final class UuidDenormalizerTest extends TestCase
 
     public function testHasCacheableSupportsMethod(): void
     {
-        $this->assertTrue($this->denormalizer->hasCacheableSupportsMethod());
+        self::assertTrue($this->denormalizer->hasCacheableSupportsMethod());
     }
 
     public function testDenormalizeValid(): void
     {
         $uuid = Uuid::uuid4();
-        $this->assertTrue($uuid->equals($this->denormalizer->denormalize($uuid->toString(), UuidInterface::class)));
+        self::assertTrue($uuid->equals($this->denormalizer->denormalize($uuid->toString(), UuidInterface::class)));
     }
 
     /**

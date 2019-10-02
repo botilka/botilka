@@ -17,7 +17,7 @@ final class StoreInitializeCommandTest extends TestCase
     {
         $command = new StoreInitializeCommand();
 
-        $this->assertSame('botilka:store:initialize', $command->getName());
+        self::assertSame('botilka:store:initialize', $command->getName());
     }
 
     public function testExecuteNoInitializer(): void
@@ -30,15 +30,15 @@ final class StoreInitializeCommandTest extends TestCase
 
         $command->run($input, $output);
         $stdout = $output->fetch();
-        $this->assertContains('[WARNING] No initializer found.', $stdout);
+        self::assertContains('[WARNING] No initializer found.', $stdout);
     }
 
     /** @dataProvider executeProvider */
     public function testExecuteSuccess(bool $force): void
     {
         $initializer = $this->createMock(StoreInitializer::class);
-        $initializer->expects($this->once())->method('initialize');
-        $initializer->expects($this->once())->method('getType')->willReturn('foo');
+        $initializer->expects(self::once())->method('initialize');
+        $initializer->expects(self::once())->method('getType')->willReturn('foo');
 
         $command = new StoreInitializeCommand([$initializer,  new DummyEventStore()]);
 
@@ -48,8 +48,8 @@ final class StoreInitializeCommandTest extends TestCase
 
         $command->run($input, $output);
         $stdout = $output->fetch();
-        $this->assertContains('Using:', $stdout);
-        $this->assertContains('[OK] Finished.', $stdout);
+        self::assertContains('Using:', $stdout);
+        self::assertContains('[OK] Finished.', $stdout);
     }
 
     public function executeProvider(): array
@@ -64,9 +64,10 @@ final class StoreInitializeCommandTest extends TestCase
     public function testExecuteRuntimeException(bool $force): void
     {
         $initializer = $this->createMock(StoreInitializer::class);
-        $initializer->expects($this->once())->method('initialize')
-            ->willThrowException(new \RuntimeException('Cant\t touch this.'));
-        $initializer->expects($this->once())->method('getType')->willReturn('foo');
+        $initializer->expects(self::once())->method('initialize')
+            ->willThrowException(new \RuntimeException('Cant\t touch this.'))
+        ;
+        $initializer->expects(self::once())->method('getType')->willReturn('foo');
 
         $command = new StoreInitializeCommand([$initializer]);
 
@@ -77,6 +78,6 @@ final class StoreInitializeCommandTest extends TestCase
         $command->run($input, $output);
         $stdout = $output->fetch();
 
-        $this->assertContains('[ERROR]', $stdout);
+        self::assertContains('[ERROR]', $stdout);
     }
 }

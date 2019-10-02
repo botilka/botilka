@@ -31,7 +31,7 @@ final class CommandResourceClassEventListenerTest extends TestCase
 
     public function testGetSubscribedEvents(): void
     {
-        $this->assertSame([
+        self::assertSame([
             KernelEvents::REQUEST => [
                 ['onKernelRequest', EventPriorities::PRE_DESERIALIZE],
             ],
@@ -42,11 +42,12 @@ final class CommandResourceClassEventListenerTest extends TestCase
     {
         $event = $this->getEvent();
 
-        $this->descriptionContainer->expects($this->never())
-            ->method('get');
+        $this->descriptionContainer->expects(self::never())
+            ->method('get')
+        ;
 
         $this->listener->onKernelRequest($event);
-        $this->assertNull($event->getRequest()->attributes->get('_api_resource_class'));
+        self::assertNull($event->getRequest()->attributes->get('_api_resource_class'));
     }
 
     /** @dataProvider onKernelRequestCommandNotExistingProvider */
@@ -55,14 +56,15 @@ final class CommandResourceClassEventListenerTest extends TestCase
         $event = $this->getEvent(['_api_collection_operation_name' => $collectionOperationName]);
 
         if (null !== $collectionOperationName) {
-            $this->descriptionContainer->expects($this->once())
+            $this->descriptionContainer->expects(self::once())
                 ->method('has')
                 ->with($collectionOperationName)
-                ->willReturn(false);
+                ->willReturn(false)
+            ;
         }
 
         $this->listener->onKernelRequest($event);
-        $this->assertNull($event->getRequest()->attributes->get('_api_resource_class'));
+        self::assertNull($event->getRequest()->attributes->get('_api_resource_class'));
     }
 
     public function onKernelRequestCommandNotExistingProvider(): array
@@ -84,7 +86,7 @@ final class CommandResourceClassEventListenerTest extends TestCase
 
         $listener = new CommandResourceClassEventListener($descriptionContainer);
         $listener->onKernelRequest($event);
-        $this->assertSame('Foo\\Bar', $event->getRequest()->attributes->get('_api_resource_class'));
+        self::assertSame('Foo\\Bar', $event->getRequest()->attributes->get('_api_resource_class'));
     }
 
     private function getEvent(array $attributes = [], string $method = Request::METHOD_POST): RequestEvent

@@ -6,12 +6,12 @@ namespace Botilka\Tests\Bridge\ApiPlatform\Action;
 
 use ApiPlatform\Core\Bridge\Symfony\Validator\Exception\ValidationException;
 use Botilka\Application\Command\CommandBus;
+use Botilka\Application\Command\CommandResponse;
 use Botilka\Bridge\ApiPlatform\Action\CommandEntrypointAction;
 use Botilka\Bridge\ApiPlatform\Command\CommandResponseAdapter;
 use Botilka\Bridge\ApiPlatform\Description\DescriptionContainer;
 use Botilka\Bridge\ApiPlatform\Hydrator\CommandHydratorInterface;
 use Botilka\Bridge\ApiPlatform\Resource\Command;
-use Botilka\Application\Command\CommandResponse;
 use Botilka\Tests\Fixtures\Application\Command\SimpleCommand;
 use Botilka\Tests\Fixtures\Domain\StubEvent;
 use PHPUnit\Framework\TestCase;
@@ -31,24 +31,26 @@ final class CommandEntrypointActionTest extends TestCase
         $commandResource = new Command('foo', ['foo' => 'baz']);
         $command = new SimpleCommand('foo', 3210);
 
-        $hydrator->expects($this->once())
+        $hydrator->expects(self::once())
             ->method('hydrate')
             ->with($commandResource->getPayload(), 'Foo\\Bar')
-            ->willReturn($command);
+            ->willReturn($command)
+        ;
 
         $commandResponse = new CommandResponse('foo', new StubEvent(123));
 
-        $commandBus->expects($this->once())
+        $commandBus->expects(self::once())
             ->method('dispatch')
             ->with($command)
-            ->willReturn($commandResponse);
+            ->willReturn($commandResponse)
+        ;
 
         $action = new CommandEntrypointAction($commandBus, $descriptionContainer, $hydrator);
 
         $response = $action($commandResource);
 
-        $this->assertInstanceOf(CommandResponseAdapter::class, $response);
-        $this->assertSame('foo', $response->getId());
+        self::assertInstanceOf(CommandResponseAdapter::class, $response);
+        self::assertSame('foo', $response->getId());
     }
 
     /**
@@ -63,8 +65,9 @@ final class CommandEntrypointActionTest extends TestCase
 
         $commandResource = new Command('foo', ['foo' => 'baz']);
 
-        $commandBus->expects($this->never())
-            ->method('dispatch');
+        $commandBus->expects(self::never())
+            ->method('dispatch')
+        ;
 
         $action = new CommandEntrypointAction($commandBus, $descriptionContainer, $hydrator);
 
@@ -79,10 +82,11 @@ final class CommandEntrypointActionTest extends TestCase
         $commandBus = $this->createMock(CommandBus::class);
         $hydrator = $this->createMock(CommandHydratorInterface::class);
 
-        $hydrator->expects($this->once())
+        $hydrator->expects(self::once())
             ->method('hydrate')
             ->with(['foo' => 'baz'], 'Foo\\Bar')
-            ->willThrowException(new ValidationException($this->createMock(ConstraintViolationListInterface::class)));
+            ->willThrowException(new ValidationException($this->createMock(ConstraintViolationListInterface::class)))
+        ;
 
         $descriptionContainer = new DescriptionContainer(['foo' => [
             'class' => 'Foo\\Bar',
@@ -91,8 +95,9 @@ final class CommandEntrypointActionTest extends TestCase
 
         $commandResource = new Command('foo', ['foo' => 'baz']);
 
-        $commandBus->expects($this->never())
-            ->method('dispatch');
+        $commandBus->expects(self::never())
+            ->method('dispatch')
+        ;
 
         $action = new CommandEntrypointAction($commandBus, $descriptionContainer, $hydrator);
 

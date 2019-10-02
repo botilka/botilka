@@ -26,31 +26,31 @@ final class ManagedEventTest extends TestCase
 
     public function testGetId()
     {
-        $this->assertSame('foo', $this->managedEvent->getId());
+        self::assertSame('foo', $this->managedEvent->getId());
     }
 
     public function testGetRecordedOn(): void
     {
-        $this->assertSame($this->recordedOn, $this->managedEvent->getRecordedOn());
+        self::assertSame($this->recordedOn, $this->managedEvent->getRecordedOn());
     }
 
     public function testGetMetadata(): void
     {
-        $this->assertSame(['foo' => 'bar'], $this->managedEvent->getMetadata());
+        self::assertSame(['foo' => 'bar'], $this->managedEvent->getMetadata());
     }
 
     public function testGetPlayhead(): void
     {
-        $this->assertSame(1337, $this->managedEvent->getPlayhead());
+        self::assertSame(1337, $this->managedEvent->getPlayhead());
     }
 
     public function testGetDomainEvent(): void
     {
-        $this->assertSame($this->domainEvent, $this->managedEvent->getDomainEvent());
+        self::assertSame($this->domainEvent, $this->managedEvent->getDomainEvent());
     }
 
     public function testGetDomain(): void
     {
-        $this->assertSame('Foo\\Domain', $this->managedEvent->getDomain());
+        self::assertSame('Foo\\Domain', $this->managedEvent->getDomain());
     }
 }

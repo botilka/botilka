@@ -31,13 +31,14 @@ final class DefaultEventSourcedRepositoryTest extends TestCase
     public function testLoad(): void
     {
         $events = [new StubEvent(1), new StubEvent(2)];
-        $this->eventStore->expects($this->once())
+        $this->eventStore->expects(self::once())
             ->method('load')
             ->with('foo')
-            ->willReturn($events);
+            ->willReturn($events)
+        ;
 
         $aggregateRoot = $this->repository->load('foo');
-        $this->assertSame(1, $aggregateRoot->getPlayhead());
+        self::assertSame(1, $aggregateRoot->getPlayhead());
     }
 
     public function testSave(): void
@@ -47,9 +48,10 @@ final class DefaultEventSourcedRepositoryTest extends TestCase
 
         $commandResponse = new EventSourcedCommandResponse('foo', $event, $aggregateRoot->getPlayhead(), 'foomain', $aggregateRoot);
 
-        $this->eventStore->expects($this->once())
+        $this->eventStore->expects(self::once())
             ->method('append')
-            ->with('foo', 0, \get_class($event), $event, null, $this->isInstanceOf(\DateTimeImmutable::class), 'foomain');
+            ->with('foo', 0, \get_class($event), $event, null, self::isInstanceOf(\DateTimeImmutable::class), 'foomain')
+        ;
 
         $this->repository->save($commandResponse);
     }
