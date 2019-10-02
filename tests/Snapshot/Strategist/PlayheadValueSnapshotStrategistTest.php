@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
 
 final class PlayheadValueSnapshotStrategistTest extends TestCase
 {
-    public function tesGetEachPlayheadDefault()
+    public function testGetEachPlayheadDefault()
     {
         $strategist = new PlayheadValueSnapshotStrategist();
         self::assertSame(5, $strategist->getEachPlayhead());
