@@ -41,7 +41,9 @@ final class UuidDenormalizerTest extends TestCase
     public function testDenormalizeValid(): void
     {
         $uuid = Uuid::uuid4();
-        self::assertTrue($uuid->equals($this->denormalizer->denormalize($uuid->toString(), UuidInterface::class)));
+        /** @var object $denormalizedUuid */
+        $denormalizedUuid = $this->denormalizer->denormalize($uuid->toString(), UuidInterface::class);
+        self::assertTrue($uuid->equals($denormalizedUuid));
     }
 
     /**
