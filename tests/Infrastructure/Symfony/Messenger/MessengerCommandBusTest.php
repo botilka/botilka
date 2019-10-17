@@ -18,17 +18,6 @@ use Symfony\Component\Messenger\Stamp\StampInterface;
 
 final class MessengerCommandBusTest extends TestCase
 {
-    private function getMessengerCommandBus(Command $command, ?CommandResponse $commandResponse, StampInterface ...$stamps): MessengerCommandBus
-    {
-        $messageBus = $this->createMock(MessageBusInterface::class);
-        $messageBus->expects($this->once())
-            ->method('dispatch')
-            ->with($command)
-            ->willReturn(new Envelope($command, \array_values($stamps)));
-
-        return new MessengerCommandBus($messageBus);
-    }
-
     public function testDispatchHandled(): void
     {
         $command = new SimpleCommand('foo', 132);
@@ -38,8 +27,8 @@ final class MessengerCommandBusTest extends TestCase
         $bus = $this->getMessengerCommandBus($command, $commandResponse, $stamp);
 
         $result = $bus->dispatch($command);
-        $this->assertSame($commandResponse, $result);
-        $this->assertSame($commandResponse->getId(), $result->getId());
+        self::assertSame($commandResponse, $result);
+        self::assertSame($commandResponse->getId(), $result->getId());
     }
 
     public function testDispatchSent(): void
@@ -51,7 +40,7 @@ final class MessengerCommandBusTest extends TestCase
         $bus = $this->getMessengerCommandBus($command, null, $stamp);
 
         $result = $bus->dispatch($command);
-        $this->assertNull($result);
+        self::assertNull($result);
     }
 
     /** @dataProvider dispatchLogicExceptionProvider */
@@ -74,5 +63,17 @@ final class MessengerCommandBusTest extends TestCase
             }],
             'too many handlers' => [new HandledStamp('FooFoo', 'foo'), new HandledStamp('BarBar', 'bar')],
         ];
+    }
+
+    private function getMessengerCommandBus(Command $command, ?CommandResponse $commandResponse, StampInterface ...$stamps): MessengerCommandBus
+    {
+        $messageBus = $this->createMock(MessageBusInterface::class);
+        $messageBus->expects(self::once())
+            ->method('dispatch')
+            ->with($command)
+            ->willReturn(new Envelope($command, \array_values($stamps)))
+        ;
+
+        return new MessengerCommandBus($messageBus);
     }
 }

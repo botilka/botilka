@@ -27,7 +27,94 @@ class SnapshotStoreDoctrineTest extends TestCase
         $this->connection = $this->createMock(Connection::class);
         $this->serializer = $this->createMock(SerializerInterface::class);
         $this->snapshotStore = new SnapshotStoreDoctrine($this->connection, 'snapshot_store', $this->serializer);
-        $this->assertInstanceOf(SnapshotStore::class, $this->snapshotStore);
+        self::assertInstanceOf(SnapshotStore::class, $this->snapshotStore);
+    }
+
+    public function testSnapshot()
+    {
+        $aggregateRoot = new StubEventSourcedAggregateRoot();
+
+        $stmtDelete = $this->createMock(Statement::class);
+        $stmtInsert = $this->createMock(Statement::class);
+
+        $this->connection->expects(self::exactly(2))
+            ->method('prepare')
+            ->withConsecutive(['DELETE FROM snapshot_store WHERE id = :id'], ['INSERT INTO snapshot_store VALUES (:id, :playhead, :type, :payload)'])
+            ->willReturnOnConsecutiveCalls($stmtDelete, $stmtInsert)
+        ;
+
+        $stmtDelete->expects(self::once())
+            ->method('execute')
+            ->with(['id' => $aggregateRoot->getAggregateRootId()])
+        ;
+
+        $this->serializer->expects(self::once())
+            ->method('serialize')
+            ->with($aggregateRoot, 'json')
+            ->willReturn('foobarbaz')
+        ;
+
+        $stmtInsert->expects(self::once())
+            ->method('execute')
+            ->with([
+                'id' => $aggregateRoot->getAggregateRootId(),
+                'type' => \get_class($aggregateRoot),
+                'playhead' => $aggregateRoot->getPlayhead(),
+                'payload' => 'foobarbaz',
+            ])
+        ;
+
+        $this->snapshotStore->snapshot($aggregateRoot);
+    }
+
+    public function testLoadSuccess()
+    {
+        $this->connection->expects(self::once())
+            ->method('prepare')
+            ->with('SELECT type, payload FROM snapshot_store WHERE id = :id')
+            ->willReturn($stmt = $this->getStatement(true))
+        ;
+
+        $stmt->expects(self::once())
+            ->method('execute')
+            ->with(['id' => 'foo'])
+        ;
+
+        $aggregateRoot = new StubEventSourcedAggregateRoot();
+
+        $this->serializer->expects(self::once())
+            ->method('deserialize')
+            ->with(\json_encode(['foo' => 'bar']), 'Foo\\Bar', 'json')
+            ->willReturn($aggregateRoot)
+        ;
+
+        self::assertSame($aggregateRoot, $this->snapshotStore->load('foo'));
+    }
+
+    /**
+     * @expectedException \Botilka\Snapshot\SnapshotNotFoundException
+     * @expectedExceptionMessage No snapshot found for foo.
+     */
+    public function testLoadFail()
+    {
+        $this->connection->expects(self::once())
+            ->method('prepare')
+            ->with('SELECT type, payload FROM snapshot_store WHERE id = :id')
+            ->willReturn($stmt = $this->getStatement(false))
+        ;
+
+        $stmt->expects(self::once())
+            ->method('execute')
+            ->with(['id' => 'foo'])
+        ;
+
+        $aggregateRoot = new StubEventSourcedAggregateRoot();
+
+        $this->serializer->expects(self::never())
+            ->method('deserialize')
+        ;
+
+        $this->snapshotStore->load('foo');
     }
 
     private function getStatement(bool $withResult): MockObject
@@ -38,87 +125,11 @@ class SnapshotStoreDoctrineTest extends TestCase
             ['type' => 'Foo\\Bar', 'payload' => \json_encode(['foo' => 'bar'])]
         : false;
 
-        $stmt->expects($this->once())
+        $stmt->expects(self::once())
             ->method('fetch')
-            ->willReturn($result);
+            ->willReturn($result)
+        ;
 
         return $stmt;
-    }
-
-    public function testSnapshot()
-    {
-        $aggregateRoot = new StubEventSourcedAggregateRoot();
-
-        $stmtDelete = $this->createMock(Statement::class);
-        $stmtInsert = $this->createMock(Statement::class);
-
-        $this->connection->expects($this->exactly(2))
-            ->method('prepare')
-            ->withConsecutive(['DELETE FROM snapshot_store WHERE id = :id'], ['INSERT INTO snapshot_store VALUES (:id, :playhead, :type, :payload)'])
-            ->willReturnOnConsecutiveCalls($stmtDelete, $stmtInsert);
-
-        $stmtDelete->expects($this->once())
-            ->method('execute')
-            ->with(['id' => $aggregateRoot->getAggregateRootId()]);
-
-        $this->serializer->expects($this->once())
-            ->method('serialize')
-            ->with($aggregateRoot, 'json')
-            ->willReturn('foobarbaz');
-
-        $stmtInsert->expects($this->once())
-            ->method('execute')
-            ->with([
-                'id' => $aggregateRoot->getAggregateRootId(),
-                'type' => \get_class($aggregateRoot),
-                'playhead' => $aggregateRoot->getPlayhead(),
-                'payload' => 'foobarbaz',
-            ]);
-
-        $this->snapshotStore->snapshot($aggregateRoot);
-    }
-
-    public function testLoadSuccess()
-    {
-        $this->connection->expects($this->once())
-            ->method('prepare')
-            ->with('SELECT type, payload FROM snapshot_store WHERE id = :id')
-            ->willReturn($stmt = $this->getStatement(true));
-
-        $stmt->expects($this->once())
-            ->method('execute')
-            ->with(['id' => 'foo']);
-
-        $aggregateRoot = new StubEventSourcedAggregateRoot();
-
-        $this->serializer->expects($this->once())
-            ->method('deserialize')
-            ->with(\json_encode(['foo' => 'bar']), 'Foo\\Bar', 'json')
-            ->willReturn($aggregateRoot);
-
-        $this->assertSame($aggregateRoot, $this->snapshotStore->load('foo'));
-    }
-
-    /**
-     * @expectedException \Botilka\Snapshot\SnapshotNotFoundException
-     * @expectedExceptionMessage No snapshot found for foo.
-     */
-    public function testLoadFail()
-    {
-        $this->connection->expects($this->once())
-            ->method('prepare')
-            ->with('SELECT type, payload FROM snapshot_store WHERE id = :id')
-            ->willReturn($stmt = $this->getStatement(false));
-
-        $stmt->expects($this->once())
-            ->method('execute')
-            ->with(['id' => 'foo']);
-
-        $aggregateRoot = new StubEventSourcedAggregateRoot();
-
-        $this->serializer->expects($this->never())
-            ->method('deserialize');
-
-        $this->snapshotStore->load('foo');
     }
 }

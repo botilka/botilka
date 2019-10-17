@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Botilka\Tests\app;
 
-use Symfony\Component\HttpKernel\Kernel;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\Config\Loader\LoaderInterface;
-use Symfony\Component\Routing\RouteCollectionBuilder;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
+use Symfony\Component\Config\Loader\LoaderInterface;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\HttpKernel\Kernel;
+use Symfony\Component\Routing\RouteCollectionBuilder;
 
 final class AppKernel extends Kernel
 {
@@ -32,6 +32,16 @@ final class AppKernel extends Kernel
         return $this->volatileDir.'/logs/'.$this->environment;
     }
 
+    public function registerBundles()
+    {
+        return [
+            new \Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
+            new \Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
+//            new \ApiPlatform\Core\Bridge\Symfony\Bundle\ApiPlatformBundle(),
+            new \Botilka\Bridge\Symfony\Bundle\BotilkaBundle(),
+        ];
+    }
+
     protected function configureRoutes(RouteCollectionBuilder $routes)
     {
     }
@@ -41,15 +51,5 @@ final class AppKernel extends Kernel
         $c->setParameter('kernel.project_dir', __DIR__);
         $loader->load(__DIR__.'/config/config.yaml');
         $loader->load(__DIR__.'/config/services_test.yaml');
-    }
-
-    public function registerBundles()
-    {
-        return [
-            new \Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
-            new \Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
-//            new \ApiPlatform\Core\Bridge\Symfony\Bundle\ApiPlatformBundle(),
-            new \Botilka\Bridge\Symfony\Bundle\BotilkaBundle(),
-        ];
     }
 }

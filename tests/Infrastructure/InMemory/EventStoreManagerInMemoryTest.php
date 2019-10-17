@@ -16,7 +16,7 @@ final class EventStoreManagerInMemoryTest extends TestCase
         $eventStore = EventStoreInMemoryFactory::create();
         $manager = new EventStoreManagerInMemory($eventStore);
 
-        $this->assertCount($expectedCount, $manager->loadByAggregateRootId($id, $from, $to));
+        self::assertCount($expectedCount, $manager->loadByAggregateRootId($id, $from, $to));
     }
 
     public function loadByAggregateRootIdProvider(): array
@@ -37,7 +37,7 @@ final class EventStoreManagerInMemoryTest extends TestCase
         $eventStore = EventStoreInMemoryFactory::create();
         $manager = new EventStoreManagerInMemory($eventStore);
 
-        $this->assertCount($shouldBeCount, $manager->loadByDomain($domain));
+        self::assertCount($shouldBeCount, $manager->loadByDomain($domain));
     }
 
     public function loadByDomainProvider(): array
@@ -54,7 +54,7 @@ final class EventStoreManagerInMemoryTest extends TestCase
         $eventStore = EventStoreInMemoryFactory::create();
         $manager = new EventStoreManagerInMemory($eventStore);
 
-        $this->assertSame(['foo', 'bar', 'faz', 'baz'], $manager->getAggregateRootIds());
+        self::assertSame(['foo', 'bar', 'faz', 'baz'], $manager->getAggregateRootIds());
     }
 
     public function testGetDomains(): void
@@ -62,6 +62,6 @@ final class EventStoreManagerInMemoryTest extends TestCase
         $eventStore = EventStoreInMemoryFactory::create();
         $manager = new EventStoreManagerInMemory($eventStore);
 
-        $this->assertSame(['FooBar\\Domain', 'FazBaz\\Domain'], $manager->getDomains());
+        self::assertSame(['FooBar\\Domain', 'FazBaz\\Domain'], $manager->getDomains());
     }
 }

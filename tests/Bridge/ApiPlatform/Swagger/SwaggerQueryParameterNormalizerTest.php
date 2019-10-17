@@ -14,7 +14,7 @@ final class SwaggerQueryParameterNormalizerTest extends TestCase
     {
         $normalizer = new SwaggerQueryParameterNormalizer();
 
-        $this->assertSame($expected, $normalizer->normalize($payload));
+        self::assertSame($expected, $normalizer->normalize($payload));
     }
 
     public function normalizeProvider(): array

@@ -22,7 +22,7 @@ final class DescriptionContainerTest extends TestCase
 
     public function testGetFound(): void
     {
-        $this->assertSame(['class' => 'Foo\\Bar', 'payload' => ['some' => 'string']], $this->descriptionContainer->get('foo'));
+        self::assertSame(['class' => 'Foo\\Bar', 'payload' => ['some' => 'string']], $this->descriptionContainer->get('foo'));
     }
 
     /**
@@ -37,7 +37,7 @@ final class DescriptionContainerTest extends TestCase
     /** @dataProvider hasProvider */
     public function testHas(bool $expected, string $name): void
     {
-        $this->assertSame($expected, $this->descriptionContainer->has($name));
+        self::assertSame($expected, $this->descriptionContainer->has($name));
     }
 
     public function hasProvider(): array

@@ -30,19 +30,20 @@ final class DefaultProjectionistTest extends TestCase
         $event = new StubEvent(42);
 
         $projector = new StubProjector();
-        $this->assertFalse($projector->onStubEventPlayed);
+        self::assertFalse($projector->onStubEventPlayed);
 
         $projectionist = new DefaultProjectionist($this->logger, [$projector]);
-        $this->assertInstanceOf(Projectionist::class, $projectionist);
+        self::assertInstanceOf(Projectionist::class, $projectionist);
 
         $projection = new Projection($event, $context);
 
-        $this->logger->expects($expectedSkippedNoticeCall ? $this->once() : $this->never())
+        $this->logger->expects($expectedSkippedNoticeCall ? self::once() : self::never())
             ->method('notice')
-            ->with(\sprintf('Projection %s::onStubEvent skipped.', StubProjector::class));
+            ->with(\sprintf('Projection %s::onStubEvent skipped.', StubProjector::class))
+        ;
 
         $projectionist->play($projection);
-        $this->assertSame($expectedProjectionPlayed, $projector->onStubEventPlayed);
+        self::assertSame($expectedProjectionPlayed, $projector->onStubEventPlayed);
     }
 
     public function playMatchingProvider(): array
@@ -58,9 +59,10 @@ final class DefaultProjectionistTest extends TestCase
     {
         $event = $this->createMock(Event::class);
 
-        $this->logger->expects($this->once())
+        $this->logger->expects(self::once())
             ->method('notice')
-            ->with(\sprintf('No projector handler for %s.', \get_class($event)));
+            ->with(\sprintf('No projector handler for %s.', \get_class($event)))
+        ;
 
         $projectionist = new DefaultProjectionist($this->logger, [new StubProjector()]);
 
@@ -74,12 +76,12 @@ final class DefaultProjectionistTest extends TestCase
         $event = new StubEvent(42);
 
         $projector = new StubProjector();
-        $this->assertFalse($projector->onStubEventPlayed);
+        self::assertFalse($projector->onStubEventPlayed);
 
         $projectionist = new DefaultProjectionist($this->logger, [$projector]);
 
         $projectionist->playForEvent($event);
 
-        $this->assertTrue($projector->onStubEventPlayed);
+        self::assertTrue($projector->onStubEventPlayed);
     }
 }

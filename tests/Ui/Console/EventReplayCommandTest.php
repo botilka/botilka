@@ -39,20 +39,22 @@ final class EventReplayCommandTest extends KernelTestCase
 
     public function testName(): void
     {
-        $this->assertSame('botilka:event_store:replay', $this->command->getName());
+        self::assertSame('botilka:event_store:replay', $this->command->getName());
     }
 
     /** @dataProvider executeIdProvider */
     public function testExecuteId(string $value, ?int $from, ?int $to): void
     {
-        $this->eventStoreManager->expects($this->once())
+        $this->eventStoreManager->expects(self::once())
             ->method('loadByAggregateRootId')
             ->with($value, $from, $to)
-            ->willReturn($this->events);
+            ->willReturn($this->events)
+        ;
 
-        $this->eventBus->expects($this->exactly(\count($this->events)))
+        $this->eventBus->expects(self::exactly(\count($this->events)))
             ->method('dispatch')
-            ->withConsecutive(...$this->events);
+            ->withConsecutive(...$this->events)
+        ;
 
         $input = new ArrayInput(['--id' => true, 'value' => $value, '--from' => $from, '--to' => $to]);
         $this->command->run($input, new BufferedOutput());
@@ -69,14 +71,16 @@ final class EventReplayCommandTest extends KernelTestCase
 
     public function testExecuteDomain(): void
     {
-        $this->eventStoreManager->expects($this->once())
+        $this->eventStoreManager->expects(self::once())
             ->method('loadByDomain')
             ->with('Foo\\Domain')
-            ->willReturn($this->events);
+            ->willReturn($this->events)
+        ;
 
-        $this->eventBus->expects($this->exactly(\count($this->events)))
+        $this->eventBus->expects(self::exactly(\count($this->events)))
             ->method('dispatch')
-            ->withConsecutive(...$this->events);
+            ->withConsecutive(...$this->events)
+        ;
 
         $input = new ArrayInput(['--domain' => true, 'value' => 'Foo\\Domain']);
         $this->command->run($input, new BufferedOutput());

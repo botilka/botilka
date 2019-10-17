@@ -24,35 +24,12 @@ abstract class AbstractMongoDBStoreInitializerTest extends AbstractKernelTestCas
     /** @var string */
     protected $type;
 
-    abstract protected function getInitializer(Client $client): StoreInitializer;
-
     public function initializeProvider(): array
     {
         return [
             [true],
             [false],
         ];
-    }
-
-    protected function assertInitialize(bool $force, array $createIndexParams): void
-    {
-        $collection = $this->createMock(Collection::class);
-        $collection->expects($this->once())
-            ->method('createIndex')
-            ->with($createIndexParams, ['unique' => true]);
-
-        $database = $this->createMock(Database::class);
-        $database->expects($this->once())->method('selectCollection')
-            ->with($this->collectionName)->willReturn($collection);
-        $database->expects($force ? $this->once() : $this->never())->method('dropCollection')
-            ->with($this->collectionName)->willReturn($collection);
-
-        $client = $this->createMock(Client::class);
-        $client->expects($this->once())->method('selectDatabase')
-            ->willReturn($database);
-
-        $initializer = $this->getInitializer($client);
-        $initializer->initialize($force);
     }
 
     /**
@@ -66,7 +43,7 @@ abstract class AbstractMongoDBStoreInitializerTest extends AbstractKernelTestCas
         $client->selectDatabase($this->database)->dropCollection($this->collectionName);
         $initializer = $this->getInitializer($client);
         $initializer->initialize();
-        $this->assertTrue(true);
+        self::assertTrue(true);
 
         $this->expectExceptionMessage("Collection '{$this->collectionName}' already exists.");
         $initializer->initialize();
@@ -82,7 +59,7 @@ abstract class AbstractMongoDBStoreInitializerTest extends AbstractKernelTestCas
         $initializer->initialize();
         $initializer->initialize(true);
         $initializer->initialize(true);
-        $this->assertTrue(true);
+        self::assertTrue(true);
     }
 
     /**
@@ -91,12 +68,14 @@ abstract class AbstractMongoDBStoreInitializerTest extends AbstractKernelTestCas
     public function testInitializeCommandException(): void
     {
         $database = $this->createMock(Database::class);
-        $database->expects($this->once())->method('createCollection')
-            ->willThrowException(new \MongoDB\Driver\Exception\CommandException("Collection '{$this->collectionName}' already exists."));
+        $database->expects(self::once())->method('createCollection')
+            ->willThrowException(new \MongoDB\Driver\Exception\CommandException("Collection '{$this->collectionName}' already exists."))
+        ;
 
         $client = $this->createMock(Client::class);
-        $client->expects($this->once())->method('selectDatabase')
-            ->willReturn($database);
+        $client->expects(self::once())->method('selectDatabase')
+            ->willReturn($database)
+        ;
 
         $this->expectExceptionMessage("Collection '{$this->collectionName}' already exists.");
 
@@ -109,6 +88,31 @@ abstract class AbstractMongoDBStoreInitializerTest extends AbstractKernelTestCas
         $client = $this->createMock(Client::class);
         $initializer = $this->getInitializer($client);
 
-        $this->assertSame($this->type, $initializer->getType());
+        self::assertSame($this->type, $initializer->getType());
+    }
+
+    abstract protected function getInitializer(Client $client): StoreInitializer;
+
+    protected function assertInitialize(bool $force, array $createIndexParams): void
+    {
+        $collection = $this->createMock(Collection::class);
+        $collection->expects(self::once())
+            ->method('createIndex')
+            ->with($createIndexParams, ['unique' => true])
+        ;
+
+        $database = $this->createMock(Database::class);
+        $database->expects(self::once())->method('selectCollection')
+            ->with($this->collectionName)->willReturn($collection);
+        $database->expects($force ? self::once() : self::never())->method('dropCollection')
+            ->with($this->collectionName)->willReturn($collection);
+
+        $client = $this->createMock(Client::class);
+        $client->expects(self::once())->method('selectDatabase')
+            ->willReturn($database)
+        ;
+
+        $initializer = $this->getInitializer($client);
+        $initializer->initialize($force);
     }
 }

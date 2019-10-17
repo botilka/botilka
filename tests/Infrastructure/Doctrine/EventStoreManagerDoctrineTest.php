@@ -32,51 +32,35 @@ final class EventStoreManagerDoctrineTest extends TestCase
         $this->manager = new EventStoreManagerDoctrine($this->connection, $this->denormarlizer, $this->table);
     }
 
-    private function getRows(): array
-    {
-        $rows = ['foo' => [], 'bar' => []];
-        foreach ($rows as $rowId => $subRows) {
-            for ($i = 0; $i < ('foo' === $rowId ? 10 : 5); ++$i) {
-                $rows[$rowId][] = [
-                    'id' => 'foo',
-                    'playhead' => $i,
-                    'type' => StubEvent::class,
-                    'payload' => \json_encode(['foo' => $i]),
-                    'metadata' => \json_encode(null),
-                    'recorded_on' => (new \DateTimeImmutable('2018-11-14 19:42:'.($i * 2).'.1234'))->format('Y-m-d H:i:s.u'),
-                    'domain' => 'Foo\\Domain',
-                ];
-            }
-        }
-
-        return $rows;
-    }
-
     /** @dataProvider loadByAggregateRootIdProvider */
-    public function testLoadByAggregateRootId(string $id, ?int $from = null, ?int $to = null, int $shouldBeCount, string $queryPart, array $parameters): void
+    public function testLoadByAggregateRootId(string $id, ?int $from, ?int $to, int $shouldBeCount, string $queryPart, array $parameters): void
     {
         $rows = $this->getRows();
 
         $expected = \array_slice($rows[$id], null !== $from ? $from : 0, null !== $to ? $to - $from : null);
 
         $stmt = $this->createMock(Statement::class);
-        $stmt->expects($this->once())->method('execute')
-            ->with($parameters);
-        $stmt->expects($this->once())->method('fetchAll')
-            ->willReturn($expected);
+        $stmt->expects(self::once())->method('execute')
+            ->with($parameters)
+        ;
+        $stmt->expects(self::once())->method('fetchAll')
+            ->willReturn($expected)
+        ;
 
-        $this->denormarlizer->expects($this->exactly(\count($expected)))
+        $this->denormarlizer->expects(self::exactly(\count($expected)))
             ->method('denormalize')
-            ->willReturn($this->createMock(Event::class));
+            ->willReturn($this->createMock(Event::class))
+        ;
 
         $query = \trim("SELECT * FROM {$this->table} WHERE id = :id ".$queryPart).' ORDER BY playhead';
-        $this->connection->expects($this->once())->method('prepare')
+        $this->connection->expects(self::once())->method('prepare')
             ->with($query)
-            ->willReturn($stmt);
+            ->willReturn($stmt)
+        ;
 
         $events = $this->manager->loadByAggregateRootId($id, $from, $to);
 
-        $this->assertCount($shouldBeCount, $expected);
+        self::assertCount($shouldBeCount, $expected);
     }
 
     public function loadByAggregateRootIdProvider(): array
@@ -106,23 +90,27 @@ final class EventStoreManagerDoctrineTest extends TestCase
         ];
 
         $stmt = $this->createMock(Statement::class);
-        $stmt->expects($this->once())->method('execute')
-            ->with(['domain' => 'Foo\\Domain']);
-        $stmt->expects($this->once())->method('fetchAll')
-            ->willReturn($rows);
+        $stmt->expects(self::once())->method('execute')
+            ->with(['domain' => 'Foo\\Domain'])
+        ;
+        $stmt->expects(self::once())->method('fetchAll')
+            ->willReturn($rows)
+        ;
 
-        $this->denormarlizer->expects($this->once())
+        $this->denormarlizer->expects(self::once())
             ->method('denormalize')
-            ->willReturn($this->createMock(Event::class));
+            ->willReturn($this->createMock(Event::class))
+        ;
 
         $query = "SELECT * FROM {$this->table} WHERE domain = :domain ORDER BY playhead";
-        $this->connection->expects($this->once())->method('prepare')
+        $this->connection->expects(self::once())->method('prepare')
             ->with($query)
-            ->willReturn($stmt);
+            ->willReturn($stmt)
+        ;
 
         $events = $this->manager->loadByDomain('Foo\\Domain');
 
-        $this->assertCount(1, $events);
+        self::assertCount(1, $events);
     }
 
     /** @dataProvider getProvider */
@@ -135,15 +123,17 @@ final class EventStoreManagerDoctrineTest extends TestCase
         ];
 
         $stmt = $this->createMock(Statement::class);
-        $stmt->expects($this->once())->method('execute');
-        $stmt->expects($this->once())->method('fetchAll')
-            ->willReturn($rows);
+        $stmt->expects(self::once())->method('execute');
+        $stmt->expects(self::once())->method('fetchAll')
+            ->willReturn($rows)
+        ;
 
-        $this->connection->expects($this->once())->method('prepare')
-            ->with("SELECT DISTINCT $key FROM {$this->table}")
-            ->willReturn($stmt);
+        $this->connection->expects(self::once())->method('prepare')
+            ->with("SELECT DISTINCT {$key} FROM {$this->table}")
+            ->willReturn($stmt)
+        ;
 
-        $this->assertSame(['foo', 'bar', 'baz'], $this->manager->$method());
+        self::assertSame(['foo', 'bar', 'baz'], $this->manager->{$method}());
     }
 
     public function getProvider(): array
@@ -152,5 +142,25 @@ final class EventStoreManagerDoctrineTest extends TestCase
             ['id', 'getAggregateRootIds'],
             ['domain', 'getDomains'],
         ];
+    }
+
+    private function getRows(): array
+    {
+        $rows = ['foo' => [], 'bar' => []];
+        foreach ($rows as $rowId => $subRows) {
+            for ($i = 0; $i < ('foo' === $rowId ? 10 : 5); ++$i) {
+                $rows[$rowId][] = [
+                    'id' => 'foo',
+                    'playhead' => $i,
+                    'type' => StubEvent::class,
+                    'payload' => \json_encode(['foo' => $i]),
+                    'metadata' => \json_encode(null),
+                    'recorded_on' => (new \DateTimeImmutable('2018-11-14 19:42:'.($i * 2).'.1234'))->format('Y-m-d H:i:s.u'),
+                    'domain' => 'Foo\\Domain',
+                ];
+            }
+        }
+
+        return $rows;
     }
 }

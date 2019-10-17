@@ -19,36 +19,36 @@ final class EventTest extends TestCase
 
     public function testGetPlayhead(): void
     {
-        $this->assertSame(123, $this->event->getPlayhead());
+        self::assertSame(123, $this->event->getPlayhead());
     }
 
     public function testGetRecordedOn(): void
     {
-        $this->assertInstanceOf(\DateTimeImmutable::class, $this->event->getRecordedOn());
+        self::assertInstanceOf(\DateTimeImmutable::class, $this->event->getRecordedOn());
     }
 
     public function testGetType(): void
     {
-        $this->assertSame('Bar\\Baz', $this->event->getType());
+        self::assertSame('Bar\\Baz', $this->event->getType());
     }
 
     public function testGetId(): void
     {
-        $this->assertSame('12345678-abcd-1337-affa-f00baababaf0', $this->event->getId());
+        self::assertSame('12345678-abcd-1337-affa-f00baababaf0', $this->event->getId());
     }
 
     public function testGetPayload(): void
     {
-        $this->assertSame(['foo' => 'bar'], $this->event->getPayload());
+        self::assertSame(['foo' => 'bar'], $this->event->getPayload());
     }
 
     public function testGetMetadata(): void
     {
-        $this->assertSame(['baz' => 456], $this->event->getMetadata());
+        self::assertSame(['baz' => 456], $this->event->getMetadata());
     }
 
     public function testGetDomain(): void
     {
-        $this->assertSame('Foo\\Domain', $this->event->getDomain());
+        self::assertSame('Foo\\Domain', $this->event->getDomain());
     }
 }

@@ -14,7 +14,7 @@ final class SwaggerCommandBodyNormalizerTest extends TestCase
     {
         $normalizer = new SwaggerCommandBodyNormalizer();
 
-        $this->assertSame($expected, $normalizer->normalize($payload));
+        self::assertSame($expected, $normalizer->normalize($payload));
     }
 
     public function normalizeProvider(): array

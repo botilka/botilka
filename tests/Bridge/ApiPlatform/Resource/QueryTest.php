@@ -19,11 +19,11 @@ final class QueryTest extends TestCase
 
     public function testGetName(): void
     {
-        $this->assertSame('foo_bar', $this->query->getName());
+        self::assertSame('foo_bar', $this->query->getName());
     }
 
     public function testGetPayload(): void
     {
-        $this->assertSame(['foo' => 'baz'], $this->query->getPayload());
+        self::assertSame(['foo' => 'baz'], $this->query->getPayload());
     }
 }

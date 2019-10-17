@@ -29,27 +29,27 @@ final class EventSourcedCommandResponseTest extends TestCase
 
     public function testGetPlayhead(): void
     {
-        $this->assertSame(456, $this->commandResponse->getPlayhead());
+        self::assertSame(456, $this->commandResponse->getPlayhead());
     }
 
     public function testGetEvent(): void
     {
-        $this->assertSame($this->event, $this->commandResponse->getEvent());
+        self::assertSame($this->event, $this->commandResponse->getEvent());
     }
 
     public function testGetId(): void
     {
-        $this->assertSame('foo', $this->commandResponse->getId());
+        self::assertSame('foo', $this->commandResponse->getId());
     }
 
     public function testGetDomain(): void
     {
-        $this->assertSame('bar', $this->commandResponse->getDomain());
+        self::assertSame('bar', $this->commandResponse->getDomain());
     }
 
     public function testAggregateRoot(): void
     {
-        $this->assertSame($this->aggregateRoot, $this->commandResponse->getAggregateRoot());
+        self::assertSame($this->aggregateRoot, $this->commandResponse->getAggregateRoot());
     }
 
     /** @dataProvider fromEventSourcedAggregateRootProvider */
@@ -57,12 +57,12 @@ final class EventSourcedCommandResponseTest extends TestCase
     {
         $aggregateRoot = new StubEventSourcedAggregateRoot();
         $commandResponse = EventSourcedCommandResponse::fromEventSourcedAggregateRoot($aggregateRoot, $this->event, $domain);
-        $this->assertInstanceOf(EventSourcedCommandResponse::class, $commandResponse);
-        $this->assertSame($aggregateRoot->getAggregateRootId(), $commandResponse->getId());
-        $this->assertSame($aggregateRoot->getPlayhead(), $commandResponse->getPlayhead());
-        $this->assertSame($this->event, $commandResponse->getEvent());
-        $this->assertSame($domain ?? \get_class($aggregateRoot), $commandResponse->getDomain());
-        $this->assertSame($aggregateRoot, $commandResponse->getAggregateRoot());
+        self::assertInstanceOf(EventSourcedCommandResponse::class, $commandResponse);
+        self::assertSame($aggregateRoot->getAggregateRootId(), $commandResponse->getId());
+        self::assertSame($aggregateRoot->getPlayhead(), $commandResponse->getPlayhead());
+        self::assertSame($this->event, $commandResponse->getEvent());
+        self::assertSame($domain ?? \get_class($aggregateRoot), $commandResponse->getDomain());
+        self::assertSame($aggregateRoot, $commandResponse->getAggregateRoot());
     }
 
     public function fromEventSourcedAggregateRootProvider(): array

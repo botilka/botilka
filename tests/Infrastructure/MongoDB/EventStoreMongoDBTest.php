@@ -36,7 +36,7 @@ final class EventStoreMongoDBTest extends TestCase
 
     public function testAppend()
     {
-        $this->collection->expects($this->once())->method('insertOne');
+        $this->collection->expects(self::once())->method('insertOne');
 
         $this->eventStore->append('bar', 1, StubEvent::class, new StubEvent(42), null, new \DateTimeImmutable(), 'Foo\\Domain');
     }

@@ -31,16 +31,16 @@ class SnapshotStoreInMemoryTest extends TestCase
 
         /** @var StubEventSourcedAggregateRoot $aggregateRootFromSnapshotStore */
         $aggregateRootFromSnapshotStore = $this->snapshotStore->load($aggregateRoot->getAggregateRootId());
-        $this->assertSame($aggregateRoot, $aggregateRootFromSnapshotStore);
-        $this->assertSame(-1, $aggregateRootFromSnapshotStore->getPlayhead());
+        self::assertSame($aggregateRoot, $aggregateRootFromSnapshotStore);
+        self::assertSame(-1, $aggregateRootFromSnapshotStore->getPlayhead());
 
         [$aggregateRoot, $event] = $aggregateRoot = $aggregateRoot->stub(456);
         $this->snapshotStore->snapshot($aggregateRoot);
 
         /** @var StubEventSourcedAggregateRoot $aggregateRootFromSnapshotStore */
         $aggregateRootFromSnapshotStore = $this->snapshotStore->load($aggregateRoot->getAggregateRootId());
-        $this->assertSame($aggregateRoot, $aggregateRootFromSnapshotStore);
-        $this->assertSame(456, $aggregateRootFromSnapshotStore->getFoo());
-        $this->assertSame(0, $aggregateRootFromSnapshotStore->getPlayhead());
+        self::assertSame($aggregateRoot, $aggregateRootFromSnapshotStore);
+        self::assertSame(456, $aggregateRootFromSnapshotStore->getFoo());
+        self::assertSame(0, $aggregateRootFromSnapshotStore->getPlayhead());
     }
 }

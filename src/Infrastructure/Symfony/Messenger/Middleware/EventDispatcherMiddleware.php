@@ -60,7 +60,7 @@ final class EventDispatcherMiddleware implements MiddlewareInterface
 
         // persist to event store only if aggregate is event sourced
         if ($commandResponse instanceof EventSourcedCommandResponse) {
-            $this->handleEventSourcedCommandResponse($commandResponse, $event);
+            $this->handleEventSourcedCommandResponse($commandResponse);
         }
 
         try {
@@ -75,8 +75,10 @@ final class EventDispatcherMiddleware implements MiddlewareInterface
         return $envelope;
     }
 
-    private function handleEventSourcedCommandResponse(EventSourcedCommandResponse $commandResponse, Event $event): void
+    private function handleEventSourcedCommandResponse(EventSourcedCommandResponse $commandResponse): void
     {
+        $event = $commandResponse->getEvent();
+
         try {
             $aggregateRootClassName = \get_class($commandResponse->getAggregateRoot());
             if ($this->repositoryRegistry->has($aggregateRootClassName)) {

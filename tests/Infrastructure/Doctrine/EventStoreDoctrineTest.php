@@ -33,52 +33,13 @@ final class EventStoreDoctrineTest extends TestCase
         $this->normalizer = $this->createMock(NormalizerInterface::class);
         $this->denormalizer = $this->createMock(DenormalizerInterface::class);
         $this->eventStore = new EventStoreDoctrine($this->connection, $this->normalizer, $this->denormalizer, 'event_store');
-        $this->assertInstanceOf(EventStore::class, $this->eventStore);
-    }
-
-    private function getStatement(bool $withResult): MockObject
-    {
-        $stmt = $this->createMock(Statement::class);
-
-        $result = $withResult ? [
-            ['type' => 'Foo\\Bar', 'payload' => \json_encode(['foo' => 'bar'])],
-        ] : [];
-
-        $stmt->expects($this->once())
-            ->method('fetchAll')
-            ->willReturn($result);
-
-        return $stmt;
-    }
-
-    private function addDenormalizerAssertion(): void
-    {
-        $this->denormalizer->expects($this->once())
-            ->method('denormalize')
-            ->with(['foo' => 'bar'], 'Foo\\Bar')
-            ->willReturn('baz');
-    }
-
-    private function addLoadAssertions(string $query, array $executeParameters, bool $withResult): void
-    {
-        $this->connection->expects($this->once())
-            ->method('prepare')
-            ->with($query)
-            ->willReturn($stmt = $this->getStatement($withResult));
-
-        $stmt->expects($this->once())
-            ->method('execute')
-            ->with($executeParameters);
-
-        if (true === $withResult) {
-            $this->addDenormalizerAssertion();
-        }
+        self::assertInstanceOf(EventStore::class, $this->eventStore);
     }
 
     public function testLoadSuccess(): void
     {
         $this->addLoadAssertions('SELECT type, payload FROM event_store WHERE id = :id ORDER BY playhead', ['id' => 'foo'], true);
-        $this->assertEquals(['baz'], $this->eventStore->load('foo'));
+        self::assertEquals(['baz'], $this->eventStore->load('foo'));
     }
 
     /**
@@ -94,33 +55,35 @@ final class EventStoreDoctrineTest extends TestCase
     public function testLoadFromPlayheadSuccess(): void
     {
         $this->addLoadAssertions('SELECT type, payload FROM event_store WHERE id = :id AND playhead >= :from ORDER BY playhead', ['id' => 'foo', 'from' => 2], true);
-        $this->assertEquals(['baz'], $this->eventStore->loadFromPlayhead('foo', 2));
+        self::assertEquals(['baz'], $this->eventStore->loadFromPlayhead('foo', 2));
     }
 
     public function testLoadFromPlayheadToPlayheadSuccess(): void
     {
         $this->addLoadAssertions('SELECT type, payload FROM event_store WHERE id = :id AND playhead BETWEEN :from AND :to ORDER BY playhead', ['id' => 'foo', 'from' => 2, 'to' => 4], true);
-        $this->assertEquals(['baz'], $this->eventStore->loadFromPlayheadToPlayhead('foo', 2, 4));
+        self::assertEquals(['baz'], $this->eventStore->loadFromPlayheadToPlayhead('foo', 2, 4));
     }
 
     public function testAppend(): void
     {
         $stmt = $this->createMock(Statement::class);
 
-        $this->connection->expects($this->once())
+        $this->connection->expects(self::once())
             ->method('prepare')
             ->with('INSERT INTO event_store VALUES (:id, :playhead, :type, :payload, :metadata, :recordedOn, :domain)')
-            ->willReturn($stmt);
+            ->willReturn($stmt)
+        ;
 
         $event = new StubEvent(123);
-        $this->normalizer->expects($this->once())
+        $this->normalizer->expects(self::once())
             ->method('normalize')
             ->with($event)
-            ->willReturn('foo_bar');
+            ->willReturn('foo_bar')
+        ;
 
         $recordedOn = new \DateTimeImmutable();
 
-        $stmt->expects($this->once())
+        $stmt->expects(self::once())
             ->method('execute')
             ->with([
                 'id' => 'foo',
@@ -130,7 +93,8 @@ final class EventStoreDoctrineTest extends TestCase
                 'metadata' => \json_encode(['rab' => 'zab']),
                 'recordedOn' => $recordedOn->format('Y-m-d H:i:s.u'),
                 'domain' => 'Foo\\Domain',
-            ]);
+            ])
+        ;
 
         $this->eventStore->append('foo', 123, 'Foo\\Bar', $event, ['rab' => 'zab'], $recordedOn, 'Foo\\Domain');
     }
@@ -143,14 +107,59 @@ final class EventStoreDoctrineTest extends TestCase
     {
         $stmt = $this->createMock(Statement::class);
 
-        $this->connection->expects($this->once())
+        $this->connection->expects(self::once())
             ->method('prepare')
-            ->willReturn($stmt);
+            ->willReturn($stmt)
+        ;
 
-        $stmt->expects($this->once())
+        $stmt->expects(self::once())
             ->method('execute')
-            ->willThrowException(new UniqueConstraintViolationException('foo', $this->getMockForAbstractClass(DriverException::class)));
+            ->willThrowException(new UniqueConstraintViolationException('foo', $this->getMockForAbstractClass(DriverException::class)))
+        ;
 
         $this->eventStore->append('foo', 123, 'Foo\\Bar', new StubEvent(123), ['rab' => 'zab'], new \DateTimeImmutable(), 'Foo\\Domain');
+    }
+
+    private function getStatement(bool $withResult): MockObject
+    {
+        $stmt = $this->createMock(Statement::class);
+
+        $result = $withResult ? [
+            ['type' => 'Foo\\Bar', 'payload' => \json_encode(['foo' => 'bar'])],
+        ] : [];
+
+        $stmt->expects(self::once())
+            ->method('fetchAll')
+            ->willReturn($result)
+        ;
+
+        return $stmt;
+    }
+
+    private function addDenormalizerAssertion(): void
+    {
+        $this->denormalizer->expects(self::once())
+            ->method('denormalize')
+            ->with(['foo' => 'bar'], 'Foo\\Bar')
+            ->willReturn('baz')
+        ;
+    }
+
+    private function addLoadAssertions(string $query, array $executeParameters, bool $withResult): void
+    {
+        $this->connection->expects(self::once())
+            ->method('prepare')
+            ->with($query)
+            ->willReturn($stmt = $this->getStatement($withResult))
+        ;
+
+        $stmt->expects(self::once())
+            ->method('execute')
+            ->with($executeParameters)
+        ;
+
+        if (true === $withResult) {
+            $this->addDenormalizerAssertion();
+        }
     }
 }

@@ -26,7 +26,7 @@ final class EventSourcedRepositoryRegistryTest extends TestCase
     /** @dataProvider hasProvider */
     public function testHas(string $className, bool $expected): void
     {
-        $this->assertSame($expected, $this->registry->has($className));
+        self::assertSame($expected, $this->registry->has($className));
     }
 
     public function hasProvider(): array
@@ -39,7 +39,7 @@ final class EventSourcedRepositoryRegistryTest extends TestCase
 
     public function testGetSuccess(): void
     {
-        $this->assertSame($this->repositories['Foo\\Bar'], $this->registry->get('Foo\\Bar'));
+        self::assertSame($this->repositories['Foo\\Bar'], $this->registry->get('Foo\\Bar'));
     }
 
     /**

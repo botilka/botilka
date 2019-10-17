@@ -30,8 +30,8 @@ final class ConfigurationTest extends TestCase
         $treeBuilder = $this->configuration->getConfigTreeBuilder();
         $config = $this->processor->processConfiguration($this->configuration, []);
 
-        $this->assertInstanceOf(ConfigurationInterface::class, $this->configuration);
-        $this->assertInstanceOf(TreeBuilder::class, $treeBuilder);
+        self::assertInstanceOf(ConfigurationInterface::class, $this->configuration);
+        self::assertInstanceOf(TreeBuilder::class, $treeBuilder);
 
         $expected = [
             'event_store' => EventStoreInMemory::class,
@@ -44,6 +44,6 @@ final class ConfigurationTest extends TestCase
             ],
         ];
 
-        $this->assertSame($expected, $config);
+        self::assertSame($expected, $config);
     }
 }
