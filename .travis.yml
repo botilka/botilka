@@ -41,6 +41,7 @@ after_script:
     fi
 
 install:
+  - pecl channel-update pecl.php.net
   - pecl -q install mongodb || true
   - if [[ $deps = 'low' ]]; then
       composer update --prefer-dist --no-progress --no-suggest --ansi --prefer-stable --prefer-lowest;
