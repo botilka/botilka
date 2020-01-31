@@ -12,7 +12,7 @@ final class EventTest extends TestCase
     /** @var Event */
     private $event;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->event = new Event('12345678-abcd-1337-affa-f00baababaf0', 123, 'Bar\\Baz', ['foo' => 'bar'], ['baz' => 456], 'Foo\\Domain');
     }

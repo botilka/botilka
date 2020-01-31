@@ -25,7 +25,7 @@ final class ProjectorPlayCommandTest extends TestCase
     /** @var ProjectorPlayCommand */
     private $command;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->eventStoreManager = $this->createMock(EventStoreManager::class);
         $this->projectionist = $this->createMock(Projectionist::class);

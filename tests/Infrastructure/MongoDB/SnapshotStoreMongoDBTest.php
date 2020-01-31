@@ -19,7 +19,7 @@ final class SnapshotStoreMongoDBTest extends TestCase
     /** @var SnapshotStoreMongoDB */
     private $snapshotStore;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->collection = $this->createMock(Collection::class);
         $this->snapshotStore = new SnapshotStoreMongoDB($this->collection);

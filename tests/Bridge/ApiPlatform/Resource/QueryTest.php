@@ -12,7 +12,7 @@ final class QueryTest extends TestCase
     /** @var Query */
     private $query;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->query = new Query('foo_bar', ['foo' => 'baz']);
     }

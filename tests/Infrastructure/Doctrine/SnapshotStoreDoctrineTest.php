@@ -22,7 +22,7 @@ class SnapshotStoreDoctrineTest extends TestCase
     /** @var SnapshotStoreDoctrine */
     private $snapshotStore;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->connection = $this->createMock(Connection::class);
         $this->serializer = $this->createMock(SerializerInterface::class);

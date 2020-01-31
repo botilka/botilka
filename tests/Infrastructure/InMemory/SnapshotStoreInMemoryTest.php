@@ -13,7 +13,7 @@ class SnapshotStoreInMemoryTest extends TestCase
     /** @var SnapshotStoreInMemory */
     private $snapshotStore;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->snapshotStore = new SnapshotStoreInMemory();
     }

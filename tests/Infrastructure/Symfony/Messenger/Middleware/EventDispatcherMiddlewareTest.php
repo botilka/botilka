@@ -37,7 +37,7 @@ final class EventDispatcherMiddlewareTest extends MiddlewareTestCase
     /** @var Projectionist|MockObject */
     private $projectionist;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->eventStore = $this->createMock(EventStore::class);
         $this->repositoryRegistry = $this->createMock(ContainerInterface::class);

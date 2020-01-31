@@ -28,7 +28,7 @@ final class ApiPlatformDescriptionContainerPassTest extends TestCase
     /** @var ApiPlatformDescriptionContainerPass */
     private $compilerPass;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->container = new ContainerBuilder();
         $this->compilerPass = new ApiPlatformDescriptionContainerPass();

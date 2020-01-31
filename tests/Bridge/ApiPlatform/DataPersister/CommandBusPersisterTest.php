@@ -25,7 +25,7 @@ final class CommandBusPersisterTest extends TestCase
     /** @var ValidatorInterface|MockObject */
     private $validator;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->commandBus = $this->createMock(CommandBus::class);
         $this->validator = $this->createMock(ValidatorInterface::class);

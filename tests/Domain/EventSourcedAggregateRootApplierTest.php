@@ -12,7 +12,7 @@ final class EventSourcedAggregateRootApplierTest extends TestCase
 {
     private $eventSourcedAggregateRoot;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->eventSourcedAggregateRoot = new StubEventSourcedAggregateRoot();
     }

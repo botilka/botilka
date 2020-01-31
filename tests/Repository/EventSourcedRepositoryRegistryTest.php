@@ -15,7 +15,7 @@ final class EventSourcedRepositoryRegistryTest extends TestCase
     /** @var array */
     private $repositories;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->repositories = [
             'Foo\\Bar' => $this->createMock(EventSourcedRepository::class),

@@ -20,7 +20,7 @@ final class EventSourcedCommandResponseTest extends TestCase
     /** @var EventSourcedAggregateRoot */
     private $aggregateRoot;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->event = new StubEvent(123);
         $this->aggregateRoot = new StubEventSourcedAggregateRoot();

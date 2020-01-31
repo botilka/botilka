@@ -23,7 +23,7 @@ final class CommandResourceClassEventListenerTest extends TestCase
     /** @var DescriptionContainerInterface|MockObject */
     private $descriptionContainer;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->descriptionContainer = $this->createMock(DescriptionContainerInterface::class);
         $this->listener = new CommandResourceClassEventListener($this->descriptionContainer);

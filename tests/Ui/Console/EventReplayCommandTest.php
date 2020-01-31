@@ -25,7 +25,7 @@ final class EventReplayCommandTest extends KernelTestCase
     /** @var EventReplayCommand */
     private $command;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->eventStoreManager = $this->createMock(EventStoreManager::class);
         $this->eventBus = $this->createMock(EventBus::class);

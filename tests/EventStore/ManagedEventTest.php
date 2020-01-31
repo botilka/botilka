@@ -17,7 +17,7 @@ final class ManagedEventTest extends TestCase
     /** @var \DateTimeImmutable */
     private $recordedOn;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->domainEvent = new StubEvent(42);
         $this->recordedOn = new \DateTimeImmutable();

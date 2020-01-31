@@ -30,7 +30,7 @@ final class SnapshotedEventSourcedRepositoryTest extends TestCase
     /** @var EventStore|MockObject */
     private $eventStore;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->snapshotStore = $this->createMock(SnapshotStore::class);
         $this->strategist = $this->createMock(SnapshotStrategist::class);

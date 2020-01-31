@@ -10,7 +10,7 @@ final class SnapshotStoreDoctrineInitializerTest extends AbstractDoctrineInitial
 {
     protected $type = 'snapshot';
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $kernel = static::bootKernel();
         $container = static::$container;

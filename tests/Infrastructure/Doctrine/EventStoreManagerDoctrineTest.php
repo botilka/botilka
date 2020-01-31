@@ -24,7 +24,7 @@ final class EventStoreManagerDoctrineTest extends TestCase
 
     private $table = 'foo';
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->denormarlizer = $this->createMock(DenormalizerInterface::class);
         $this->connection = $this->createMock(Connection::class);

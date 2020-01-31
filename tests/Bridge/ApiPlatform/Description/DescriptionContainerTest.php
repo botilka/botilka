@@ -12,7 +12,7 @@ final class DescriptionContainerTest extends TestCase
     /** @var DescriptionContainer */
     private $descriptionContainer;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->descriptionContainer = new DescriptionContainer(['foo' => [
             'class' => 'Foo\\Bar',
