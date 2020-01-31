@@ -54,7 +54,7 @@ final class EventReplayCommandTest extends KernelTestCase
 
         $this->eventBus->expects(self::exactly(\count($this->events)))
             ->method('dispatch')
-            ->with($this->isInstanceOf(Event::class))
+            ->with(self::isInstanceOf(Event::class))
         ;
 
         $input = new ArrayInput(['--id' => true, 'value' => $value, '--from' => $from, '--to' => $to]);
@@ -80,7 +80,7 @@ final class EventReplayCommandTest extends KernelTestCase
 
         $this->eventBus->expects(self::exactly(\count($this->events)))
             ->method('dispatch')
-            ->with($this->isInstanceOf(Event::class))
+            ->with(self::isInstanceOf(Event::class))
         ;
 
         $input = new ArrayInput(['--domain' => true, 'value' => 'Foo\\Domain']);
