@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Botilka\Infrastructure\Doctrine;
 
-use Botilka\Event\Event;
 use Botilka\EventStore\EventStoreManager;
 use Botilka\EventStore\ManagedEvent;
 use Doctrine\DBAL\Driver\Connection;
@@ -84,7 +83,7 @@ final class EventStoreManagerDoctrine implements EventStoreManager
         $events = [];
 
         foreach ($storedEvents as $storedEvent) {
-            /** @var Event $domainEvent */
+            /** @var \Botilka\Event\Event $domainEvent */
             $domainEvent = $this->denormalizer->denormalize(\json_decode($storedEvent['payload'], true), $storedEvent['type']);
             $events[] = new ManagedEvent(
                 $storedEvent['id'],

@@ -43,7 +43,7 @@ trait GetManagedEventsFromEventStoreTrait
     }
 
     /**
-     * @return ManagedEvent[]
+     * @return iterable<ManagedEvent>
      */
     private function getManagedEvents(InputInterface $input): iterable
     {
