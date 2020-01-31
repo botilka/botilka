@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Botilka\Tests\Infrastructure\InMemory;
 
 use Botilka\Infrastructure\InMemory\SnapshotStoreInMemory;
+use Botilka\Snapshot\SnapshotNotFoundException;
 use Botilka\Tests\Fixtures\Domain\StubEventSourcedAggregateRoot;
 use PHPUnit\Framework\TestCase;
 
@@ -18,9 +19,9 @@ class SnapshotStoreInMemoryTest extends TestCase
         $this->snapshotStore = new SnapshotStoreInMemory();
     }
 
-    /** @expectedException \Botilka\Snapshot\SnapshotNotFoundException */
     public function testLoadNotFound()
     {
+        $this->expectException(SnapshotNotFoundException::class);
         $this->snapshotStore->load('non_existent');
     }
 

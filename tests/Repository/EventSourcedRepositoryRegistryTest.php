@@ -7,6 +7,7 @@ namespace Botilka\Tests\Repository;
 use Botilka\Repository\EventSourcedRepository;
 use Botilka\Repository\EventSourcedRepositoryRegistry;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 
 final class EventSourcedRepositoryRegistryTest extends TestCase
 {
@@ -42,12 +43,11 @@ final class EventSourcedRepositoryRegistryTest extends TestCase
         self::assertSame($this->repositories['Foo\\Bar'], $this->registry->get('Foo\\Bar'));
     }
 
-    /**
-     * @expectedException \Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException
-     * @expectedExceptionMessage You have requested a non-existent service "Event sourced repository for aggregate root 'DateTime' not found.
-     */
     public function testGetFail(): void
     {
+        $this->expectException(ServiceNotFoundException::class);
+        $this->expectExceptionMessage('You have requested a non-existent service "Event sourced repository for aggregate root \'DateTime\' not found.');
+
         $this->registry->get(\DateTime::class);
     }
 }

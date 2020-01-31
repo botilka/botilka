@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Botilka\Tests\Infrastructure\Doctrine;
 
+use Botilka\EventStore\AggregateRootNotFoundException;
 use Botilka\EventStore\EventStore;
+use Botilka\EventStore\EventStoreConcurrencyException;
 use Botilka\Infrastructure\Doctrine\EventStoreDoctrine;
 use Botilka\Tests\Fixtures\Domain\StubEvent;
 use Doctrine\DBAL\Driver\Connection;
@@ -42,12 +44,11 @@ final class EventStoreDoctrineTest extends TestCase
         self::assertEquals(['baz'], $this->eventStore->load('foo'));
     }
 
-    /**
-     * @expectedException \Botilka\EventStore\AggregateRootNotFoundException
-     * @expectedExceptionMessage No aggregrate root found for foo.
-     */
     public function testLoadFail(): void
     {
+        $this->expectException(AggregateRootNotFoundException::class);
+        $this->expectExceptionMessage('No aggregrate root found for foo.');
+
         $this->addLoadAssertions('SELECT type, payload FROM event_store WHERE id = :id ORDER BY playhead', ['id' => 'foo'], false);
         $this->eventStore->load('foo');
     }
@@ -99,10 +100,6 @@ final class EventStoreDoctrineTest extends TestCase
         $this->eventStore->append('foo', 123, 'Foo\\Bar', $event, ['rab' => 'zab'], $recordedOn, 'Foo\\Domain');
     }
 
-    /**
-     * @expectedException \Botilka\EventStore\EventStoreConcurrencyException
-     * @expectedExceptionMessage Duplicate storage of event "Foo\Bar" on aggregate "foo" with playhead 123.
-     */
     public function testAppendUniqueConstraintViolationException(): void
     {
         $stmt = $this->createMock(Statement::class);
@@ -116,6 +113,9 @@ final class EventStoreDoctrineTest extends TestCase
             ->method('execute')
             ->willThrowException(new UniqueConstraintViolationException('foo', $this->getMockForAbstractClass(DriverException::class)))
         ;
+
+        $this->expectException(EventStoreConcurrencyException::class);
+        $this->expectExceptionMessage('Duplicate storage of event "Foo\Bar" on aggregate "foo" with playhead 123.');
 
         $this->eventStore->append('foo', 123, 'Foo\\Bar', new StubEvent(123), ['rab' => 'zab'], new \DateTimeImmutable(), 'Foo\\Domain');
     }

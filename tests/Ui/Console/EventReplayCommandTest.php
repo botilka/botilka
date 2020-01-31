@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Botilka\Tests\Ui\Console;
 
+use Botilka\Event\Event;
 use Botilka\Event\EventBus;
 use Botilka\EventStore\EventStoreManager;
 use Botilka\EventStore\ManagedEvent;
@@ -53,7 +54,7 @@ final class EventReplayCommandTest extends KernelTestCase
 
         $this->eventBus->expects(self::exactly(\count($this->events)))
             ->method('dispatch')
-            ->withConsecutive(...$this->events)
+            ->with($this->isInstanceOf(Event::class))
         ;
 
         $input = new ArrayInput(['--id' => true, 'value' => $value, '--from' => $from, '--to' => $to]);
@@ -79,7 +80,7 @@ final class EventReplayCommandTest extends KernelTestCase
 
         $this->eventBus->expects(self::exactly(\count($this->events)))
             ->method('dispatch')
-            ->withConsecutive(...$this->events)
+            ->with($this->isInstanceOf(Event::class))
         ;
 
         $input = new ArrayInput(['--domain' => true, 'value' => 'Foo\\Domain']);
@@ -88,11 +89,12 @@ final class EventReplayCommandTest extends KernelTestCase
 
     /**
      * @dataProvider executeFailProvider
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage You must set a domain or an id.
      */
     public function testExecuteFail(array $parameters): void
     {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('You must set a domain or an id.');
+
         $input = new ArrayInput($parameters);
         $this->command->run($input, new BufferedOutput());
     }

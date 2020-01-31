@@ -47,13 +47,13 @@ abstract class AbstractDoctrineInitializerTest extends AbstractKernelTestCase
 
     /**
      * @group functional
-     * @expectedException \RuntimeException
      */
     public function testInitialize(): void
     {
         $this->initializer->initialize();
 
-        $this->expectExceptionMessageRegExp('/Duplicate table:.*relation "'.$this->tableName.'" already exists/');
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessageMatches('/Duplicate table:.*relation "'.$this->tableName.'" already exists/');
 
         $this->initializer->initialize();
     }

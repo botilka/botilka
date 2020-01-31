@@ -134,10 +134,6 @@ final class EventDispatcherMiddlewareTest extends MiddlewareTestCase
         $middleware->handle($this->getEnvelopeWithHandledStamp($commandResponse), $this->getStackMock());
     }
 
-    /**
-     * @expectedException \Botilka\EventStore\EventStoreConcurrencyException
-     * @expectedExceptionMessage bar message
-     */
     public function testHandledEventStoreConcurrencyException(): void
     {
         $event = new StubEvent(1337);
@@ -160,16 +156,15 @@ final class EventDispatcherMiddlewareTest extends MiddlewareTestCase
             ->with('bar message')
         ;
 
+        $this->expectException(EventStoreConcurrencyException::class);
+        $this->expectExceptionMessage('bar message');
+
         $commandResponse = new EventSourcedCommandResponse('foo', $event, 51, 'FooBar\\Domain', $this->createMock(EventSourcedAggregateRoot::class));
 
         $middleware = new EventDispatcherMiddleware($this->eventStore, $this->repositoryRegistry, $this->eventBus, $this->logger, $this->projectionist);
         $middleware->handle($this->getEnvelopeWithHandledStamp($commandResponse), $this->getStackMock());
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Result must be an instance of Botilka\Application\Command\CommandResponse, stdClass given.
-     */
     public function testHandleddNotCommandResponse(): void
     {
         $this->eventStore->expects(self::never())
@@ -183,6 +178,9 @@ final class EventDispatcherMiddlewareTest extends MiddlewareTestCase
         $this->projectionist->expects(self::never())
             ->method('play')
         ;
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Result must be an instance of Botilka\Application\Command\CommandResponse, stdClass given.');
 
         $middleware = new EventDispatcherMiddleware($this->eventStore, $this->repositoryRegistry, $this->eventBus, $this->logger, $this->projectionist);
         $middleware->handle($this->getEnvelopeWithHandledStamp(new \stdClass()), $this->getStackMock());

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Botilka\Tests\Bridge\ApiPlatform\Hydrator;
 
+use ApiPlatform\Core\Bridge\Symfony\Validator\Exception\ValidationException;
 use Botilka\Bridge\ApiPlatform\Hydrator\CommandHydrator;
 use Botilka\Tests\Fixtures\Application\Command\SimpleCommand;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -48,7 +49,6 @@ final class CommandHydratorTest extends TestCase
         self::assertSame($command, $this->hydrator->hydrate(['bar' => 'baz'], 'Foo\\Bar'));
     }
 
-    /** @expectedException \ApiPlatform\Core\Bridge\Symfony\Validator\Exception\ValidationException */
     public function testHydrateViolation(): void
     {
         $command = new SimpleCommand('foo');
@@ -66,6 +66,8 @@ final class CommandHydratorTest extends TestCase
             ->with($command)
             ->willReturn($violationList)
         ;
+
+        $this->expectException(ValidationException::class);
 
         $this->hydrator->hydrate(['bar' => 'baz'], 'Foo\\Bar');
     }

@@ -46,12 +46,11 @@ final class UuidDenormalizerTest extends TestCase
         self::assertTrue($uuid->equals($denormalizedUuid));
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Can not denormalize "foo" as an Uuid.
-     */
     public function testDenormalizeInvalid(): void
     {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Can not denormalize "foo" as an Uuid.');
+
         $this->denormalizer->denormalize('foo', UuidInterface::class);
     }
 }

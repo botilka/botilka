@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Botilka\Tests\Bridge\ApiPlatform\Description;
 
 use Botilka\Bridge\ApiPlatform\Description\DescriptionContainer;
+use Botilka\Bridge\ApiPlatform\Description\DescriptionNotFoundException;
 use PHPUnit\Framework\TestCase;
 
 final class DescriptionContainerTest extends TestCase
@@ -25,12 +26,11 @@ final class DescriptionContainerTest extends TestCase
         self::assertSame(['class' => 'Foo\\Bar', 'payload' => ['some' => 'string']], $this->descriptionContainer->get('foo'));
     }
 
-    /**
-     * @expectedException \Botilka\Bridge\ApiPlatform\Description\DescriptionNotFoundException
-     * @expectedExceptionMessage Description "bar" was not found. Possible values: "foo".
-     */
     public function testGetNotFound(): void
     {
+        $this->expectException(DescriptionNotFoundException::class);
+        $this->expectExceptionMessage('Description "bar" was not found. Possible values: "foo".');
+
         $this->descriptionContainer->get('bar');
     }
 
