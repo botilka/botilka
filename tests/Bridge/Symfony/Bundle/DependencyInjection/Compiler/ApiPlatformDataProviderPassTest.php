@@ -19,7 +19,7 @@ final class ApiPlatformDataProviderPassTest extends TestCase
     /** @var ApiPlatformDataProviderPass */
     private $compilerPass;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->compilerPass = new ApiPlatformDataProviderPass();
     }

@@ -12,7 +12,7 @@ final class CommandTest extends TestCase
     /** @var Command */
     private $command;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->command = new Command('foo_bar', ['foo' => 'baz']);
     }

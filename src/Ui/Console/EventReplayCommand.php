@@ -15,21 +15,25 @@ final class EventReplayCommand extends Command
 {
     use GetManagedEventsFromEventStoreTrait;
 
-    private $eventStoreManager;
     private $eventBus;
 
     public function __construct(EventStoreManager $eventStoreManager, EventBus $eventBus)
     {
         parent::__construct('botilka:event_store:replay');
-        $this->eventStoreManager = $eventStoreManager;
         $this->eventBus = $eventBus;
+        $this->eventStoreManager = $eventStoreManager;
     }
 
     protected function configure()
     {
         $this->setDescription('Replay events for an aggregate or a domain')
-            ->configureCommon($this)
+            ->configureParameters($this)
         ;
+    }
+
+    protected function initialize(InputInterface $input, OutputInterface $output)
+    {
+        $this->checkDomainOrId($input);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)

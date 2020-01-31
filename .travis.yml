@@ -5,11 +5,6 @@ services:
   - mongodb
   - postgresql
 
-php:
-  - '7.1'
-  - '7.2'
-  - '7.3'
-
 env:
   global:
     - DATABASE_URL=pgsql://postgres@localhost:5432/database
@@ -19,9 +14,20 @@ env:
     - EVENT_STORE_COLLECTION=event_store
     - SNAPSHOT_STORE_COLLECTION=snapshot_store
     - BOTILKA_TEST_FORCE_RECREATE_DB=true
-  matrix:
-    - deps=low
-    - deps=high
+
+matrix:
+  include:
+    - php: 7.2
+      env: deps=low
+    - php: 7.2
+      env: deps=high
+    - php: 7.3
+      env: deps=low
+    - php: 7.3
+      env: deps=high
+    - php: 7.4
+      env: deps=high
+  fast_finish: true
 
 before_script:
   - composer global require friendsofphp/php-cs-fixer infection/infection
@@ -39,8 +45,15 @@ after_script:
       infection;
     fi
 
+before_install:
+  - pecl channel-update pecl.php.net
+  - if [[ $(phpenv version-name) < 7.3 ]]; then
+      pecl -q install mongodb;
+    else
+      echo 'extension="mongodb"' >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini;
+    fi
+
 install:
-  - pecl -q install mongodb || true
   - if [[ $deps = 'low' ]]; then
       composer update --prefer-dist --no-progress --no-suggest --ansi --prefer-stable --prefer-lowest;
     else

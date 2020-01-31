@@ -16,7 +16,7 @@ final class CommandResponseTest extends TestCase
     /** @var Event */
     private $event;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->event = new StubEvent(123);
         $this->commandResponse = new CommandResponse('foo', $this->event);

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Botilka\Tests\Infrastructure\MongoDB;
 
 use Botilka\Infrastructure\MongoDB\SnapshotStoreMongoDB;
+use Botilka\Snapshot\SnapshotNotFoundException;
 use Botilka\Tests\Fixtures\Domain\StubEventSourcedAggregateRoot;
 use MongoDB\Collection;
 use MongoDB\Model\BSONDocument;
@@ -19,7 +20,7 @@ final class SnapshotStoreMongoDBTest extends TestCase
     /** @var SnapshotStoreMongoDB */
     private $snapshotStore;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->collection = $this->createMock(Collection::class);
         $this->snapshotStore = new SnapshotStoreMongoDB($this->collection);
@@ -46,10 +47,6 @@ final class SnapshotStoreMongoDBTest extends TestCase
         self::assertSame($aggregateRoot->getAggregateRootId(), $this->snapshotStore->load('foo')->getAggregateRootId());
     }
 
-    /**
-     * @expectedException \Botilka\Snapshot\SnapshotNotFoundException
-     * @expectedExceptionMessage No snapshot found for foo.
-     */
     public function testLoadFail(): void
     {
         $aggregateRoot = new StubEventSourcedAggregateRoot();
@@ -63,6 +60,9 @@ final class SnapshotStoreMongoDBTest extends TestCase
         $this->collection->expects(self::never())
             ->method('findOne')
         ;
+
+        $this->expectException(SnapshotNotFoundException::class);
+        $this->expectExceptionMessage('No snapshot found for foo.');
 
         $this->snapshotStore->load('foo');
     }

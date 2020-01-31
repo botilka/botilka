@@ -34,7 +34,6 @@ abstract class AbstractMongoDBStoreInitializerTest extends AbstractKernelTestCas
 
     /**
      * @group functional
-     * @expectedException \RuntimeException
      */
     public function testInitializeFunctional(): void
     {
@@ -45,7 +44,9 @@ abstract class AbstractMongoDBStoreInitializerTest extends AbstractKernelTestCas
         $initializer->initialize();
         self::assertTrue(true);
 
+        $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage("Collection '{$this->collectionName}' already exists.");
+
         $initializer->initialize();
     }
 
@@ -62,9 +63,6 @@ abstract class AbstractMongoDBStoreInitializerTest extends AbstractKernelTestCas
         self::assertTrue(true);
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testInitializeCommandException(): void
     {
         $database = $this->createMock(Database::class);
@@ -77,6 +75,7 @@ abstract class AbstractMongoDBStoreInitializerTest extends AbstractKernelTestCas
             ->willReturn($database)
         ;
 
+        $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage("Collection '{$this->collectionName}' already exists.");
 
         $initializer = $this->getInitializer($client);

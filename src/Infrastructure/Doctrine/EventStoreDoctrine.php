@@ -83,9 +83,11 @@ final class EventStoreDoctrine implements EventStore
     private function deserialize(array $storedEvents): array
     {
         $events = [];
-        /** @var array $event */
-        foreach ($storedEvents as $event) {
-            $events[] = $this->denormalizer->denormalize(\json_decode($event['payload'], true), $event['type']);
+        /** @var array $storedEvent */
+        foreach ($storedEvents as $storedEvent) {
+            /** @var DomainEvent $event */
+            $event = $this->denormalizer->denormalize(\json_decode($storedEvent['payload'], true), $storedEvent['type']);
+            $events[] = $event;
         }
 
         return $events;

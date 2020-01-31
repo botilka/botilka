@@ -7,12 +7,12 @@ namespace Botilka\EventStore;
 interface EventStoreManager
 {
     /**
-     * @return ManagedEvent[]
+     * @return iterable<ManagedEvent>
      */
     public function loadByAggregateRootId(string $id, ?int $from = null, ?int $to = null): iterable;
 
     /**
-     * @return ManagedEvent[]
+     * @return iterable<ManagedEvent>
      */
     public function loadByDomain(string $domain): iterable;
 

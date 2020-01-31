@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Botilka\Infrastructure\MongoDB;
 
+use Botilka\Event\Event;
 use Botilka\EventStore\EventStoreManager;
 use Botilka\EventStore\ManagedEvent;
 use MongoDB\Collection;
@@ -67,9 +68,11 @@ final class EventStoreManagerMongoDB implements EventStoreManager
         $events = [];
         /* @var BSONDocument $event */
         foreach ($storedEvents as $storedEvent) {
+            /** @var Event $domainEvent */
+            $domainEvent = $this->denormalizer->denormalize($storedEvent->offsetGet('payload'), $storedEvent->offsetGet('type'));
             $events[] = new ManagedEvent(
                 $storedEvent->offsetGet('id'),
-                $this->denormalizer->denormalize($storedEvent->offsetGet('payload'), $storedEvent->offsetGet('type')),
+                $domainEvent,
                 $storedEvent->offsetGet('playhead'),
                 $storedEvent->offsetGet('metadata')->getArrayCopy(),
                 new \DateTimeImmutable($storedEvent->offsetGet('recordedOn')),

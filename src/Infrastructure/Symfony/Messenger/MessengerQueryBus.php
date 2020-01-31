@@ -13,8 +13,6 @@ final class MessengerQueryBus implements QueryBus
 {
     use HandleTrait;
 
-    private $messageBus;
-
     public function __construct(MessageBusInterface $messageBus)
     {
         $this->messageBus = $messageBus;

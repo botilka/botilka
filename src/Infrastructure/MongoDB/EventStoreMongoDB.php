@@ -89,9 +89,11 @@ final class EventStoreMongoDB implements EventStore
     private function deserialize(Cursor $cursor): array
     {
         $events = [];
-        /** @var BSONDocument $event */
-        foreach ($cursor as $event) {
-            $events[] = $this->denormalizer->denormalize($event->offsetGet('payload'), $event->offsetGet('type'));
+        /** @var BSONDocument $current */
+        foreach ($cursor as $current) {
+            /** @var Event $event */
+            $event = $this->denormalizer->denormalize($current->offsetGet('payload'), $current->offsetGet('type'));
+            $events[] = $event;
         }
 
         return $events;

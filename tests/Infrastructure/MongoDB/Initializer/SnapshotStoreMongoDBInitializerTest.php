@@ -14,7 +14,7 @@ final class SnapshotStoreMongoDBInitializerTest extends AbstractMongoDBStoreInit
 {
     protected $type = 'snapshot';
 
-    protected function setUp()
+    protected function setUp(): void
     {
         static::bootKernel();
         $container = static::$container;

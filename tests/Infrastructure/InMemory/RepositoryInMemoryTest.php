@@ -13,7 +13,7 @@ final class RepositoryInMemoryTest extends TestCase
     /** @var RepositoryInMemory */
     private $repository;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->repository = new RepositoryInMemory();
     }

@@ -8,13 +8,14 @@ use Botilka\Bridge\ApiPlatform\DataProvider\CommandDataProvider;
 use Botilka\Bridge\ApiPlatform\Description\DescriptionContainer;
 use Botilka\Bridge\ApiPlatform\Resource\Command;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 final class CommandDataProviderTest extends TestCase
 {
     /** @var CommandDataProvider */
     private $dataProvider;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $descriptionContainer = new DescriptionContainer(['foo' => [
             'class' => 'Foo\\Bar',
@@ -33,12 +34,11 @@ final class CommandDataProviderTest extends TestCase
         self::assertSame(['some' => 'string'], $item->getPayload());
     }
 
-    /**
-     * @expectedException \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
-     * @expectedExceptionMessage Command "non-existent" not found.
-     */
     public function testGetItemNotFoundException(): void
     {
+        $this->expectException(NotFoundHttpException::class);
+        $this->expectExceptionMessage('Command "non-existent" not found.');
+
         $this->dataProvider->getItem('whatever', 'non-existent');
     }
 

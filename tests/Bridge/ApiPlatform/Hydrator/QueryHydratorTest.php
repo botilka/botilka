@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Botilka\Tests\Bridge\ApiPlatform\Hydrator;
 
+use ApiPlatform\Core\Bridge\Symfony\Validator\Exception\ValidationException;
 use Botilka\Bridge\ApiPlatform\Hydrator\QueryHydrator;
 use Botilka\Tests\Fixtures\Application\Query\SimpleQuery;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -22,7 +23,7 @@ final class QueryHydratorTest extends TestCase
     /** @var DenormalizerInterface|MockObject */
     private $denormalizer;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->denormalizer = $this->createMock(DenormalizerInterface::class);
         $this->validator = $this->createMock(ValidatorInterface::class);
@@ -48,7 +49,6 @@ final class QueryHydratorTest extends TestCase
         self::assertSame($Query, $this->hydrator->hydrate(['bar' => 'baz'], 'Foo\\Bar'));
     }
 
-    /** @expectedException \ApiPlatform\Core\Bridge\Symfony\Validator\Exception\ValidationException */
     public function testHydrateViolation(): void
     {
         $query = new SimpleQuery('foo');
@@ -66,6 +66,8 @@ final class QueryHydratorTest extends TestCase
             ->with($query)
             ->willReturn($violationList)
         ;
+
+        $this->expectException(ValidationException::class);
 
         $this->hydrator->hydrate(['bar' => 'baz'], 'Foo\\Bar');
     }

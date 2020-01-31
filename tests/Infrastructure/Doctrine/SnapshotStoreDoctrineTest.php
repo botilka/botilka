@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Botilka\Tests\Infrastructure\Doctrine;
 
 use Botilka\Infrastructure\Doctrine\SnapshotStoreDoctrine;
+use Botilka\Snapshot\SnapshotNotFoundException;
 use Botilka\Snapshot\SnapshotStore;
 use Botilka\Tests\Fixtures\Domain\StubEventSourcedAggregateRoot;
 use Doctrine\DBAL\Driver\Connection;
@@ -22,7 +23,7 @@ class SnapshotStoreDoctrineTest extends TestCase
     /** @var SnapshotStoreDoctrine */
     private $snapshotStore;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->connection = $this->createMock(Connection::class);
         $this->serializer = $this->createMock(SerializerInterface::class);
@@ -91,10 +92,6 @@ class SnapshotStoreDoctrineTest extends TestCase
         self::assertSame($aggregateRoot, $this->snapshotStore->load('foo'));
     }
 
-    /**
-     * @expectedException \Botilka\Snapshot\SnapshotNotFoundException
-     * @expectedExceptionMessage No snapshot found for foo.
-     */
     public function testLoadFail()
     {
         $this->connection->expects(self::once())
@@ -113,6 +110,9 @@ class SnapshotStoreDoctrineTest extends TestCase
         $this->serializer->expects(self::never())
             ->method('deserialize')
         ;
+
+        $this->expectException(SnapshotNotFoundException::class);
+        $this->expectDeprecationMessage('No snapshot found for foo.');
 
         $this->snapshotStore->load('foo');
     }

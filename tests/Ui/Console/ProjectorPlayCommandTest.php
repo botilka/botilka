@@ -6,6 +6,7 @@ namespace Botilka\Tests\Ui\Console;
 
 use Botilka\EventStore\EventStoreManager;
 use Botilka\EventStore\ManagedEvent;
+use Botilka\Projector\Projection;
 use Botilka\Projector\Projectionist;
 use Botilka\Tests\Fixtures\Domain\StubEvent;
 use Botilka\Ui\Console\ProjectorPlayCommand;
@@ -25,7 +26,7 @@ final class ProjectorPlayCommandTest extends TestCase
     /** @var ProjectorPlayCommand */
     private $command;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->eventStoreManager = $this->createMock(EventStoreManager::class);
         $this->projectionist = $this->createMock(Projectionist::class);
@@ -53,16 +54,15 @@ final class ProjectorPlayCommandTest extends TestCase
 
         $this->projectionist->expects(self::exactly(\count($this->events)))
             ->method('play')
-            ->withConsecutive(...$this->events)
+            ->with(self::isInstanceOf(Projection::class))
         ;
 
         $input = new ArrayInput(['--id' => true, 'value' => $value, '--from' => $from, '--to' => $to]);
         $output = new BufferedOutput();
         $this->command->run($input, $output);
         $stdout = $output->fetch();
-        self::assertContains('[NOTE] 2 events found.', $stdout);
-        self::assertContains('(     0): Botilka\Tests\Fixtures\Domain\StubEvent (null)', $stdout);
-        self::assertContains('(     1): Botilka\Tests\Fixtures\Domain\StubEvent ({"foo":"bar"})', $stdout);
+        self::assertStringContainsStringIgnoringCase('(     0): Botilka\Tests\Fixtures\Domain\StubEvent (null)', $stdout);
+        self::assertStringContainsStringIgnoringCase('(     1): Botilka\Tests\Fixtures\Domain\StubEvent ({"foo":"bar"})', $stdout);
     }
 
     public function executeIdProvider(): array
@@ -84,7 +84,7 @@ final class ProjectorPlayCommandTest extends TestCase
 
         $this->projectionist->expects(self::exactly(\count($this->events)))
             ->method('play')
-            ->withConsecutive(...$this->events)
+            ->with(self::isInstanceOf(Projection::class))
         ;
 
         $input = new ArrayInput(['--domain' => true, 'value' => 'Foo\\Domain']);
@@ -93,11 +93,12 @@ final class ProjectorPlayCommandTest extends TestCase
 
     /**
      * @dataProvider executeFailProvider
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage You must set a domain or an id.
      */
     public function testExecuteFail(array $parameters): void
     {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('You must set a domain or an id.');
+
         $input = new ArrayInput($parameters);
         $this->command->run($input, new BufferedOutput());
     }

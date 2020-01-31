@@ -10,7 +10,7 @@ final class EventStoreDoctrineInitializerTest extends AbstractDoctrineInitialize
 {
     protected $type = 'event';
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $kernel = static::bootKernel();
         $container = static::$container;

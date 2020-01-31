@@ -26,7 +26,7 @@ final class EventStoreMongoDBTest extends TestCase
     /** @var DenormalizerInterface|MockObject */
     private $denormalizer;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->collection = $this->createMock(Collection::class);
         $this->normalizer = $this->createMock(NormalizerInterface::class);

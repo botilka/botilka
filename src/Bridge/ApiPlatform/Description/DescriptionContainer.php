@@ -27,9 +27,7 @@ final class DescriptionContainer implements DescriptionContainerInterface
     {
         // avoid a function call
         if (!isset($this->data[$name])) {
-            throw new DescriptionNotFoundException(
-                \sprintf('Description "%s" was not found. Possible values: "%s".', $name, \implode('", "', \array_keys($this->data)))
-            );
+            throw new DescriptionNotFoundException(\sprintf('Description "%s" was not found. Possible values: "%s".', $name, \implode('", "', \array_keys($this->data))));
         }
 
         return $this->data[$name];

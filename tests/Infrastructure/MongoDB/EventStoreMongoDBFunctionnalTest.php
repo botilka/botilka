@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Botilka\Tests\Infrastructure\MongoDB;
 
+use Botilka\EventStore\AggregateRootNotFoundException;
 use Botilka\EventStore\EventStore;
+use Botilka\EventStore\EventStoreConcurrencyException;
 use Botilka\Tests\AbstractKernelTestCase;
 use Botilka\Tests\Fixtures\Application\EventStore\EventStoreMongoDBSetup;
 use Botilka\Tests\Fixtures\Domain\StubEvent;
@@ -32,15 +34,14 @@ final class EventStoreMongoDBFunctionnalTest extends AbstractKernelTestCase
         ];
     }
 
-    /**
-     * @expectedException \Botilka\EventStore\AggregateRootNotFoundException
-     * @expectedExceptionMessage No aggregrate root found for non_existent.
-     * @group functional
-     */
     public function testLoadNotFoundFunctional(): void
     {
         /** @var EventStore $eventStore */
         [$eventStore, $collection] = $this->setUpEventStore();
+
+        $this->expectException(AggregateRootNotFoundException::class);
+        $this->expectExceptionMessage('No aggregrate root found for non_existent.');
+
         $eventStore->load('non_existent');
     }
 
@@ -90,13 +91,15 @@ final class EventStoreMongoDBFunctionnalTest extends AbstractKernelTestCase
 
     /**
      * @group functional
-     * @expectedException \Botilka\EventStore\EventStoreConcurrencyException
-     * @expectedExceptionMessage Duplicate storage of event "Botilka\Tests\Fixtures\Domain\StubEvent" on aggregate "bar" with playhead 1.
      */
     public function testAppendBulkWriteExceptionFunctional(): void
     {
         /** @var EventStore $eventStore */
         [$eventStore, $collection] = $this->setUpEventStore();
+
+        $this->expectException(EventStoreConcurrencyException::class);
+        $this->expectExceptionMessage('Duplicate storage of event "Botilka\Tests\Fixtures\Domain\StubEvent" on aggregate "bar" with playhead 1.');
+
         $eventStore->append('bar', 1, StubEvent::class, new StubEvent(42), null, new \DateTimeImmutable(), 'Foo\\Domain');
     }
 }

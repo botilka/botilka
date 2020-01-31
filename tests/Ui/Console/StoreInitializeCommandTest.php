@@ -30,7 +30,7 @@ final class StoreInitializeCommandTest extends TestCase
 
         $command->run($input, $output);
         $stdout = $output->fetch();
-        self::assertContains('[WARNING] No initializer found.', $stdout);
+        self::assertStringContainsStringIgnoringCase('[WARNING] No initializer found.', $stdout);
     }
 
     /** @dataProvider executeProvider */
@@ -48,8 +48,8 @@ final class StoreInitializeCommandTest extends TestCase
 
         $command->run($input, $output);
         $stdout = $output->fetch();
-        self::assertContains('Using:', $stdout);
-        self::assertContains('[OK] Finished.', $stdout);
+        self::assertStringContainsStringIgnoringCase('Using:', $stdout);
+        self::assertStringContainsStringIgnoringCase('[OK] Finished.', $stdout);
     }
 
     public function executeProvider(): array
@@ -78,6 +78,6 @@ final class StoreInitializeCommandTest extends TestCase
         $command->run($input, $output);
         $stdout = $output->fetch();
 
-        self::assertContains('[ERROR]', $stdout);
+        self::assertStringContainsStringIgnoringCase('[ERROR]', $stdout);
     }
 }

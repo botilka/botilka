@@ -13,7 +13,7 @@ final class EventStoreMongoDBInitializerTest extends AbstractMongoDBStoreInitial
 {
     protected $type = 'event';
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $kernel = static::bootKernel();
         $container = static::$container;

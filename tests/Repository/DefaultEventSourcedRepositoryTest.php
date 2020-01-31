@@ -21,7 +21,7 @@ final class DefaultEventSourcedRepositoryTest extends TestCase
     /** @var DefaultEventSourcedRepository */
     private $repository;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->eventStore = $this->createMock(EventStore::class);
         $this->aggregateRootClass = StubEventSourcedAggregateRoot::class;

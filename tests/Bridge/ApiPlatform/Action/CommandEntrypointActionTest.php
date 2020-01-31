@@ -15,6 +15,8 @@ use Botilka\Bridge\ApiPlatform\Resource\Command;
 use Botilka\Tests\Fixtures\Application\Command\SimpleCommand;
 use Botilka\Tests\Fixtures\Domain\StubEvent;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 final class CommandEntrypointActionTest extends TestCase
@@ -53,10 +55,6 @@ final class CommandEntrypointActionTest extends TestCase
         self::assertSame('foo', $response->getId());
     }
 
-    /**
-     * @expectedException \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
-     * @expectedExceptionMessage Command 'foo' not found.
-     */
     public function testInvokeNotFound(): void
     {
         $commandBus = $this->createMock(CommandBus::class);
@@ -69,14 +67,14 @@ final class CommandEntrypointActionTest extends TestCase
             ->method('dispatch')
         ;
 
+        $this->expectException(NotFoundHttpException::class);
+        $this->expectExceptionMessage('Command \'foo\' not found.');
+
         $action = new CommandEntrypointAction($commandBus, $descriptionContainer, $hydrator);
 
         $response = $action($commandResource);
     }
 
-    /**
-     * @expectedException \Symfony\Component\HttpKernel\Exception\BadRequestHttpException
-     */
     public function testInvokeBadRequest(): void
     {
         $commandBus = $this->createMock(CommandBus::class);
@@ -93,11 +91,13 @@ final class CommandEntrypointActionTest extends TestCase
             'payload' => ['some' => 'string'],
         ]]);
 
-        $commandResource = new Command('foo', ['foo' => 'baz']);
-
         $commandBus->expects(self::never())
             ->method('dispatch')
         ;
+
+        $this->expectException(BadRequestHttpException::class);
+
+        $commandResource = new Command('foo', ['foo' => 'baz']);
 
         $action = new CommandEntrypointAction($commandBus, $descriptionContainer, $hydrator);
 

@@ -82,11 +82,12 @@ final class EventStoreManagerDoctrine implements EventStoreManager
     {
         $events = [];
 
-        /* @var array $event */
         foreach ($storedEvents as $storedEvent) {
+            /** @var \Botilka\Event\Event $domainEvent */
+            $domainEvent = $this->denormalizer->denormalize(\json_decode($storedEvent['payload'], true), $storedEvent['type']);
             $events[] = new ManagedEvent(
                 $storedEvent['id'],
-                $this->denormalizer->denormalize(\json_decode($storedEvent['payload'], true), $storedEvent['type']),
+                $domainEvent,
                 $storedEvent['playhead'],
                 \json_decode($storedEvent['metadata'], true),
                 new \DateTimeImmutable($storedEvent['recorded_on']),

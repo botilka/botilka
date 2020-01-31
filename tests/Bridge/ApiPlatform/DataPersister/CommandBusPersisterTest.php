@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Botilka\Tests\Bridge\ApiPlatform\DataPersister;
 
+use ApiPlatform\Core\Bridge\Symfony\Validator\Exception\ValidationException;
 use Botilka\Application\Command\CommandBus;
 use Botilka\Application\Command\CommandResponse;
 use Botilka\Bridge\ApiPlatform\Command\CommandResponseAdapter;
@@ -25,7 +26,7 @@ final class CommandBusPersisterTest extends TestCase
     /** @var ValidatorInterface|MockObject */
     private $validator;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->commandBus = $this->createMock(CommandBus::class);
         $this->validator = $this->createMock(ValidatorInterface::class);
@@ -54,7 +55,6 @@ final class CommandBusPersisterTest extends TestCase
         self::assertSame('bar', $result->getId());
     }
 
-    /** @expectedException \ApiPlatform\Core\Bridge\Symfony\Validator\Exception\ValidationException */
     public function testPersistViolation(): void
     {
         $command = new SimpleCommand('foo');
@@ -70,16 +70,17 @@ final class CommandBusPersisterTest extends TestCase
             ->willReturn($violationList)
         ;
 
+        $this->expectException(ValidationException::class);
+
         $persister = new CommandBusPersister($this->commandBus, $this->validator);
         $result = $persister->persist($command);
     }
 
-    /**
-     * @expectedException \LogicException
-     * @expectedExceptionMessage Remove must not be called in an event-sourced application.
-     */
     public function testRemove()
     {
+        $this->expectException(\LogicException::class);
+        $this->expectExceptionMessage('Remove must not be called in an event-sourced application.');
+
         $command = new SimpleCommand('foo');
         $persister = new CommandBusPersister($this->commandBus, $this->validator);
 

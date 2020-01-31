@@ -19,7 +19,7 @@ final class DefaultProjectionistTest extends TestCase
     /** @var LoggerInterface|MockObject */
     private $logger;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->logger = $this->createMock(LoggerInterface::class);
     }

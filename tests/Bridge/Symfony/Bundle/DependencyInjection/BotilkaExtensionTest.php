@@ -47,7 +47,7 @@ final class BotilkaExtensionTest extends TestCase
     /** @var BotilkaExtension */
     private $extension;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->extension = new BotilkaExtension();
     }
