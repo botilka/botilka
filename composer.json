@@ -36,8 +36,8 @@
         "tests:unit": "phpunit",
         "tests:functional": "phpunit --group functional",
         "tests:coverage": "phpunit --group default,functional --coverage-html=coverage",
-        "csfix:dry": "./php-cs-fixer fix --dry-run",
-        "csfix": "./php-cs-fixer fix",
+        "csfix:dry": "./php-cs-fixer.phar fix --dry-run",
+        "csfix": "./php-cs-fixer.phar fix",
         "tests": [
             "@analyze",
             "@tests:coverage",

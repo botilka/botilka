@@ -23,6 +23,10 @@ env:
     - deps=low
     - deps=high
 
+allow_failures:
+    - php: 7.4
+      env: deps=low
+
 before_script:
   - composer global require friendsofphp/php-cs-fixer infection/infection
   - export PATH="$PATH:$HOME/.composer/vendor/bin"
