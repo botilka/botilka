@@ -27,8 +27,13 @@ final class EventReplayCommand extends Command
     protected function configure()
     {
         $this->setDescription('Replay events for an aggregate or a domain')
-            ->configureCommon($this)
+            ->configureParameters($this)
         ;
+    }
+
+    protected function initialize(InputInterface $input, OutputInterface $output)
+    {
+        $this->checkDomainOrId($input);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
