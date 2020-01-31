@@ -32,8 +32,10 @@ final class SnapshotStoreDoctrine implements SnapshotStore
         if (false === ($result = $stmt->fetch())) {
             throw new SnapshotNotFoundException("No snapshot found for {$id}.");
         }
+        /** @var EventSourcedAggregateRoot $result */
+        $result = $this->serializer->deserialize($result['payload'], $result['type'], self::FORMAT);
 
-        return $this->serializer->deserialize($result['payload'], $result['type'], self::FORMAT);
+        return $result;
     }
 
     public function snapshot(EventSourcedAggregateRoot $aggregateRoot): void

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Botilka\Ui\Console;
 
+use Botilka\EventStore\EventStoreManager;
 use Botilka\EventStore\ManagedEvent;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -16,6 +17,9 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 trait GetManagedEventsFromEventStoreTrait
 {
+    /** @var EventStoreManager */
+    private $eventStoreManager;
+
     protected function initialize(InputInterface $input, OutputInterface $output)
     {
         /** @var bool $id */
@@ -41,7 +45,7 @@ trait GetManagedEventsFromEventStoreTrait
     /**
      * @return ManagedEvent[]
      */
-    private function getManagedEvents(InputInterface $input): array
+    private function getManagedEvents(InputInterface $input): iterable
     {
         /** @var string $value */
         $value = $input->getArgument('value');
@@ -53,8 +57,9 @@ trait GetManagedEventsFromEventStoreTrait
             return $this->eventStoreManager->loadByDomain($value);
         }
 
-        $from = $input->getOption('from');
-        $to = $input->getOption('to');
+
+        $from = intval($input->getOption('from'));
+        $to = intval($input->getOption('to'));
 
         return $this->eventStoreManager->loadByAggregateRootId($value, $from, $to);
     }

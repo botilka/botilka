@@ -15,14 +15,13 @@ final class EventReplayCommand extends Command
 {
     use GetManagedEventsFromEventStoreTrait;
 
-    private $eventStoreManager;
     private $eventBus;
 
     public function __construct(EventStoreManager $eventStoreManager, EventBus $eventBus)
     {
         parent::__construct('botilka:event_store:replay');
-        $this->eventStoreManager = $eventStoreManager;
         $this->eventBus = $eventBus;
+        $this->eventStoreManager = $eventStoreManager;
     }
 
     protected function configure()

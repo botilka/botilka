@@ -17,7 +17,6 @@ final class ProjectorPlayCommand extends Command
 {
     use GetManagedEventsFromEventStoreTrait;
 
-    private $eventStoreManager;
     private $projectionist;
 
     public function __construct(EventStoreManager $eventStoreManager, Projectionist $projectionist)
@@ -44,8 +43,6 @@ final class ProjectorPlayCommand extends Command
         $context = [
             'matching' => $input->getOption('matching'),
         ];
-
-        $io->note(\sprintf('%d events found.', \count($managedEvents)));
 
         foreach ($managedEvents as $managedEvent) {
             $domainEvent = $managedEvent->getDomainEvent();
