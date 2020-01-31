@@ -40,9 +40,15 @@ after_script:
       infection;
     fi
 
-install:
+before_install:
   - pecl channel-update pecl.php.net
-  - pecl -q install mongodb || true
+  - if [[ $(phpenv version-name) < 7.3 ]]; then
+      pecl -q install mongodb;
+    else
+      echo 'extension="mongodb.so"' >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini;
+    fi
+
+install:
   - if [[ $deps = 'low' ]]; then
       composer update --prefer-dist --no-progress --no-suggest --ansi --prefer-stable --prefer-lowest;
     else
