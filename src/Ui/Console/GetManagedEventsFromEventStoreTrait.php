@@ -57,9 +57,13 @@ trait GetManagedEventsFromEventStoreTrait
             return $this->eventStoreManager->loadByDomain($value);
         }
 
+        /** @var string $from */
+        $from = $input->getOption('from');
+        $from = \intval($from, 10);
 
-        $from = intval($input->getOption('from'));
-        $to = intval($input->getOption('to'));
+        /** @var string $to */
+        $to = $input->getOption('to');
+        $to = \intval($to, 10);
 
         return $this->eventStoreManager->loadByAggregateRootId($value, $from, $to);
     }
