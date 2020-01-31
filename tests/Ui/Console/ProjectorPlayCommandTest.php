@@ -60,7 +60,6 @@ final class ProjectorPlayCommandTest extends TestCase
         $output = new BufferedOutput();
         $this->command->run($input, $output);
         $stdout = $output->fetch();
-        self::assertContains('[NOTE] 2 events found.', $stdout);
         self::assertContains('(     0): Botilka\Tests\Fixtures\Domain\StubEvent (null)', $stdout);
         self::assertContains('(     1): Botilka\Tests\Fixtures\Domain\StubEvent ({"foo":"bar"})', $stdout);
     }
