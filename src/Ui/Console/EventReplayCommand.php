@@ -36,7 +36,7 @@ final class EventReplayCommand extends Command
         $this->checkDomainOrId($input);
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $managedEvents = $this->getManagedEvents($input);
 
@@ -44,5 +44,7 @@ final class EventReplayCommand extends Command
         foreach ($managedEvents as $managedEvent) {
             $this->eventBus->dispatch($managedEvent->getDomainEvent());
         }
+
+        return 0;
     }
 }

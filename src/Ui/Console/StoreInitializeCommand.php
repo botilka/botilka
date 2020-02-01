@@ -31,7 +31,7 @@ final class StoreInitializeCommand extends Command
         ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         /** @var string $implementation */
         $implementation = $input->getArgument('implementation');
@@ -59,6 +59,14 @@ final class StoreInitializeCommand extends Command
             }
         }
 
-        true === $found ? $io->success('Finished.') : $io->warning('No initializer found.');
+        if (true !== $found) {
+            $io->warning('No initializer found.');
+
+            return 1;
+        }
+
+        $io->success('Finished.');
+
+        return 0;
     }
 }
