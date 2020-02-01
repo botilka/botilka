@@ -112,7 +112,7 @@ class SnapshotStoreDoctrineTest extends TestCase
         ;
 
         $this->expectException(SnapshotNotFoundException::class);
-        $this->expectDeprecationMessage('No snapshot found for foo.');
+        $this->expectExceptionMessage('No snapshot found for foo.');
 
         $this->snapshotStore->load('foo');
     }
