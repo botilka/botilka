@@ -99,10 +99,10 @@ abstract class AbstractDoctrineInitializerTest extends AbstractKernelTestCase
 
         /** @var ManagerRegistry $doctrine */
         $doctrine = self::$container->get('doctrine');
-        $application = new DropDatabaseDoctrineCommand();
+        $application = new DropDatabaseDoctrineCommand($doctrine);
         $application->run(new ArrayInput(['--force' => true]), new NullOutput());
 
-        $application = new CreateDatabaseDoctrineCommand();
+        $application = new CreateDatabaseDoctrineCommand($doctrine);
         $application->run(new ArrayInput([]), new NullOutput());
     }
 }
