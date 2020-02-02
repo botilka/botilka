@@ -23,6 +23,9 @@ final class CommandBusPersister implements DataPersisterInterface
         $this->validator = $validator;
     }
 
+    /**
+     * @param mixed $data
+     */
     public function supports($data): bool
     {
         return $data instanceof Command;
