@@ -6,5 +6,8 @@ namespace Botilka\Projector;
 
 interface Projector
 {
+    /**
+     * @return array<string, string>
+     */
     public static function getSubscribedEvents();
 }

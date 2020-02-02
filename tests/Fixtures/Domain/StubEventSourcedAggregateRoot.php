@@ -11,10 +11,14 @@ final class StubEventSourcedAggregateRoot implements EventSourcedAggregateRoot
 {
     use EventSourcedAggregateRootApplier;
 
+    /**
+     * @var array<string, string>
+     */
     protected $eventMap = [
         StubEvent::class => 'stubbed',
     ];
 
+    /** @var int */
     private $foo = 123;
 
     public function getAggregateRootId(): string

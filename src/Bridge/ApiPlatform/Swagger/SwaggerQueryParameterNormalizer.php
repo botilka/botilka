@@ -17,9 +17,13 @@ final class SwaggerQueryParameterNormalizer implements SwaggerPayloadNormalizerI
         return $parameters;
     }
 
+    /**
+     * @param string|string[] $type
+     */
     private function flatten(string $name, $type, array &$parameters): void
     {
         if (\is_array($type)) {
+            /** @var string|string[] $childType */
             foreach ($type as $childName => $childType) {
                 $flattenedChildName = $name.'['.$childName.']';
                 if (\is_array($childType)) {

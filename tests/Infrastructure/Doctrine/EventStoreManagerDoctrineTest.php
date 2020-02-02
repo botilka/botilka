@@ -22,6 +22,7 @@ final class EventStoreManagerDoctrineTest extends TestCase
     /** @var EventStoreManagerDoctrine */
     private $manager;
 
+    /** @var string */
     private $table = 'foo';
 
     protected function setUp(): void

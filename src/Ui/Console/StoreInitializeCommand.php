@@ -22,7 +22,7 @@ final class StoreInitializeCommand extends Command
         $this->initializers = $initializers;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->setDescription('Initialize an store implementation (create, unique index, ...).')
             ->addArgument('type', InputArgument::REQUIRED, \sprintf('Type of store (%s)', \implode(', ', StoreInitializer::TYPES)))

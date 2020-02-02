@@ -11,8 +11,14 @@ use Botilka\Application\Command\Command;
  */
 final class CommandHydrator extends AbstractHydrator implements CommandHydratorInterface
 {
+    /**
+     * @param mixed $data
+     */
     public function hydrate($data, string $class): Command
     {
-        return $this->doHydrate($data, $class);
+        /** @var Command $command */
+        $command = $this->doHydrate($data, $class);
+
+        return $command;
     }
 }

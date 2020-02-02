@@ -26,7 +26,7 @@ final class ProjectorPlayCommand extends Command
         $this->projectionist = $projectionist;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->setDescription('Play projections for an aggregate or a domain')
             ->configureParameters($this)
@@ -34,7 +34,7 @@ final class ProjectorPlayCommand extends Command
         ;
     }
 
-    protected function initialize(InputInterface $input, OutputInterface $output)
+    protected function initialize(InputInterface $input, OutputInterface $output): void
     {
         $this->checkDomainOrId($input);
     }

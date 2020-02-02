@@ -23,7 +23,10 @@ final class CommandDataProvider implements CollectionDataProviderInterface, Item
         $this->descriptionContainer = $descriptionContainer;
     }
 
-    public function getCollection(string $resourceClass, string $operationName = null)
+    /**
+     * @return Command[]
+     */
+    public function getCollection(string $resourceClass, string $operationName = null): array
     {
         $descriptionContainer = [];
         foreach ($this->descriptionContainer as $name => $description) {
@@ -36,7 +39,7 @@ final class CommandDataProvider implements CollectionDataProviderInterface, Item
     /**
      * @param string $id
      */
-    public function getItem(string $resourceClass, $id, string $operationName = null, array $context = [])
+    public function getItem(string $resourceClass, $id, string $operationName = null, array $context = []): Command
     {
         if (!$this->descriptionContainer->has($id)) {
             throw new NotFoundHttpException(\sprintf('Command "%s" not found.', $id));

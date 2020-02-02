@@ -18,7 +18,7 @@ final class ApiPlatformDataProviderPass implements CompilerPassInterface
         Query::class => QueryDataProvider::class,
     ];
 
-    public function process(ContainerBuilder $container)
+    public function process(ContainerBuilder $container): void
     {
         foreach (self::RESOURCE_TO_DATA_PROVIDER as $resourceClassName => $dataProviderClassName) {
             if (!$container->hasDefinition($dataProviderClassName)) {

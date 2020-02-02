@@ -31,7 +31,7 @@ class SnapshotStoreDoctrineTest extends TestCase
         self::assertInstanceOf(SnapshotStore::class, $this->snapshotStore);
     }
 
-    public function testSnapshot()
+    public function testSnapshot(): void
     {
         $aggregateRoot = new StubEventSourcedAggregateRoot();
 
@@ -68,7 +68,7 @@ class SnapshotStoreDoctrineTest extends TestCase
         $this->snapshotStore->snapshot($aggregateRoot);
     }
 
-    public function testLoadSuccess()
+    public function testLoadSuccess(): void
     {
         $this->connection->expects(self::once())
             ->method('prepare')
@@ -92,7 +92,7 @@ class SnapshotStoreDoctrineTest extends TestCase
         self::assertSame($aggregateRoot, $this->snapshotStore->load('foo'));
     }
 
-    public function testLoadFail()
+    public function testLoadFail(): void
     {
         $this->connection->expects(self::once())
             ->method('prepare')

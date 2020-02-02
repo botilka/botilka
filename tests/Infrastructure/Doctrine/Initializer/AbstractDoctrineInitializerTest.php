@@ -29,6 +29,7 @@ abstract class AbstractDoctrineInitializerTest extends AbstractKernelTestCase
     /** @var string */
     protected $type;
 
+    /** @var bool */
     private $needDropTable = false;
 
     protected function tearDown(): void
@@ -98,10 +99,10 @@ abstract class AbstractDoctrineInitializerTest extends AbstractKernelTestCase
 
         /** @var ManagerRegistry $doctrine */
         $doctrine = self::$container->get('doctrine');
-        $application = new DropDatabaseDoctrineCommand($doctrine);
+        $application = new DropDatabaseDoctrineCommand();
         $application->run(new ArrayInput(['--force' => true]), new NullOutput());
 
-        $application = new CreateDatabaseDoctrineCommand($doctrine);
+        $application = new CreateDatabaseDoctrineCommand();
         $application->run(new ArrayInput([]), new NullOutput());
     }
 }

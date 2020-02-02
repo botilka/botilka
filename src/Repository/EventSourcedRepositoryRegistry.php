@@ -22,11 +22,9 @@ final class EventSourcedRepositoryRegistry implements ContainerInterface
     }
 
     /**
-     * @param mixed $className
-     *
-     * @return EventSourcedRepository
+     * @param string $className
      */
-    public function get($className)
+    public function get($className): EventSourcedRepository
     {
         if (!isset($this->repositories[$className])) {
             throw new ServiceNotFoundException("Event sourced repository for aggregate root '{$className}' not found.");
@@ -35,7 +33,10 @@ final class EventSourcedRepositoryRegistry implements ContainerInterface
         return $this->repositories[$className];
     }
 
-    public function has($className)
+    /**
+     * @param string $className
+     */
+    public function has($className): bool
     {
         return isset($this->repositories[$className]);
     }

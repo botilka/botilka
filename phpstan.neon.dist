@@ -1,5 +1,5 @@
 includes:
-    - vendor/phpstan/phpstan-deprecation-rules/rules.neon
+#    - vendor/phpstan/phpstan-deprecation-rules/rules.neon
     - vendor/phpstan/phpstan-phpunit/extension.neon
     - vendor/phpstan/phpstan-phpunit/rules.neon
     - vendor/jangregor/phpstan-prophecy/src/extension.neon
@@ -10,4 +10,13 @@ parameters:
         - tests/
     excludes_analyse:
         - src/Bridge/Symfony/Bundle/DependencyInjection/Configuration.php
+        - tests/Fixtures/Application/Command
+    ignoreErrors:
+            -
+                message: '#Call to an undefined method ReflectionType::getName\(\)#'
+                path: src/Bridge/Symfony/Bundle/DependencyInjection/Compiler/ApiPlatformDescriptionContainerPass.php
     inferPrivatePropertyTypeFromConstructor: true
+
+    # todo: clean all the things!
+    checkMissingIterableValueType: false
+    checkGenericClassInNonGenericObjectType: false

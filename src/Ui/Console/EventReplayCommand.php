@@ -24,14 +24,14 @@ final class EventReplayCommand extends Command
         $this->eventStoreManager = $eventStoreManager;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->setDescription('Replay events for an aggregate or a domain')
             ->configureParameters($this)
         ;
     }
 
-    protected function initialize(InputInterface $input, OutputInterface $output)
+    protected function initialize(InputInterface $input, OutputInterface $output): void
     {
         $this->checkDomainOrId($input);
     }

@@ -21,7 +21,7 @@ final class ApiPlatformDescriptionContainerPass implements CompilerPassInterface
         Query::class => 'cqrs.query',
     ];
 
-    public function process(ContainerBuilder $container)
+    public function process(ContainerBuilder $container): void
     {
         if (!$container->hasDefinition(DescriptionContainer::class)) {
             return;
@@ -39,6 +39,7 @@ final class ApiPlatformDescriptionContainerPass implements CompilerPassInterface
 
         $serviceIds = $container->findTaggedServiceIds($tag);
         $collection = [];
+        /** @var class-string $serviceId */
         foreach ($serviceIds as $serviceId => $tags) {
             $class = new \ReflectionClass($serviceId);
             $payload = $this->extractConstructorArgumentsUntilScalar($class);

@@ -7,6 +7,7 @@ namespace Botilka\Tests\app;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Routing\RouteCollectionBuilder;
 
@@ -22,17 +23,20 @@ final class AppKernel extends Kernel
         $this->volatileDir = \sys_get_temp_dir().'/botilka_test';
     }
 
-    public function getCacheDir()
+    public function getCacheDir(): string
     {
         return $this->volatileDir.'/cache/'.$this->environment;
     }
 
-    public function getLogDir()
+    public function getLogDir(): string
     {
         return $this->volatileDir.'/logs/'.$this->environment;
     }
 
-    public function registerBundles()
+    /**
+     * @return Bundle[]
+     */
+    public function registerBundles(): array
     {
         return [
             new \Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
@@ -42,11 +46,11 @@ final class AppKernel extends Kernel
         ];
     }
 
-    protected function configureRoutes(RouteCollectionBuilder $routes)
+    protected function configureRoutes(RouteCollectionBuilder $routes): void
     {
     }
 
-    protected function configureContainer(ContainerBuilder $c, LoaderInterface $loader)
+    protected function configureContainer(ContainerBuilder $c, LoaderInterface $loader): void
     {
         $c->setParameter('kernel.project_dir', __DIR__);
         $loader->load(__DIR__.'/config/config.yaml');

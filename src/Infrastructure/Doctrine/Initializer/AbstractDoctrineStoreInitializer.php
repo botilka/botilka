@@ -10,6 +10,7 @@ use Doctrine\DBAL\Schema\Schema;
 
 abstract class AbstractDoctrineStoreInitializer
 {
+    /** @var string */
     protected $tableName;
     private $connection;
 
