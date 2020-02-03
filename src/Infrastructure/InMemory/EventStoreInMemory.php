@@ -9,6 +9,7 @@ use Botilka\EventStore\EventStore;
 
 final class EventStoreInMemory implements EventStore
 {
+    /** @var array<string, array<string, array<string, mixed>>> */
     private $store = [];
 
     public function load(string $id): array

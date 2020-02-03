@@ -10,6 +10,7 @@ use PHPUnit\Framework\TestCase;
 
 final class EventSourcedAggregateRootApplierTest extends TestCase
 {
+    /** @var StubEventSourcedAggregateRoot */
     private $eventSourcedAggregateRoot;
 
     protected function setUp(): void

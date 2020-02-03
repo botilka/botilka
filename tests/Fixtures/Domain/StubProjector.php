@@ -8,6 +8,7 @@ use Botilka\Projector\Projector;
 
 final class StubProjector implements Projector
 {
+    /** @var bool */
     public $onStubEventPlayed = false;
 
     public function onStubEvent(StubEvent $event): void
@@ -15,7 +16,10 @@ final class StubProjector implements Projector
         $this->onStubEventPlayed = true;
     }
 
-    public static function getSubscribedEvents()
+    /**
+     * @return array<string, string>
+     */
+    public static function getSubscribedEvents(): array
     {
         return [
             \stdClass::class => 'onStdClass',

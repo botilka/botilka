@@ -19,13 +19,13 @@ class SnapshotStoreInMemoryTest extends TestCase
         $this->snapshotStore = new SnapshotStoreInMemory();
     }
 
-    public function testLoadNotFound()
+    public function testLoadNotFound(): void
     {
         $this->expectException(SnapshotNotFoundException::class);
         $this->snapshotStore->load('non_existent');
     }
 
-    public function testSnapshotAndLoad()
+    public function testSnapshotAndLoad(): void
     {
         $aggregateRoot = new StubEventSourcedAggregateRoot();
         $this->snapshotStore->snapshot($aggregateRoot);

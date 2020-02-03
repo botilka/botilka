@@ -7,7 +7,6 @@ namespace Botilka\Tests\Infrastructure\MongoDB\Initializer;
 use Botilka\Infrastructure\MongoDB\Initializer\SnapshotStoreMongoDBInitializer;
 use Botilka\Infrastructure\StoreInitializer;
 use MongoDB\Client;
-use MongoDB\Collection;
 use MongoDB\Database;
 
 final class SnapshotStoreMongoDBInitializerTest extends AbstractMongoDBStoreInitializerTest
@@ -20,7 +19,7 @@ final class SnapshotStoreMongoDBInitializerTest extends AbstractMongoDBStoreInit
         $container = static::$container;
         /** @var string $database */
         $database = $container->getParameter('botilka.mongodb.db').'_test';
-        /** @var string $collection */
+        /** @var string $collectionName */
         $collectionName = $container->getParameter('botilka.snapshot_store.collection').'_test';
         $this->database = $database;
         $this->collectionName = $collectionName;

@@ -19,7 +19,10 @@ trait GetManagedEventsFromEventStoreTrait
     /** @var EventStoreManager */
     private $eventStoreManager;
 
-    protected function checkDomainOrId(InputInterface $input)
+    /**
+     * @throws \InvalidArgumentException
+     */
+    protected function checkDomainOrId(InputInterface $input): void
     {
         /** @var bool $id */
         $id = $input->getOption('id');

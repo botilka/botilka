@@ -34,7 +34,7 @@ final class EventStoreMongoDBTest extends TestCase
         $this->eventStore = new EventStoreMongoDB($this->collection, $this->normalizer, $this->denormalizer);
     }
 
-    public function testAppend()
+    public function testAppend(): void
     {
         $this->collection->expects(self::once())->method('insertOne');
 

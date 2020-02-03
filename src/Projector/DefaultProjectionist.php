@@ -29,8 +29,8 @@ final class DefaultProjectionist implements Projectionist
         $context = $projection->getContext();
         $matching = $context['matching'] ?? null;
 
-        /** @var Projector $projector */
         $found = false;
+        /** @var Projector $projector */
         foreach ($this->projectors as $projector) {
             $eventMap = $projector::getSubscribedEvents();
 

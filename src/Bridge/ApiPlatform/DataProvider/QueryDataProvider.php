@@ -23,7 +23,10 @@ final class QueryDataProvider implements CollectionDataProviderInterface, ItemDa
         $this->descriptionContainer = $descriptionContainer;
     }
 
-    public function getCollection(string $resourceClass, string $operationName = null)
+    /**
+     * @return Query[]
+     */
+    public function getCollection(string $resourceClass, string $operationName = null): array
     {
         $collection = [];
         foreach ($this->descriptionContainer as $name => $description) {
@@ -36,7 +39,7 @@ final class QueryDataProvider implements CollectionDataProviderInterface, ItemDa
     /**
      * @param string $id
      */
-    public function getItem(string $resourceClass, $id, string $operationName = null, array $context = [])
+    public function getItem(string $resourceClass, $id, string $operationName = null, array $context = []): Query
     {
         if (!$this->descriptionContainer->has($id)) {
             throw new NotFoundHttpException(\sprintf('Query "%s" not found.', $id));

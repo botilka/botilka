@@ -11,8 +11,14 @@ use Botilka\Application\Query\Query;
  */
 final class QueryHydrator extends AbstractHydrator implements QueryHydratorInterface
 {
+    /**
+     * @param mixed $data
+     */
     public function hydrate($data, string $class): Query
     {
-        return $this->doHydrate($data, $class);
+        /** @var Query $query */
+        $query = $this->doHydrate($data, $class);
+
+        return $query;
     }
 }

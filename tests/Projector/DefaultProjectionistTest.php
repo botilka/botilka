@@ -71,7 +71,7 @@ final class DefaultProjectionistTest extends TestCase
         $projectionist->play($projection);
     }
 
-    public function testPlayForEvent()
+    public function testPlayForEvent(): void
     {
         $event = new StubEvent(42);
 

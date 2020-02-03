@@ -8,9 +8,7 @@ use Botilka\Application\Command\Command;
 
 final class WithoutConstructorCommand implements Command
 {
-    /** @var string */
     private $foo;
-    /** @var ?int */
     private $bar;
 
     public function setFoo(string $foo): self

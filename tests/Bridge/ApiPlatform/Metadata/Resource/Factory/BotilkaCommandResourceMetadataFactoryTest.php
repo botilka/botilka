@@ -149,7 +149,7 @@ final class BotilkaCommandResourceMetadataFactoryTest extends TestCase
         self::assertSame($itemOperations, $resourceMetadata->getItemOperations());
     }
 
-    public function testIsSubclassOfCommand()
+    public function testIsSubclassOfCommand(): void
     {
         $resourceMetadata = $this->factory->create(SimpleCommand::class);
         self::assertSame($resourceMetadata->getAttributes(), ['output' => ['class' => '']]);

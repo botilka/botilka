@@ -29,6 +29,7 @@ abstract class AbstractDoctrineInitializerTest extends AbstractKernelTestCase
     /** @var string */
     protected $type;
 
+    /** @var bool */
     private $needDropTable = false;
 
     protected function tearDown(): void

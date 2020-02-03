@@ -12,7 +12,7 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 class BotilkaBundle extends Bundle
 {
-    public function build(ContainerBuilder $container)
+    public function build(ContainerBuilder $container): void
     {
         if ($container->hasExtension('api_platform')) {
             $container->addCompilerPass(new ApiPlatformDescriptionContainerPass());

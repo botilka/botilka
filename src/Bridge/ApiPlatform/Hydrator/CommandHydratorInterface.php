@@ -8,5 +8,8 @@ use Botilka\Application\Command\Command;
 
 interface CommandHydratorInterface
 {
+    /**
+     * @param mixed $data
+     */
     public function hydrate($data, string $class): Command;
 }

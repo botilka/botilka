@@ -76,7 +76,7 @@ final class CommandBusPersisterTest extends TestCase
         $result = $persister->persist($command);
     }
 
-    public function testRemove()
+    public function testRemove(): void
     {
         $this->expectException(\LogicException::class);
         $this->expectExceptionMessage('Remove must not be called in an event-sourced application.');
@@ -87,13 +87,19 @@ final class CommandBusPersisterTest extends TestCase
         $persister->remove($command);
     }
 
-    /** @dataProvider supportsProvider */
-    public function testSupports($data, bool $expected)
+    /**
+     * @param object $data
+     * @dataProvider supportsProvider
+     */
+    public function testSupports($data, bool $expected): void
     {
         $persister = new CommandBusPersister($this->commandBus, $this->validator);
         self::assertSame($expected, $persister->supports($data));
     }
 
+    /**
+     * @return array<int, array<int, bool|object>>
+     */
     public function supportsProvider(): array
     {
         return [

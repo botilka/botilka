@@ -34,7 +34,7 @@ final class BotilkaExtension extends Extension implements PrependExtensionInterf
         EventSourcedRepository::class => ['botilka.repository.event_sourced'],
     ];
 
-    public function prepend(ContainerBuilder $container)
+    public function prepend(ContainerBuilder $container): void
     {
         $botilkaConfig = \array_merge([], ...$container->getExtensionConfig('botilka'));
         $container->setParameter('botilka.bridge.api_platform', false);
@@ -48,7 +48,7 @@ final class BotilkaExtension extends Extension implements PrependExtensionInterf
         $this->prependApliPlatformConfig($container, $botilkaConfig);
     }
 
-    public function load(array $configs, ContainerBuilder $container)
+    public function load(array $configs, ContainerBuilder $container): void
     {
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);

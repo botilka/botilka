@@ -55,7 +55,10 @@ final class QueryDataProviderTest extends TestCase
         self::assertSame($expected, $this->dataProvider->supports($resourceClass));
     }
 
-    public function supportsDataProvider()
+    /**
+     * @return array<int, array<int, bool|class-string>>
+     */
+    public function supportsDataProvider(): array
     {
         return [
             [true, Query::class],

@@ -23,6 +23,9 @@ final class CommandBusPersister implements DataPersisterInterface
         $this->validator = $validator;
     }
 
+    /**
+     * @param mixed $data
+     */
     public function supports($data): bool
     {
         return $data instanceof Command;
@@ -52,7 +55,7 @@ final class CommandBusPersister implements DataPersisterInterface
      *
      * @throws \LogicException must not be called in an event-sourced application
      */
-    public function remove($data)
+    public function remove($data): void
     {
         throw new \LogicException('Remove must not be called in an event-sourced application.');
     }

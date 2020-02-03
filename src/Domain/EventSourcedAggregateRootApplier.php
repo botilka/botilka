@@ -8,6 +8,7 @@ use Botilka\Event\Event;
 
 trait EventSourcedAggregateRootApplier
 {
+    /** @var int */
     private $playhead = -1;
 
     public function apply(Event $event): EventSourcedAggregateRoot

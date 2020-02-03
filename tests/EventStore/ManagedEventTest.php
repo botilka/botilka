@@ -24,7 +24,7 @@ final class ManagedEventTest extends TestCase
         $this->managedEvent = new ManagedEvent('foo', $this->domainEvent, 1337, ['foo' => 'bar'], $this->recordedOn, 'Foo\\Domain');
     }
 
-    public function testGetId()
+    public function testGetId(): void
     {
         self::assertSame('foo', $this->managedEvent->getId());
     }

@@ -82,7 +82,7 @@ abstract class AbstractMongoDBStoreInitializerTest extends AbstractKernelTestCas
         $initializer->initialize();
     }
 
-    public function testGetType()
+    public function testGetType(): void
     {
         $client = $this->createMock(Client::class);
         $initializer = $this->getInitializer($client);

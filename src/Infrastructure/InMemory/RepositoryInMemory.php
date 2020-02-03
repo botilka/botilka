@@ -9,6 +9,7 @@ use Botilka\Repository\Repository;
 
 final class RepositoryInMemory implements Repository
 {
+    /** @var array<string, AggregateRoot> */
     private $data = [];
 
     public function get(string $id): ?AggregateRoot

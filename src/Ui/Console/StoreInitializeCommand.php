@@ -22,7 +22,7 @@ final class StoreInitializeCommand extends Command
         $this->initializers = $initializers;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->setDescription('Initialize an store implementation (create, unique index, ...).')
             ->addArgument('type', InputArgument::REQUIRED, \sprintf('Type of store (%s)', \implode(', ', StoreInitializer::TYPES)))
@@ -31,7 +31,7 @@ final class StoreInitializeCommand extends Command
         ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         /** @var string $implementation */
         $implementation = $input->getArgument('implementation');
@@ -59,6 +59,14 @@ final class StoreInitializeCommand extends Command
             }
         }
 
-        true === $found ? $io->success('Finished.') : $io->warning('No initializer found.');
+        if (true !== $found) {
+            $io->warning('No initializer found.');
+
+            return 1;
+        }
+
+        $io->success('Finished.');
+
+        return 0;
     }
 }

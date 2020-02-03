@@ -34,6 +34,9 @@ final class EventStoreMongoDBFunctionnalTest extends AbstractKernelTestCase
         ];
     }
 
+    /**
+     * @group functional
+     */
     public function testLoadNotFoundFunctional(): void
     {
         /** @var EventStore $eventStore */

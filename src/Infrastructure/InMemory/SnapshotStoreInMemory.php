@@ -10,6 +10,9 @@ use Botilka\Snapshot\SnapshotStore;
 
 final class SnapshotStoreInMemory implements SnapshotStore
 {
+    /**
+     * @var array<string, EventSourcedAggregateRoot>
+     */
     private $store = [];
 
     public function load(string $id): EventSourcedAggregateRoot
