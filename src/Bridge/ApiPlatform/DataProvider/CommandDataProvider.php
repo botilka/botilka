@@ -37,7 +37,8 @@ final class CommandDataProvider implements CollectionDataProviderInterface, Item
     }
 
     /**
-     * @param string $id
+     * @param string               $id
+     * @param array<string, mixed> $context
      */
     public function getItem(string $resourceClass, $id, string $operationName = null, array $context = []): Command
     {
@@ -50,6 +51,9 @@ final class CommandDataProvider implements CollectionDataProviderInterface, Item
         return new Command($id, $description['payload']);
     }
 
+    /**
+     * @param array<string, mixed> $context
+     */
     public function supports(string $resourceClass, string $operationName = null, array $context = []): bool
     {
         return Command::class === $resourceClass;

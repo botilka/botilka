@@ -36,7 +36,10 @@ final class CommandResourceClassEventListener implements EventSubscriberInterfac
         $attributes->set('_api_resource_class', $resource['class']);
     }
 
-    public static function getSubscribedEvents()
+    /**
+     * @return array<string, array<int, array<int, string|int>>>
+     */
+    public static function getSubscribedEvents(): array
     {
         return [
             KernelEvents::REQUEST => [

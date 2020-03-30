@@ -19,6 +19,9 @@ abstract class AbstractMongoDBStoreInitializer
         $this->collectionName = $collectionName;
     }
 
+    /**
+     * @param array<string, int> $uniqueIndexKeys
+     */
     protected function doInitialize(array $uniqueIndexKeys, bool $force): void
     {
         $database = $this->client->selectDatabase($this->database);

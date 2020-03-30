@@ -6,6 +6,11 @@ namespace Botilka\Bridge\ApiPlatform\Swagger;
 
 final class SwaggerQueryParameterNormalizer implements SwaggerPayloadNormalizerInterface
 {
+    /**
+     * @param array<string, mixed> $payload
+     *
+     * @return array<string, mixed>
+     */
     public function normalize(array $payload): array
     {
         $parameters = [];
@@ -18,7 +23,8 @@ final class SwaggerQueryParameterNormalizer implements SwaggerPayloadNormalizerI
     }
 
     /**
-     * @param string|string[] $type
+     * @param string|string[]      $type
+     * @param array<string, mixed> $parameters
      */
     private function flatten(string $name, $type, array &$parameters): void
     {
@@ -37,6 +43,9 @@ final class SwaggerQueryParameterNormalizer implements SwaggerPayloadNormalizerI
         }
     }
 
+    /**
+     * @return array<string, string|bool>
+     */
     private function getParameterDescription(string $name, string $type): array
     {
         return [

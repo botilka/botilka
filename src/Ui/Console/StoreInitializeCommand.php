@@ -16,6 +16,9 @@ final class StoreInitializeCommand extends Command
 {
     private $initializers;
 
+    /**
+     * @param iterable<StoreInitializer> $initializers
+     */
     public function __construct(iterable $initializers = [])
     {
         parent::__construct('botilka:store:initialize');

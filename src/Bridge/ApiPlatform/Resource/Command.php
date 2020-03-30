@@ -24,9 +24,12 @@ final class Command implements ResourceInterface
     /** @ApiProperty(identifier=true) */
     private $name;
 
-    /** @var array An object representing the command arguments */
+    // An object representing the command arguments
     private $payload;
 
+    /**
+     * @param array<string, mixed> $payload
+     */
     public function __construct(string $name, array $payload)
     {
         $this->name = $name;
@@ -38,6 +41,9 @@ final class Command implements ResourceInterface
         return $this->name;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getPayload(): array
     {
         return $this->payload;

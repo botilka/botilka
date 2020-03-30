@@ -50,6 +50,9 @@ final class QueryResourceClassEventListener implements EventSubscriberInterface
         }
     }
 
+    /**
+     * @return array<string, array<int, array<int, string|int>>>
+     */
     public static function getSubscribedEvents()
     {
         return [

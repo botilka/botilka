@@ -26,7 +26,7 @@ final class SnapshotStoreMongoDB implements SnapshotStore
             throw new SnapshotNotFoundException("No snapshot found for {$id}.");
         }
 
-        /** @var BSONDocument $snapshot */
+        /** @var BSONDocument<EventSourcedAggregateRoot> $snapshot */
         $snapshot = $this->collection->findOne(['id' => $id]);
 
         return \unserialize($snapshot->offsetGet('data'));

@@ -21,7 +21,7 @@ final class EventReplayCommandTest extends KernelTestCase
     private $eventStoreManager;
     /** @var EventBus|MockObject */
     private $eventBus;
-    /** @var array */
+    /** @var ManagedEvent[] */
     private $events;
     /** @var EventReplayCommand */
     private $command;
@@ -61,6 +61,9 @@ final class EventReplayCommandTest extends KernelTestCase
         $this->command->run($input, new BufferedOutput());
     }
 
+    /**
+     * @return array<int, array<int, int|string|null>>
+     */
     public function executeIdProvider(): array
     {
         return [
@@ -89,6 +92,8 @@ final class EventReplayCommandTest extends KernelTestCase
 
     /**
      * @dataProvider executeFailProvider
+     *
+     * @param array<int, array<string, string|true>> $parameters
      */
     public function testExecuteFail(array $parameters): void
     {
@@ -99,6 +104,9 @@ final class EventReplayCommandTest extends KernelTestCase
         $this->command->run($input, new BufferedOutput());
     }
 
+    /**
+     * @return array<int, array<int, array<string, string|true>>>
+     */
     public function executeFailProvider(): array
     {
         return [

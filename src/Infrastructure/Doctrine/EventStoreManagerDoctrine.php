@@ -46,9 +46,9 @@ final class EventStoreManagerDoctrine implements EventStoreManager
 
     public function loadByDomain(string $domain): iterable
     {
-        $query = "SELECT * FROM {$this->tableName} WHERE domain = :domain";
+        $query = "SELECT * FROM {$this->tableName} WHERE domain = :domain ORDER BY playhead";
 
-        $stmt = $this->connection->prepare("{$query} ORDER BY playhead");
+        $stmt = $this->connection->prepare($query);
         $stmt->execute(['domain' => $domain]);
 
         return $this->deserialize($stmt->fetchAll());
@@ -64,6 +64,9 @@ final class EventStoreManagerDoctrine implements EventStoreManager
         return $this->getDistinct('domain');
     }
 
+    /**
+     * @return string[]
+     */
     private function getDistinct(string $column): array
     {
         $query = "SELECT DISTINCT {$column} FROM {$this->tableName}";
@@ -76,6 +79,8 @@ final class EventStoreManagerDoctrine implements EventStoreManager
     }
 
     /**
+     * @param array<int, array<string, mixed>> $storedEvents
+     *
      * @return ManagedEvent[]
      */
     private function deserialize(array $storedEvents): array

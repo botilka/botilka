@@ -46,13 +46,13 @@ class Event
     private $type;
 
     /**
-     * @var array
+     * @var array<string, mixed>
      * @ORM\Column(type="json")
      */
     private $payload;
 
     /**
-     * @var ?array
+     * @var ?array<string, mixed>
      * @ORM\Column(type="json")
      */
     private $metadata;
@@ -69,6 +69,11 @@ class Event
      */
     private $domain;
 
+    /**
+     * @param class-string              $type
+     * @param array<string, mixed>      $payload
+     * @param array<string, mixed>|null $metadata
+     */
     public function __construct(string $id, int $playhead, string $type, array $payload, ?array $metadata, string $domain)
     {
         $this->id = Uuid::fromString($id);
@@ -95,11 +100,17 @@ class Event
         return $this->type;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getPayload(): array
     {
         return $this->payload;
     }
 
+    /**
+     * @return array<string, mixed>|null
+     */
     public function getMetadata(): ?array
     {
         return $this->metadata;

@@ -12,7 +12,13 @@ use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
 final class UuidDenormalizer implements DenormalizerInterface, CacheableSupportsMethodInterface
 {
-    public function denormalize($data, $class, $format = null, array $context = [])
+    /**
+     * @param mixed                $data
+     * @param class-string         $class
+     * @param ?string              $format
+     * @param array<string, mixed> $context
+     */
+    public function denormalize($data, $class, $format = null, array $context = []): UuidInterface
     {
         try {
             return Uuid::fromString($data);

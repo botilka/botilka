@@ -15,6 +15,9 @@ final class DefaultProjectionist implements Projectionist
     private $logger;
     private $projectors;
 
+    /**
+     * @param iterable<Projector> $projectors
+     */
     public function __construct(LoggerInterface $logger, iterable $projectors = [])
     {
         $this->logger = $logger;

@@ -30,6 +30,9 @@ final class PlayheadValueSnapshotStrategistTest extends TestCase
         self::assertSame($expected, $strategist->mustSnapshot($aggregateRoot));
     }
 
+    /**
+     * @return array<int, array<int, bool|int>>
+     */
     public function mustSnapshotProvider(): array
     {
         return [

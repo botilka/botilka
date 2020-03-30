@@ -22,6 +22,9 @@ final class ManagedEvent
     private $recordedOn;
     private $domain;
 
+    /**
+     * @param array<string, mixed>|null $metadata
+     */
     public function __construct(string $id, Event $domainEvent, int $playhead, ?array $metadata, \DateTimeImmutable $recordedOn, string $domain)
     {
         $this->id = $id;
@@ -47,6 +50,9 @@ final class ManagedEvent
         return $this->playhead;
     }
 
+    /**
+     * @return array<string, mixed>|null
+     */
     public function getMetadata(): ?array
     {
         return $this->metadata;
