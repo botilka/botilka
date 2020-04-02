@@ -48,6 +48,9 @@ final class BotilkaExtension extends Extension implements PrependExtensionInterf
         $this->prependApliPlatformConfig($container, $botilkaConfig);
     }
 
+    /**
+     * @param array<string, array<string, mixed>> $configs
+     */
     public function load(array $configs, ContainerBuilder $container): void
     {
         $configuration = new Configuration();
@@ -78,6 +81,9 @@ final class BotilkaExtension extends Extension implements PrependExtensionInterf
         $container->setParameter('botilka.api_platform.endpoint_prefix', $config['api_platform']['endpoint_prefix']);
     }
 
+    /**
+     * @param array<string, mixed> $config
+     */
     private function prependDefaultMessengerConfig(ContainerBuilder $container, array $config): void
     {
         $commandBusMiddlewares = [EventDispatcherMiddleware::class];
@@ -102,6 +108,9 @@ final class BotilkaExtension extends Extension implements PrependExtensionInterf
         ]);
     }
 
+    /**
+     * @param array<string, mixed> $botilkaConfig
+     */
     private function prependApliPlatformConfig(ContainerBuilder $container, array $botilkaConfig): void
     {
         if (!$container->hasExtension('api_platform')) {
@@ -127,6 +136,13 @@ final class BotilkaExtension extends Extension implements PrependExtensionInterf
         }
     }
 
+    /**
+     * @param array<string, mixed> $config
+     * @param array<string, mixed> $botilkaConfig
+     * @param array<int, string>   $paths
+     *
+     * @return array<int, string>
+     */
     private function prependApliPlatformEventStoreConfig(ContainerBuilder $container, array $config, array $botilkaConfig, array $paths): array
     {
         if (($config['expose_event_store'] ?? true) && 'Botilka\\Infrastructure\\Doctrine\\EventStoreDoctrine' === ($botilkaConfig['event_store'] ?? null)) {

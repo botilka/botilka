@@ -25,6 +25,9 @@ final class UuidDenormalizerTest extends TestCase
         self::assertSame($expected, $this->denormalizer->supportsDenormalization('foo', $type));
     }
 
+    /**
+     * @return array<int, array<int, bool|class-string>>
+     */
     public function supportsDenormalizationProvider(): array
     {
         return  [

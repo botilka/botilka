@@ -61,12 +61,14 @@ final class EventStoreManagerMongoDB implements EventStoreManager
     }
 
     /**
+     * @param Cursor<BSONDocument> $storedEvents
+     *
      * @return ManagedEvent[]
      */
     private function deserialize(Cursor $storedEvents): array
     {
         $events = [];
-        /* @var BSONDocument $event */
+        /** @var BSONDocument<array<string, mixed>> $storedEvent */
         foreach ($storedEvents as $storedEvent) {
             /** @var Event $domainEvent */
             $domainEvent = $this->denormalizer->denormalize($storedEvent->offsetGet('payload'), $storedEvent->offsetGet('type'));

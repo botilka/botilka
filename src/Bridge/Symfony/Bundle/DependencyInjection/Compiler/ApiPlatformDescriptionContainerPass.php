@@ -41,6 +41,7 @@ final class ApiPlatformDescriptionContainerPass implements CompilerPassInterface
         $collection = [];
         /** @var class-string $serviceId */
         foreach ($serviceIds as $serviceId => $tags) {
+            /** @var \ReflectionClass<Command|Query> $class */
             $class = new \ReflectionClass($serviceId);
             $payload = $this->extractConstructorArgumentsUntilScalar($class);
 
@@ -52,7 +53,9 @@ final class ApiPlatformDescriptionContainerPass implements CompilerPassInterface
     }
 
     /**
-     * Will recursively navigate in constructor arguments until we have only scalars.
+     * @param \ReflectionClass<Command|Query|object> $class
+     *
+     * @return array<string, mixed>
      */
     private function extractConstructorArgumentsUntilScalar(\ReflectionClass $class): array
     {
@@ -81,9 +84,14 @@ final class ApiPlatformDescriptionContainerPass implements CompilerPassInterface
         return $values;
     }
 
+    /**
+     * @param array<string, mixed> $values
+     *
+     * @return array<string, mixed>
+     */
     private function handleParameterWithClass(\ReflectionParameter $parameter, array $values): array
     {
-        /** @var \ReflectionClass $parameterClass */
+        /** @var \ReflectionClass<object> $parameterClass */
         $parameterClass = $parameter->getClass();
         $parameterName = $parameter->getName();
 

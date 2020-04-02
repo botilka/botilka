@@ -31,6 +31,9 @@ interface EventStore
     public function loadFromPlayheadToPlayhead(string $id, int $fromPlayhead, int $toPlayhead): array;
 
     /**
+     * @param class-string              $type
+     * @param array<string, mixed>|null $metadata
+     *
      * @throws EventStoreConcurrencyException
      */
     public function append(string $id, int $playhead, string $type, Event $payload, ?array $metadata, \DateTimeImmutable $recordedOn, string $domain): void;

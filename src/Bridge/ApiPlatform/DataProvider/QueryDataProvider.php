@@ -37,7 +37,8 @@ final class QueryDataProvider implements CollectionDataProviderInterface, ItemDa
     }
 
     /**
-     * @param string $id
+     * @param string               $id
+     * @param array<string, mixed> $context
      */
     public function getItem(string $resourceClass, $id, string $operationName = null, array $context = []): Query
     {
@@ -50,6 +51,9 @@ final class QueryDataProvider implements CollectionDataProviderInterface, ItemDa
         return new Query($id, $description['payload']);
     }
 
+    /**
+     * @param array<string, mixed> $context
+     */
     public function supports(string $resourceClass, string $operationName = null, array $context = []): bool
     {
         return Query::class === $resourceClass;

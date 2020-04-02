@@ -29,6 +29,9 @@ final class BotilkaQueryResourceMetadataFactory implements ResourceMetadataFacto
     private $formats;
     private $prefix;
 
+    /**
+     * @param array<string, array<int, string>> $formats
+     */
     public function __construct(ResourceMetadataFactoryInterface $decorated, DescriptionContainerInterface $descriptionContainer, SwaggerPayloadNormalizerInterface $parameterNormalizer, array $formats, ?string $prefix)
     {
         $this->decorated = $decorated;

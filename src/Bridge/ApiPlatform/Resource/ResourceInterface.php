@@ -15,5 +15,8 @@ interface ResourceInterface
      */
     public function getName(): string;
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getPayload(): array;
 }

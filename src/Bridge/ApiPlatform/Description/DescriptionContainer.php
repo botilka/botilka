@@ -15,6 +15,9 @@ final class DescriptionContainer implements DescriptionContainerInterface
 {
     private $data;
 
+    /**
+     * @param array<string, array<string, mixed>> $data
+     */
     public function __construct(array $data = [])
     {
         $this->data = $data;
@@ -22,6 +25,8 @@ final class DescriptionContainer implements DescriptionContainerInterface
 
     /**
      * @throws DescriptionNotFoundException
+     *
+     * @return array<string, mixed>
      */
     public function get(string $name): array
     {
@@ -38,7 +43,10 @@ final class DescriptionContainer implements DescriptionContainerInterface
         return isset($this->data[$name]);
     }
 
-    public function getIterator()
+    /**
+     * @return \ArrayIterator<string, array<string, mixed>>
+     */
+    public function getIterator(): \ArrayIterator
     {
         return new \ArrayIterator($this->data);
     }

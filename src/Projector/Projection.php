@@ -14,6 +14,9 @@ final class Projection
     private $event;
     private $context;
 
+    /**
+     * @param array<string, mixed>|null $context
+     */
     public function __construct(Event $event, ?array $context = [])
     {
         $this->event = $event;
@@ -25,6 +28,9 @@ final class Projection
         return $this->event;
     }
 
+    /**
+     * @return array<string, mixed>|null
+     */
     public function getContext(): ?array
     {
         return $this->context;

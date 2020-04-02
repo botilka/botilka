@@ -64,6 +64,9 @@ final class EventStoreMongoDB implements EventStore
         return $this->deserialize($events);
     }
 
+    /**
+     * @param array<string, mixed>|null $metadata
+     */
     public function append(string $id, int $playhead, string $type, Event $payload, ?array $metadata, \DateTimeImmutable $recordedOn, string $domain): void
     {
         $values = [
@@ -84,12 +87,14 @@ final class EventStoreMongoDB implements EventStore
     }
 
     /**
+     * @param Cursor<BSONDocument> $cursor
+     *
      * @return Event[]
      */
     private function deserialize(Cursor $cursor): array
     {
         $events = [];
-        /** @var BSONDocument $current */
+        /** @var BSONDocument<array<string, int|string>> $current */
         foreach ($cursor as $current) {
             /** @var Event $event */
             $event = $this->denormalizer->denormalize($current->offsetGet('payload'), $current->offsetGet('type'));

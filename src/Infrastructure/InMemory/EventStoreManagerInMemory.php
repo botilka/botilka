@@ -23,14 +23,7 @@ final class EventStoreManagerInMemory implements EventStoreManager
 
         $events = [];
         foreach ($storedEvents as $storedEvent) {
-            $events[] = new ManagedEvent(
-                $storedEvent['id'],
-                $storedEvent['payload'],
-                $storedEvent['playhead'],
-                $storedEvent['metadata'],
-                $storedEvent['recordedOn'],
-                $storedEvent['domain']
-            );
+            $events[] = $storedEvent;
         }
 
         return $events;
@@ -40,9 +33,10 @@ final class EventStoreManagerInMemory implements EventStoreManager
     {
         $result = [];
 
-        foreach ($this->eventStore->getStore() as $id => $events) {
+        foreach ($this->eventStore->getStore() as $events) {
+            /** @var ManagedEvent $event */
             foreach ($events as $event) {
-                if ($event['domain'] === $domain) {
+                if ($event->getDomain() === $domain) {
                     $result[] = $event;
                 }
             }
@@ -56,8 +50,9 @@ final class EventStoreManagerInMemory implements EventStoreManager
         $result = [];
 
         foreach ($this->eventStore->getStore() as $id => $events) {
+            /** @var ManagedEvent $event */
             foreach ($events as $event) {
-                $result[] = $event['domain'];
+                $result[] = $event->getDomain();
             }
         }
 

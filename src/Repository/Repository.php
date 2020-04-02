@@ -16,5 +16,8 @@ interface Repository
 
     public function delete(string $id): void;
 
+    /**
+     * @return array<string, AggregateRoot>
+     */
     public function all(): array;
 }

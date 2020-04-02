@@ -21,7 +21,7 @@ final class ProjectorPlayCommandTest extends TestCase
     private $eventStoreManager;
     /** @var Projectionist|MockObject */
     private $projectionist;
-    /** @var array */
+    /** @var ManagedEvent[] */
     private $events;
     /** @var ProjectorPlayCommand */
     private $command;
@@ -65,6 +65,9 @@ final class ProjectorPlayCommandTest extends TestCase
         self::assertStringContainsStringIgnoringCase('(     1): Botilka\Tests\Fixtures\Domain\StubEvent ({"foo":"bar"})', $stdout);
     }
 
+    /**
+     * @return array<int, array<int, int|string|null>>
+     */
     public function executeIdProvider(): array
     {
         return [
@@ -93,6 +96,8 @@ final class ProjectorPlayCommandTest extends TestCase
 
     /**
      * @dataProvider executeFailProvider
+     *
+     * @param array<int, array<string, string|true>> $parameters
      */
     public function testExecuteFail(array $parameters): void
     {
@@ -103,6 +108,9 @@ final class ProjectorPlayCommandTest extends TestCase
         $this->command->run($input, new BufferedOutput());
     }
 
+    /**
+     * @return array<int, array<int, array<string, string|true>>>
+     */
     public function executeFailProvider(): array
     {
         return [

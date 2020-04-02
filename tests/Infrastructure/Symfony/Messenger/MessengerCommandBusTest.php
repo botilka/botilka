@@ -56,6 +56,9 @@ final class MessengerCommandBusTest extends TestCase
         $result = $bus->dispatch($command);
     }
 
+    /**
+     * @return array<string, array<int, StampInterface>>
+     */
     public function dispatchLogicExceptionProvider(): array
     {
         return [

@@ -10,5 +10,8 @@ interface Projectionist
 {
     public function play(Projection $projection): void;
 
+    /**
+     * @param array<string, mixed>|null $context
+     */
     public function playForEvent(Event $event, ?array $context = []): void;
 }

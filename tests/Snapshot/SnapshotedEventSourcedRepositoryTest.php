@@ -119,6 +119,9 @@ final class SnapshotedEventSourcedRepositoryTest extends TestCase
         $this->repository->save($commandResponse);
     }
 
+    /**
+     * @return array<int, array<bool>>
+     */
     public function saveProvider(): array
     {
         return [

@@ -99,6 +99,9 @@ final class EventDispatcherMiddlewareTest extends MiddlewareTestCase
         $middleware->handle($this->getEnvelopeWithHandledStamp($commandResponse), $this->getStackMock());
     }
 
+    /**
+     * @return array<int, array<int, EventSourcedCommandResponse|bool>>
+     */
     public function handledEventSourcedCommandResponseProvider(): array
     {
         $event = new StubEvent(1337);

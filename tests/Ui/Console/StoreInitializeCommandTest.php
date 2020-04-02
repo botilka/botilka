@@ -52,6 +52,9 @@ final class StoreInitializeCommandTest extends TestCase
         self::assertStringContainsStringIgnoringCase('[OK] Finished.', $stdout);
     }
 
+    /**
+     * @return array<bool[]>
+     */
     public function executeProvider(): array
     {
         return [

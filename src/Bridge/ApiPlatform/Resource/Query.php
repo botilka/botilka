@@ -22,9 +22,12 @@ final class Query implements ResourceInterface
     /** @ApiProperty(identifier=true) */
     private $name;
 
-    /** @var array An object representing the query arguments */
+    // An object representing the query arguments
     private $payload;
 
+    /**
+     * @param array<string, mixed> $payload
+     */
     public function __construct(string $name, array $payload)
     {
         $this->name = $name;
@@ -36,6 +39,9 @@ final class Query implements ResourceInterface
         return $this->name;
     }
 
+    /**
+     * @return array<string, mixed> $payload
+     */
     public function getPayload(): array
     {
         return $this->payload;

@@ -6,6 +6,11 @@ namespace Botilka\Bridge\ApiPlatform\Swagger;
 
 final class SwaggerCommandBodyNormalizer implements SwaggerPayloadNormalizerInterface
 {
+    /**
+     * @param array<string, mixed> $payload
+     *
+     * @return array<string, mixed>
+     */
     public function normalize(array $payload): array
     {
         $body = [

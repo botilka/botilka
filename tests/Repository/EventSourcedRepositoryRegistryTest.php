@@ -6,6 +6,7 @@ namespace Botilka\Tests\Repository;
 
 use Botilka\Repository\EventSourcedRepository;
 use Botilka\Repository\EventSourcedRepositoryRegistry;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 
@@ -13,7 +14,7 @@ final class EventSourcedRepositoryRegistryTest extends TestCase
 {
     /** @var EventSourcedRepositoryRegistry */
     private $registry;
-    /** @var array */
+    /** @var array<string, EventSourcedRepository|MockObject> */
     private $repositories;
 
     protected function setUp(): void
@@ -30,6 +31,9 @@ final class EventSourcedRepositoryRegistryTest extends TestCase
         self::assertSame($expected, $this->registry->has($className));
     }
 
+    /**
+     * @return array<int, array<string|bool>>
+     */
     public function hasProvider(): array
     {
         return [

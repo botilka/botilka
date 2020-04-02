@@ -24,7 +24,11 @@ final class DefaultProjectionistTest extends TestCase
         $this->logger = $this->createMock(LoggerInterface::class);
     }
 
-    /** @dataProvider playMatchingProvider */
+    /**
+     * @dataProvider playMatchingProvider
+     *
+     * @param array<string, string> $context
+     */
     public function testPlayMatching(array $context, bool $expectedSkippedNoticeCall, bool $expectedProjectionPlayed): void
     {
         $event = new StubEvent(42);
@@ -46,6 +50,9 @@ final class DefaultProjectionistTest extends TestCase
         self::assertSame($expectedProjectionPlayed, $projector->onStubEventPlayed);
     }
 
+    /**
+     * @return array<int, array<array<string, string>|bool>>
+     */
     public function playMatchingProvider(): array
     {
         return [
