@@ -11,7 +11,7 @@ use Botilka\Bridge\ApiPlatform\Description\DescriptionContainerInterface;
 use Botilka\Bridge\ApiPlatform\Hydrator\QueryHydratorInterface;
 use Botilka\Bridge\ApiPlatform\Resource\Query;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
 final class QueryResourceClassEventListener implements EventSubscriberInterface
@@ -27,7 +27,7 @@ final class QueryResourceClassEventListener implements EventSubscriberInterface
         $this->hydrator = $hydrator;
     }
 
-    public function onKernelRequest(GetResponseEvent $event): void
+    public function onKernelRequest(RequestEvent $event): void
     {
         $request = $event->getRequest();
         $attributes = $request->attributes;

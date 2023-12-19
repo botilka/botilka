@@ -6,7 +6,7 @@ namespace Botilka\Infrastructure\Doctrine;
 
 use Botilka\EventStore\EventStoreManager;
 use Botilka\EventStore\ManagedEvent;
-use Doctrine\DBAL\Driver\Connection;
+use Doctrine\DBAL\Connection;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
 final class EventStoreManagerDoctrine implements EventStoreManager

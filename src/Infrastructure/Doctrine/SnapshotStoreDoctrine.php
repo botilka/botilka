@@ -7,7 +7,7 @@ namespace Botilka\Infrastructure\Doctrine;
 use Botilka\Domain\EventSourcedAggregateRoot;
 use Botilka\Snapshot\SnapshotNotFoundException;
 use Botilka\Snapshot\SnapshotStore;
-use Doctrine\DBAL\Driver\Connection;
+use Doctrine\DBAL\Connection;
 use Symfony\Component\Serializer\SerializerInterface;
 
 final class SnapshotStoreDoctrine implements SnapshotStore
