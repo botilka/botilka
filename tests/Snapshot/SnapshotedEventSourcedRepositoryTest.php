@@ -14,21 +14,22 @@ use Botilka\Snapshot\SnapshotStore;
 use Botilka\Snapshot\Strategist\SnapshotStrategist;
 use Botilka\Tests\Fixtures\Domain\StubEvent;
 use Botilka\Tests\Fixtures\Domain\StubEventSourcedAggregateRoot;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ */
+#[CoversClass(SnapshotedEventSourcedRepository::class)]
 final class SnapshotedEventSourcedRepositoryTest extends TestCase
 {
-    /** @var SnapshotedEventSourcedRepository */
-    private $repository;
-    /** @var SnapshotStore|MockObject */
-    private $snapshotStore;
-    /** @var SnapshotStrategist|MockObject */
-    private $strategist;
-    /** @var EventSourcedRepository|MockObject */
-    private $eventSourcedRepository;
-    /** @var EventStore|MockObject */
-    private $eventStore;
+    private SnapshotedEventSourcedRepository $repository;
+    private MockObject&SnapshotStore $snapshotStore;
+    private MockObject&SnapshotStrategist $strategist;
+    private EventSourcedRepository&MockObject $eventSourcedRepository;
+    private EventStore&MockObject $eventStore;
 
     protected function setUp(): void
     {
@@ -80,7 +81,8 @@ final class SnapshotedEventSourcedRepositoryTest extends TestCase
         ;
 
         $instances = [$aggregateRoot];
-        for ($i = 0; $i < \count($events); ++$i) {
+        $counter = \count($events);
+        for ($i = 0; $i < $counter; ++$i) {
             $instances[$i + 1] = $this->createMock(EventSourcedAggregateRoot::class);
             $instances[$i]->expects(self::once())
                 ->method('apply')
@@ -89,10 +91,10 @@ final class SnapshotedEventSourcedRepositoryTest extends TestCase
             ;
         }
 
-        self::assertSame(\end($instances), $this->repository->load('foo'));
+        self::assertSame(end($instances), $this->repository->load('foo'));
     }
 
-    /** @dataProvider saveProvider */
+    #[DataProvider('provideSaveCases')]
     public function testSave(bool $mustSnapshot): void
     {
         $aggregateRoot = new StubEventSourcedAggregateRoot();
@@ -122,7 +124,7 @@ final class SnapshotedEventSourcedRepositoryTest extends TestCase
     /**
      * @return array<int, array<bool>>
      */
-    public function saveProvider(): array
+    public static function provideSaveCases(): iterable
     {
         return [
             [true],

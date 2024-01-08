@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Botilka\Bridge\Symfony\Bundle\DependencyInjection;
 
-use Botilka\Application\Command\Command;
 use Botilka\Application\Command\CommandHandler;
-use Botilka\Application\Query\Query;
 use Botilka\Application\Query\QueryHandler;
 use Botilka\Event\EventHandler;
+use Botilka\EventStore\EventStore;
 use Botilka\Infrastructure\Doctrine\EventStoreDoctrine;
+use Botilka\Infrastructure\MongoDB\EventStoreMongoDB;
 use Botilka\Infrastructure\StoreInitializer;
 use Botilka\Infrastructure\Symfony\Messenger\Middleware\EventDispatcherMiddleware;
 use Botilka\Projector\Projector;
@@ -28,24 +28,18 @@ final class BotilkaExtension extends Extension implements PrependExtensionInterf
         QueryHandler::class => ['messenger.message_handler', ['bus' => 'messenger.bus.queries']],
         EventHandler::class => ['messenger.message_handler', ['bus' => 'messenger.bus.events']],
         Projector::class => ['botilka.projector'],
-        Command::class => ['cqrs.command'],
-        Query::class => ['cqrs.query'],
         StoreInitializer::class => ['botilka.store.initializer'],
         EventSourcedRepository::class => ['botilka.repository.event_sourced'],
     ];
 
     public function prepend(ContainerBuilder $container): void
     {
-        $botilkaConfig = \array_merge([], ...$container->getExtensionConfig('botilka'));
-        $container->setParameter('botilka.bridge.api_platform', false);
-        $container->setParameter('botilka.messenger.doctrine_transaction_middleware', false);
+        $botilkaConfig = array_merge([], ...$container->getExtensionConfig('botilka'));
 
         // default is to use Messenger
         if ($botilkaConfig['default_messenger_config'] ?? true) {
-            $this->prependDefaultMessengerConfig($container, $botilkaConfig);
+            $this->prependDefaultMessengerConfig($container);
         }
-
-        $this->prependApliPlatformConfig($container, $botilkaConfig);
     }
 
     /**
@@ -59,14 +53,6 @@ final class BotilkaExtension extends Extension implements PrependExtensionInterf
 
         $loader->load('botilka.yaml');
 
-        if (true === $container->getParameter('botilka.bridge.api_platform')) {
-            $loader->load('bridge_api_platform_cq.yaml');
-        }
-
-        if (true === $container->getParameter('botilka.messenger.doctrine_transaction_middleware')) {
-            $loader->load('messenger_doctrine_transaction_middleware.yaml');
-        }
-
         if (true === $config['default_messenger_config']) {
             $loader->load('messenger_default_config.yaml');
             foreach (self::AUTOCONFIGURAION_CLASSES_TAG as $className => $tag) {
@@ -77,22 +63,11 @@ final class BotilkaExtension extends Extension implements PrependExtensionInterf
         }
 
         $this->loadEventStoreConfig($loader, $config['event_store']);
-
-        $container->setParameter('botilka.api_platform.endpoint_prefix', $config['api_platform']['endpoint_prefix']);
     }
 
-    /**
-     * @param array<string, mixed> $config
-     */
-    private function prependDefaultMessengerConfig(ContainerBuilder $container, array $config): void
+    private function prependDefaultMessengerConfig(ContainerBuilder $container): void
     {
         $commandBusMiddlewares = [EventDispatcherMiddleware::class];
-
-        // if EventStoreDoctrine is used, add doctrine_transaction middleware by default
-        if ('Botilka\\Infrastructure\\Doctrine\\EventStoreDoctrine' === ($config['event_store'] ?? '') && ($config['doctrine_transaction_middleware'] ?? true)) {
-            $container->setParameter('botilka.messenger.doctrine_transaction_middleware', true);
-            \array_unshift($commandBusMiddlewares, 'doctrine_transaction');
-        }
 
         $container->prependExtensionConfig('framework', [
             'messenger' => [
@@ -109,69 +84,15 @@ final class BotilkaExtension extends Extension implements PrependExtensionInterf
     }
 
     /**
-     * @param array<string, mixed> $botilkaConfig
+     * @param class-string<EventStore> $eventStore
      */
-    private function prependApliPlatformConfig(ContainerBuilder $container, array $botilkaConfig): void
-    {
-        if (!$container->hasExtension('api_platform')) {
-            return;
-        }
-
-        $config = $botilkaConfig['api_platform'] ?? [];
-
-        $paths = [];
-        if ($config['expose_cq'] ?? true) {
-            $paths[] = '%kernel.project_dir%/vendor/botilka/botilka/src/Bridge/ApiPlatform/Resource';
-            $container->setParameter('botilka.bridge.api_platform', true);
-        }
-
-        $paths = $this->prependApliPlatformEventStoreConfig($container, $config, $botilkaConfig, $paths);
-
-        if (\count($paths) > 0) {
-            $container->prependExtensionConfig('api_platform', [
-                'mapping' => [
-                    'paths' => $paths,
-                ],
-            ]);
-        }
-    }
-
-    /**
-     * @param array<string, mixed> $config
-     * @param array<string, mixed> $botilkaConfig
-     * @param array<int, string>   $paths
-     *
-     * @return array<int, string>
-     */
-    private function prependApliPlatformEventStoreConfig(ContainerBuilder $container, array $config, array $botilkaConfig, array $paths): array
-    {
-        if (($config['expose_event_store'] ?? true) && 'Botilka\\Infrastructure\\Doctrine\\EventStoreDoctrine' === ($botilkaConfig['event_store'] ?? null)) {
-            $paths[] = '%kernel.project_dir%/vendor/botilka/botilka/src/Infrastructure/Doctrine';
-            $container->prependExtensionConfig('doctrine', [
-                'orm' => [
-                    'mappings' => [
-                        'Botilka' => [
-                            'is_bundle' => false,
-                            'type' => 'annotation',
-                            'dir' => '%kernel.project_dir%/vendor/botilka/botilka/src/Infrastructure/Doctrine',
-                            'prefix' => 'Botilka\Infrastructure\Doctrine',
-                            'alias' => 'Botilka',
-                        ],
-                    ],
-                ],
-            ]);
-        }
-
-        return $paths;
-    }
-
     private function loadEventStoreConfig(LoaderInterface $loader, string $eventStore): void
     {
         switch ($eventStore) {
-            case 'Botilka\\Infrastructure\\Doctrine\\EventStoreDoctrine':
+            case EventStoreDoctrine::class:
                 $loader->load('event_store_doctrine.yaml');
                 break;
-            case 'Botilka\\Infrastructure\\MongoDB\\EventStoreMongoDB':
+            case EventStoreMongoDB::class:
                 $loader->load('event_store_mongodb.yaml');
                 break;
         }

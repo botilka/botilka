@@ -6,18 +6,21 @@ namespace Botilka\Tests\Bridge\Symfony\Bundle\DependencyInjection;
 
 use Botilka\Bridge\Symfony\Bundle\DependencyInjection\Configuration;
 use Botilka\Infrastructure\InMemory\EventStoreInMemory;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\Definition\Processor;
 
+/**
+ * @internal
+ */
+#[CoversClass(Configuration::class)]
 final class ConfigurationTest extends TestCase
 {
-    /** @var ConfigurationInterface */
-    private $configuration;
+    private Configuration $configuration;
 
-    /** @var Processor */
-    private $processor;
+    private Processor $processor;
 
     protected function setUp(): void
     {
@@ -36,12 +39,6 @@ final class ConfigurationTest extends TestCase
         $expected = [
             'event_store' => EventStoreInMemory::class,
             'default_messenger_config' => true,
-            'doctrine_transaction_middleware' => true,
-            'api_platform' => [
-                'expose_cq' => true,
-                'expose_event_store' => true,
-                'endpoint_prefix' => 'cqrs',
-            ],
         ];
 
         self::assertSame($expected, $config);

@@ -8,17 +8,12 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception\TableExistsException;
 use Doctrine\DBAL\Schema\Schema;
 
-abstract class AbstractDoctrineStoreInitializer
+abstract readonly class AbstractDoctrineStoreInitializer
 {
-    /** @var string */
-    protected $tableName;
-    private $connection;
-
-    public function __construct(Connection $connection, string $tableName)
-    {
-        $this->connection = $connection;
-        $this->tableName = $tableName;
-    }
+    public function __construct(
+        private Connection $connection,
+        protected string $tableName,
+    ) {}
 
     protected function doInitialize(Schema $schema, bool $force): void
     {
@@ -26,7 +21,7 @@ abstract class AbstractDoctrineStoreInitializer
         $connection = $this->connection;
         $schemaManager = $connection->getSchemaManager();
 
-        if (true === $force && $schemaManager->tablesExist([$tableName])) {
+        if ($force && $schemaManager->tablesExist([$tableName])) {
             $schemaManager->dropTable($tableName);
         }
 
@@ -41,7 +36,7 @@ abstract class AbstractDoctrineStoreInitializer
             $connection->commit();
         } catch (TableExistsException $e) {
             $connection->rollBack();
-            throw new \RuntimeException($e->getMessage());
+            throw new \RuntimeException($e->getMessage(), $e->getCode(), $e);
         }
     }
 }

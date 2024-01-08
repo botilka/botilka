@@ -10,14 +10,19 @@ use Botilka\Projector\Projection;
 use Botilka\Projector\Projectionist;
 use Botilka\Tests\Fixtures\Domain\StubEvent;
 use Botilka\Tests\Fixtures\Domain\StubProjector;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
+/**
+ * @internal
+ */
+#[CoversClass(DefaultProjectionist::class)]
 final class DefaultProjectionistTest extends TestCase
 {
-    /** @var LoggerInterface|MockObject */
-    private $logger;
+    private LoggerInterface&MockObject $logger;
 
     protected function setUp(): void
     {
@@ -25,10 +30,9 @@ final class DefaultProjectionistTest extends TestCase
     }
 
     /**
-     * @dataProvider playMatchingProvider
-     *
      * @param array<string, string> $context
      */
+    #[DataProvider('providePlayMatchingCases')]
     public function testPlayMatching(array $context, bool $expectedSkippedNoticeCall, bool $expectedProjectionPlayed): void
     {
         $event = new StubEvent(42);
@@ -43,7 +47,7 @@ final class DefaultProjectionistTest extends TestCase
 
         $this->logger->expects($expectedSkippedNoticeCall ? self::once() : self::never())
             ->method('notice')
-            ->with(\sprintf('Projection %s::onStubEvent skipped.', StubProjector::class))
+            ->with(sprintf('Projection %s::onStubEvent skipped.', StubProjector::class))
         ;
 
         $projectionist->play($projection);
@@ -53,7 +57,7 @@ final class DefaultProjectionistTest extends TestCase
     /**
      * @return array<int, array<array<string, string>|bool>>
      */
-    public function playMatchingProvider(): array
+    public static function providePlayMatchingCases(): iterable
     {
         return [
             [[], false, true],
@@ -68,7 +72,7 @@ final class DefaultProjectionistTest extends TestCase
 
         $this->logger->expects(self::once())
             ->method('notice')
-            ->with(\sprintf('No projector handler for %s.', \get_class($event)))
+            ->with(sprintf('No projector handler for %s.', $event::class))
         ;
 
         $projectionist = new DefaultProjectionist($this->logger, [new StubProjector()]);

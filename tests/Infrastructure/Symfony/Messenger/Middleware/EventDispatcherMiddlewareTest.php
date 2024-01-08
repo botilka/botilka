@@ -14,9 +14,11 @@ use Botilka\EventStore\EventStoreConcurrencyException;
 use Botilka\Infrastructure\Symfony\Messenger\Middleware\EventDispatcherMiddleware;
 use Botilka\Projector\Projectionist;
 use Botilka\Repository\EventSourcedRepository;
+use Botilka\Repository\EventSourcedRepositoryRegistry;
 use Botilka\Tests\Fixtures\Domain\StubEvent;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
-use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Exception\NoHandlerForMessageException;
@@ -24,23 +26,22 @@ use Symfony\Component\Messenger\Stamp\HandledStamp;
 use Symfony\Component\Messenger\Stamp\SentStamp;
 use Symfony\Component\Messenger\Test\Middleware\MiddlewareTestCase;
 
+/**
+ * @internal
+ */
+#[CoversClass(EventDispatcherMiddleware::class)]
 final class EventDispatcherMiddlewareTest extends MiddlewareTestCase
 {
-    /** @var EventStore|MockObject */
-    private $eventStore;
-    /** @var ContainerInterface|MockObject */
-    private $repositoryRegistry;
-    /** @var EventBus|MockObject */
-    private $eventBus;
-    /** @var LoggerInterface|MockObject */
-    private $logger;
-    /** @var Projectionist|MockObject */
-    private $projectionist;
+    private EventStore&MockObject $eventStore;
+    private EventSourcedRepositoryRegistry&MockObject $repositoryRegistry;
+    private EventBus&MockObject $eventBus;
+    private LoggerInterface&MockObject $logger;
+    private MockObject&Projectionist $projectionist;
 
     protected function setUp(): void
     {
         $this->eventStore = $this->createMock(EventStore::class);
-        $this->repositoryRegistry = $this->createMock(ContainerInterface::class);
+        $this->repositoryRegistry = $this->createMock(EventSourcedRepositoryRegistry::class);
         $this->eventBus = $this->createMock(EventBus::class);
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->projectionist = $this->createMock(Projectionist::class);
@@ -61,18 +62,18 @@ final class EventDispatcherMiddlewareTest extends MiddlewareTestCase
         $middleware->handle($this->getEnvelopeWithHandledStamp($commandResponse), $this->getStackMock());
     }
 
-    /** @dataProvider handledEventSourcedCommandResponseProvider */
-    public function testHandledEventSourcedCommandResponse(EventSourcedCommandResponse $commandResponse, bool $registryHasRepository): void
+    #[DataProvider('provideHandledEventSourcedCommandResponseCases')]
+    public function testHandledEventSourcedCommandResponse(bool $registryHasRepository): void
     {
-        $event = $commandResponse->getEvent();
-        $eventStoreAppendExpected = EventSourcedCommandResponse::class === \get_class($commandResponse);
+        $event = new StubEvent(1337);
+        $commandResponse = new EventSourcedCommandResponse('foo', $event, 51, 'FooBar\\Domain', $this->createMock(EventSourcedAggregateRoot::class));
 
-        $this->eventStore->expects(!$registryHasRepository ? self::once() : self::never())
+        $this->eventStore->expects($registryHasRepository ? self::never() : self::once())
             ->method('append')
-            ->with('foo', 51, \get_class($event), $event, null, self::isInstanceOf(\DateTimeImmutable::class), 'FooBar\\Domain')
+            ->with('foo', 51, $event::class, $event, null, self::isInstanceOf(\DateTimeImmutable::class), 'FooBar\\Domain')
         ;
 
-        $aggregateRootClassName = \get_class($commandResponse->getAggregateRoot());
+        $aggregateRootClassName = $commandResponse->getAggregateRoot()::class;
         $this->repositoryRegistry->expects(self::once())
             ->method('has')
             ->with($aggregateRootClassName)
@@ -100,16 +101,12 @@ final class EventDispatcherMiddlewareTest extends MiddlewareTestCase
     }
 
     /**
-     * @return array<int, array<int, EventSourcedCommandResponse|bool>>
+     * @return \Generator<array{bool}>
      */
-    public function handledEventSourcedCommandResponseProvider(): array
+    public static function provideHandledEventSourcedCommandResponseCases(): iterable
     {
-        $event = new StubEvent(1337);
-
-        return [
-            [new EventSourcedCommandResponse('foo', $event, 51, 'FooBar\\Domain', $this->createMock(EventSourcedAggregateRoot::class)), true],
-            [new EventSourcedCommandResponse('foo', $event, 51, 'FooBar\\Domain', $this->createMock(EventSourcedAggregateRoot::class)), false],
-        ];
+        yield [true];
+        yield [false];
     }
 
     public function testHandledNoHandlerForMessageException(): void
@@ -124,7 +121,7 @@ final class EventDispatcherMiddlewareTest extends MiddlewareTestCase
 
         $this->logger->expects(self::once())
             ->method('notice')
-            ->with(\sprintf('No event handler for %s.', \get_class($event)))
+            ->with(sprintf('No event handler for %s.', $event::class))
         ;
 
         $this->projectionist->expects(self::once())
@@ -191,7 +188,7 @@ final class EventDispatcherMiddlewareTest extends MiddlewareTestCase
 
     public function testSent(): void
     {
-        $stamp = new SentStamp(\get_class($this), 'this');
+        $stamp = new SentStamp(self::class, 'this');
         $message = new \stdClass();
         $message->foo = 'bar';
 
@@ -229,10 +226,7 @@ final class EventDispatcherMiddlewareTest extends MiddlewareTestCase
         ;
     }
 
-    /**
-     * @param mixed $result
-     */
-    private function getEnvelopeWithHandledStamp($result): Envelope
+    private function getEnvelopeWithHandledStamp(object $result): Envelope
     {
         $stamp = new HandledStamp($result, 'fooCallableName');
         $message = new \stdClass();

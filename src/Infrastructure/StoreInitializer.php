@@ -6,10 +6,10 @@ namespace Botilka\Infrastructure;
 
 interface StoreInitializer
 {
-    const TYPE_EVENT_STORE = 'event';
-    const TYPE_SNAPSHOT_STORE = 'snapshot';
+    public const TYPE_EVENT_STORE = 'event';
+    public const TYPE_SNAPSHOT_STORE = 'snapshot';
 
-    const TYPES = [
+    public const TYPES = [
         self::TYPE_EVENT_STORE,
         self::TYPE_SNAPSHOT_STORE,
     ];

@@ -6,12 +6,16 @@ namespace Botilka\Tests\Infrastructure\InMemory;
 
 use Botilka\Infrastructure\InMemory\RepositoryInMemory;
 use Botilka\Tests\Fixtures\Domain\StubAggregateRoot;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ */
+#[CoversClass(RepositoryInMemory::class)]
 final class RepositoryInMemoryTest extends TestCase
 {
-    /** @var RepositoryInMemory */
-    private $repository;
+    private RepositoryInMemory $repository;
 
     protected function setUp(): void
     {

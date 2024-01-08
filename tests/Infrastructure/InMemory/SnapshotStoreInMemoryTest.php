@@ -7,12 +7,16 @@ namespace Botilka\Tests\Infrastructure\InMemory;
 use Botilka\Infrastructure\InMemory\SnapshotStoreInMemory;
 use Botilka\Snapshot\SnapshotNotFoundException;
 use Botilka\Tests\Fixtures\Domain\StubEventSourcedAggregateRoot;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
-class SnapshotStoreInMemoryTest extends TestCase
+/**
+ * @internal
+ */
+#[CoversClass(SnapshotStoreInMemory::class)]
+final class SnapshotStoreInMemoryTest extends TestCase
 {
-    /** @var SnapshotStoreInMemory */
-    private $snapshotStore;
+    private SnapshotStoreInMemory $snapshotStore;
 
     protected function setUp(): void
     {

@@ -6,8 +6,13 @@ namespace Botilka\Tests\Projector;
 
 use Botilka\Projector\Projection;
 use Botilka\Tests\Fixtures\Domain\StubEvent;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ */
+#[CoversClass(Projection::class)]
 final class ProjectionTest extends TestCase
 {
     public function testGetEvent(): void

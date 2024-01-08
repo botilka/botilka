@@ -6,12 +6,16 @@ namespace Botilka\Tests\Infrastructure\InMemory;
 
 use Botilka\Infrastructure\InMemory\EventStoreInMemory;
 use Botilka\Tests\Fixtures\Domain\EventStoreInMemoryFactory;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ */
+#[CoversClass(EventStoreInMemory::class)]
 final class EventStoreInMemoryTest extends TestCase
 {
-    /** @var EventStoreInMemory */
-    private $eventStore;
+    private EventStoreInMemory $eventStore;
 
     protected function setUp(): void
     {

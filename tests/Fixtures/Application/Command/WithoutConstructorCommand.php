@@ -8,8 +8,8 @@ use Botilka\Application\Command\Command;
 
 final class WithoutConstructorCommand implements Command
 {
-    private $foo;
-    private $bar;
+    private ?string $foo = null;
+    private ?int $bar = null;
 
     public function setFoo(string $foo): self
     {
@@ -18,7 +18,7 @@ final class WithoutConstructorCommand implements Command
         return $this;
     }
 
-    public function getFoo(): string
+    public function getFoo(): Nstring
     {
         return $this->foo;
     }

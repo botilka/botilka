@@ -6,14 +6,11 @@ namespace Botilka\Snapshot\Strategist;
 
 use Botilka\Domain\EventSourcedAggregateRoot;
 
-final class PlayheadValueSnapshotStrategist implements SnapshotStrategist
+final readonly class PlayheadValueSnapshotStrategist implements SnapshotStrategist
 {
-    private $eachPlayhead;
-
-    public function __construct(int $eachPlayhead = 5)
-    {
-        $this->eachPlayhead = $eachPlayhead;
-    }
+    public function __construct(
+        private int $eachPlayhead = 5,
+    ) {}
 
     public function getEachPlayhead(): int
     {

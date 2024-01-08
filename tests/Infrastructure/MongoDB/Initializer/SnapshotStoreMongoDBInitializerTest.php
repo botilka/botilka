@@ -7,16 +7,19 @@ namespace Botilka\Tests\Infrastructure\MongoDB\Initializer;
 use Botilka\Infrastructure\MongoDB\Initializer\SnapshotStoreMongoDBInitializer;
 use Botilka\Infrastructure\StoreInitializer;
 use MongoDB\Client;
-use MongoDB\Database;
+use PHPUnit\Framework\Attributes\DataProvider;
 
+/**
+ * @internal
+ */
 final class SnapshotStoreMongoDBInitializerTest extends AbstractMongoDBStoreInitializerTest
 {
     protected $type = 'snapshot';
 
     protected function setUp(): void
     {
-        static::bootKernel();
-        $container = static::$container;
+        self::bootKernel();
+        $container = self::$container;
         /** @var string $database */
         $database = $container->getParameter('botilka.mongodb.db').'_test';
         /** @var string $collectionName */
@@ -25,7 +28,7 @@ final class SnapshotStoreMongoDBInitializerTest extends AbstractMongoDBStoreInit
         $this->collectionName = $collectionName;
     }
 
-    /** @dataProvider initializeProvider */
+    #[DataProvider('initializeProvider')]
     public function testInitialize(bool $force): void
     {
         $this->assertInitialize($force, ['id' => 1]);

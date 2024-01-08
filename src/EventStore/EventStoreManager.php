@@ -9,7 +9,7 @@ interface EventStoreManager
     /**
      * @return iterable<ManagedEvent>
      */
-    public function loadByAggregateRootId(string $id, ?int $from = null, ?int $to = null): iterable;
+    public function loadByAggregateRootId(string $id, int $from = null, int $to = null): iterable;
 
     /**
      * @return iterable<ManagedEvent>

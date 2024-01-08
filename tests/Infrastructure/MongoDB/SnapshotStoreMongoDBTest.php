@@ -12,13 +12,15 @@ use MongoDB\Model\BSONDocument;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ */
 final class SnapshotStoreMongoDBTest extends TestCase
 {
     /** @var Collection|MockObject */
-    private $collection;
+    private \PHPUnit\Framework\MockObject\MockObject $collection;
 
-    /** @var SnapshotStoreMongoDB */
-    private $snapshotStore;
+    private SnapshotStoreMongoDB $snapshotStore;
 
     protected function setUp(): void
     {
@@ -36,7 +38,7 @@ final class SnapshotStoreMongoDBTest extends TestCase
             ->willReturn(1)
         ;
 
-        $result = new BSONDocument(['data' => \serialize($aggregateRoot)]);
+        $result = new BSONDocument(['data' => serialize($aggregateRoot)]);
 
         $this->collection->expects(self::once())
             ->method('findOne')
@@ -49,7 +51,7 @@ final class SnapshotStoreMongoDBTest extends TestCase
 
     public function testLoadFail(): void
     {
-        $aggregateRoot = new StubEventSourcedAggregateRoot();
+        new StubEventSourcedAggregateRoot();
 
         $this->collection->expects(self::once())
             ->method('countDocuments')
@@ -74,7 +76,7 @@ final class SnapshotStoreMongoDBTest extends TestCase
         $this->collection->expects(self::once())
             ->method('updateOne')
             ->with(['id' => $aggregateRoot->getAggregateRootId()],
-                ['$set' => ['data' => \serialize($aggregateRoot)]],
+                ['$set' => ['data' => serialize($aggregateRoot)]],
                 ['upsert' => true]
             )
         ;

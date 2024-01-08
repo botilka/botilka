@@ -10,14 +10,9 @@ use Botilka\Snapshot\SnapshotStore;
 use MongoDB\Collection;
 use MongoDB\Model\BSONDocument;
 
-final class SnapshotStoreMongoDB implements SnapshotStore
+final readonly class SnapshotStoreMongoDB implements SnapshotStore
 {
-    private $collection;
-
-    public function __construct(Collection $collection)
-    {
-        $this->collection = $collection;
-    }
+    public function __construct(private Collection $collection) {}
 
     public function load(string $id): EventSourcedAggregateRoot
     {
@@ -29,14 +24,14 @@ final class SnapshotStoreMongoDB implements SnapshotStore
         /** @var BSONDocument<EventSourcedAggregateRoot> $snapshot */
         $snapshot = $this->collection->findOne(['id' => $id]);
 
-        return \unserialize($snapshot->offsetGet('data'));
+        return unserialize($snapshot->offsetGet('data'));
     }
 
     public function snapshot(EventSourcedAggregateRoot $aggregateRoot): void
     {
         $this->collection->updateOne(
             ['id' => $aggregateRoot->getAggregateRootId()],
-            ['$set' => ['data' => \serialize($aggregateRoot)]],
+            ['$set' => ['data' => serialize($aggregateRoot)]],
             ['upsert' => true]
         );
     }

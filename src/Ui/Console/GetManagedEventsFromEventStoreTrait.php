@@ -16,8 +16,7 @@ use Symfony\Component\Console\Input\InputOption;
  */
 trait GetManagedEventsFromEventStoreTrait
 {
-    /** @var EventStoreManager */
-    private $eventStoreManager;
+    private readonly EventStoreManager $eventStoreManager;
 
     /**
      * @throws \InvalidArgumentException
@@ -61,11 +60,11 @@ trait GetManagedEventsFromEventStoreTrait
 
         /** @var string $from */
         $from = $input->getOption('from');
-        $from = \intval($from, 10);
+        $from = (int) $from;
 
         /** @var string $to */
         $to = $input->getOption('to');
-        $to = \intval($to, 10);
+        $to = (int) $to;
 
         return $this->eventStoreManager->loadByAggregateRootId($value, $from, $to);
     }

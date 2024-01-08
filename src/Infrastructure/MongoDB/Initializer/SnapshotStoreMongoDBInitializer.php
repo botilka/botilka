@@ -6,7 +6,7 @@ namespace Botilka\Infrastructure\MongoDB\Initializer;
 
 use Botilka\Infrastructure\StoreInitializer;
 
-final class SnapshotStoreMongoDBInitializer extends AbstractMongoDBStoreInitializer implements StoreInitializer
+final readonly class SnapshotStoreMongoDBInitializer extends AbstractMongoDBStoreInitializer implements StoreInitializer
 {
     public function initialize(bool $force = false): void
     {

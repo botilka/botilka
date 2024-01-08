@@ -8,14 +8,9 @@ use Botilka\Event\Event;
 use Botilka\Event\EventBus;
 use Symfony\Component\Messenger\MessageBusInterface;
 
-final class MessengerEventBus implements EventBus
+final readonly class MessengerEventBus implements EventBus
 {
-    private $messageBus;
-
-    public function __construct(MessageBusInterface $messageBus)
-    {
-        $this->messageBus = $messageBus;
-    }
+    public function __construct(private MessageBusInterface $messageBus) {}
 
     public function dispatch(Event $message): void
     {

@@ -13,23 +13,22 @@ use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 final class UuidDenormalizer implements DenormalizerInterface, CacheableSupportsMethodInterface
 {
     /**
-     * @param mixed                $data
-     * @param class-string         $class
-     * @param ?string              $format
+     * @param string               $data
+     * @param class-string         $type
      * @param array<string, mixed> $context
      */
-    public function denormalize($data, $class, $format = null, array $context = []): UuidInterface
+    public function denormalize($data, string $type, string $format = null, array $context = []): UuidInterface
     {
         try {
             return Uuid::fromString($data);
-        } catch (InvalidUuidStringException $e) {
-            throw new \InvalidArgumentException(\sprintf('Can not denormalize %s as an Uuid.', \json_encode($data)));
+        } catch (InvalidUuidStringException) {
+            throw new \InvalidArgumentException(sprintf('Can not denormalize %s as an Uuid.', json_encode($data, \JSON_THROW_ON_ERROR)));
         }
     }
 
-    public function supportsDenormalization($data, $type, $format = null)
+    public function supportsDenormalization($data, string $type, string $format = null): bool
     {
-        return UuidInterface::class === $type;
+        return UuidInterface::class === $type && \is_string($data);
     }
 
     public function hasCacheableSupportsMethod(): bool

@@ -8,17 +8,20 @@ use Botilka\Infrastructure\MongoDB\EventStoreManagerMongoDB;
 use Botilka\Tests\AbstractKernelTestCase;
 use Botilka\Tests\Fixtures\Application\EventStore\EventStoreMongoDBSetup;
 use MongoDB\Collection;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
+/**
+ * @internal
+ */
 final class EventStoreManagerMongoDBTest extends AbstractKernelTestCase
 {
     use EventStoreMongoDBSetup;
 
-    /**
-     * @dataProvider loadByAggregateRootIdProviderFunctional
-     * @group functional
-     */
-    public function testLoadByAggregateRootIdFunctional(int $shouldBeCount, string $id, ?int $from = null, ?int $to = null): void
+    #[DataProvider('provideLoadByAggregateRootIdFunctionalCases')]
+    #[Group('functional')]
+    public function testLoadByAggregateRootIdFunctional(int $shouldBeCount, string $id, int $from = null, int $to = null): void
     {
         [$eventStore, $collection] = $this->setUpEventStore();
 
@@ -31,7 +34,7 @@ final class EventStoreManagerMongoDBTest extends AbstractKernelTestCase
         self::assertCount($shouldBeCount, $events);
     }
 
-    public function loadByAggregateRootIdProviderFunctional(): array
+    public static function provideLoadByAggregateRootIdFunctionalCases(): iterable
     {
         return [
             [10, 'foo', null, null],
@@ -43,10 +46,8 @@ final class EventStoreManagerMongoDBTest extends AbstractKernelTestCase
         ];
     }
 
-    /**
-     * @dataProvider loadByDomainFunctionalProvider
-     * @group functional
-     */
+    #[DataProvider('provideLoadByDomainFunctionalCases')]
+    #[Group('functional')]
     public function testLoadByDomainFunctional(int $shouldBeCount, string $domain): void
     {
         [$eventStore, $collection] = self::setUpEventStore();
@@ -60,7 +61,7 @@ final class EventStoreManagerMongoDBTest extends AbstractKernelTestCase
         self::assertCount($shouldBeCount, $events);
     }
 
-    public function loadByDomainFunctionalProvider(): array
+    public static function provideLoadByDomainFunctionalCases(): iterable
     {
         return [
             [15, 'FooBar\\Domain'],
@@ -69,7 +70,7 @@ final class EventStoreManagerMongoDBTest extends AbstractKernelTestCase
         ];
     }
 
-    /** @dataProvider getProvider */
+    #[DataProvider('provideGetCases')]
     public function testGet(string $key, string $method): void
     {
         $collection = $this->createMock(Collection::class);
@@ -88,7 +89,7 @@ final class EventStoreManagerMongoDBTest extends AbstractKernelTestCase
         self::assertSame($expected, $manager->{$method}());
     }
 
-    public function getProvider(): array
+    public static function provideGetCases(): iterable
     {
         return [
             ['id', 'getAggregateRootIds'],

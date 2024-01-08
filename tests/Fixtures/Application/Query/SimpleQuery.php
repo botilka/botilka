@@ -6,16 +6,9 @@ namespace Botilka\Tests\Fixtures\Application\Query;
 
 use Botilka\Application\Query\Query;
 
-final class SimpleQuery implements Query
+final readonly class SimpleQuery implements Query
 {
-    private $foo;
-    private $bar;
-
-    public function __construct(string $foo, ?int $bar = null)
-    {
-        $this->foo = $foo;
-        $this->bar = $bar;
-    }
+    public function __construct(private string $foo, private ?int $bar = null) {}
 
     public function getFoo(): string
     {

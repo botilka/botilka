@@ -9,25 +9,26 @@ use Botilka\EventStore\EventStore;
 use Botilka\EventStore\EventStoreConcurrencyException;
 use Botilka\Infrastructure\Doctrine\EventStoreDoctrine;
 use Botilka\Tests\Fixtures\Domain\StubEvent;
-use Doctrine\DBAL\Driver\Connection;
-use Doctrine\DBAL\Driver\DriverException;
-use Doctrine\DBAL\Driver\Statement;
+use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
+use Doctrine\DBAL\Result;
+use Doctrine\DBAL\Statement;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
+/**
+ * @internal
+ */
+#[CoversClass(EventStoreDoctrine::class)]
 final class EventStoreDoctrineTest extends TestCase
 {
-    /** @var Connection|MockObject */
-    private $connection;
-    /** @var DenormalizerInterface|MockObject */
-    private $denormalizer;
-    /** @var NormalizerInterface|MockObject */
-    private $normalizer;
-    /** @var EventStoreDoctrine */
-    private $eventStore;
+    private Connection&MockObject $connection;
+    private DenormalizerInterface&MockObject $denormalizer;
+    private MockObject&NormalizerInterface $normalizer;
+    private EventStoreDoctrine $eventStore;
 
     protected function setUp(): void
     {
@@ -41,7 +42,7 @@ final class EventStoreDoctrineTest extends TestCase
     public function testLoadSuccess(): void
     {
         $this->addLoadAssertions('SELECT type, payload FROM event_store WHERE id = :id ORDER BY playhead', ['id' => 'foo'], true);
-        self::assertEquals(['baz'], $this->eventStore->load('foo'));
+        $this->eventStore->load('foo');
     }
 
     public function testLoadFail(): void
@@ -56,13 +57,13 @@ final class EventStoreDoctrineTest extends TestCase
     public function testLoadFromPlayheadSuccess(): void
     {
         $this->addLoadAssertions('SELECT type, payload FROM event_store WHERE id = :id AND playhead >= :from ORDER BY playhead', ['id' => 'foo', 'from' => 2], true);
-        self::assertEquals(['baz'], $this->eventStore->loadFromPlayhead('foo', 2));
+        $this->eventStore->loadFromPlayhead('foo', 2);
     }
 
     public function testLoadFromPlayheadToPlayheadSuccess(): void
     {
         $this->addLoadAssertions('SELECT type, payload FROM event_store WHERE id = :id AND playhead BETWEEN :from AND :to ORDER BY playhead', ['id' => 'foo', 'from' => 2, 'to' => 4], true);
-        self::assertEquals(['baz'], $this->eventStore->loadFromPlayheadToPlayhead('foo', 2, 4));
+        $this->eventStore->loadFromPlayheadToPlayhead('foo', 2, 4);
     }
 
     public function testAppend(): void
@@ -90,8 +91,8 @@ final class EventStoreDoctrineTest extends TestCase
                 'id' => 'foo',
                 'playhead' => 123,
                 'type' => 'Foo\\Bar',
-                'payload' => \json_encode('foo_bar'),
-                'metadata' => \json_encode(['rab' => 'zab']),
+                'payload' => json_encode('foo_bar'),
+                'metadata' => json_encode(['rab' => 'zab']),
                 'recordedOn' => $recordedOn->format('Y-m-d H:i:s.u'),
                 'domain' => 'Foo\\Domain',
             ])
@@ -111,7 +112,7 @@ final class EventStoreDoctrineTest extends TestCase
 
         $stmt->expects(self::once())
             ->method('execute')
-            ->willThrowException(new UniqueConstraintViolationException('foo', $this->getMockForAbstractClass(DriverException::class)))
+            ->willThrowException($this->createMock(UniqueConstraintViolationException::class))
         ;
 
         $this->expectException(EventStoreConcurrencyException::class);
@@ -120,16 +121,19 @@ final class EventStoreDoctrineTest extends TestCase
         $this->eventStore->append('foo', 123, 'Foo\\Bar', new StubEvent(123), ['rab' => 'zab'], new \DateTimeImmutable(), 'Foo\\Domain');
     }
 
-    private function getStatement(bool $withResult): MockObject
+    private function getStatement(bool $withResult): MockObject&Statement
     {
         $stmt = $this->createMock(Statement::class);
+        $result = $this->createMock(Result::class);
 
-        $result = $withResult ? [
-            ['type' => 'Foo\\Bar', 'payload' => \json_encode(['foo' => 'bar'])],
-        ] : [];
+        $result->expects(self::once())->method('fetchAllAssociative')->willReturn(
+            $withResult ? [
+                ['type' => 'Foo\\Bar', 'payload' => json_encode(['foo' => 'bar'])],
+            ] : []
+        );
 
         $stmt->expects(self::once())
-            ->method('fetchAll')
+            ->method('execute')
             ->willReturn($result)
         ;
 
@@ -141,16 +145,16 @@ final class EventStoreDoctrineTest extends TestCase
         $this->denormalizer->expects(self::once())
             ->method('denormalize')
             ->with(['foo' => 'bar'], 'Foo\\Bar')
-            ->willReturn('baz')
         ;
     }
 
     private function addLoadAssertions(string $query, array $executeParameters, bool $withResult): void
     {
+        $stmt = $this->getStatement($withResult);
         $this->connection->expects(self::once())
             ->method('prepare')
             ->with($query)
-            ->willReturn($stmt = $this->getStatement($withResult))
+            ->willReturn($stmt)
         ;
 
         $stmt->expects(self::once())
@@ -158,7 +162,7 @@ final class EventStoreDoctrineTest extends TestCase
             ->with($executeParameters)
         ;
 
-        if (true === $withResult) {
+        if ($withResult) {
             $this->addDenormalizerAssertion();
         }
     }

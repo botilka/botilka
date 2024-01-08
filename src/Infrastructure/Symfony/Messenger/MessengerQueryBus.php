@@ -13,12 +13,13 @@ final class MessengerQueryBus implements QueryBus
 {
     use HandleTrait;
 
-    public function __construct(MessageBusInterface $messageBus)
-    {
+    public function __construct(
+        MessageBusInterface $messageBus,
+    ) {
         $this->messageBus = $messageBus;
     }
 
-    public function dispatch(Query $message)
+    public function dispatch(Query $message): mixed
     {
         return $this->handle($message);
     }

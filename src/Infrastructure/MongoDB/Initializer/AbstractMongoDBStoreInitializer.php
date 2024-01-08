@@ -6,17 +6,14 @@ namespace Botilka\Infrastructure\MongoDB\Initializer;
 
 use MongoDB\Client;
 
-abstract class AbstractMongoDBStoreInitializer
+abstract readonly class AbstractMongoDBStoreInitializer
 {
-    private $client;
-    private $database;
-    private $collectionName;
-
-    public function __construct(Client $client, string $database, string $collectionName)
-    {
+    public function __construct(
+        private Client $client,
+        private string $database,
+        private string $collectionName,
+    ) {
         $this->client = $client;
-        $this->database = $database;
-        $this->collectionName = $collectionName;
     }
 
     /**
@@ -26,13 +23,13 @@ abstract class AbstractMongoDBStoreInitializer
     {
         $database = $this->client->selectDatabase($this->database);
 
-        if (true === $force) {
+        if ($force) {
             $database->dropCollection($this->collectionName);
         }
 
         try {
             $database->createCollection($this->collectionName);
-        } catch (\MongoDB\Driver\Exception\CommandException $e) {
+        } catch (\MongoDB\Driver\Exception\CommandException) {
             throw new \RuntimeException("Collection '{$this->collectionName}' already exists.");
         }
 

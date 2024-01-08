@@ -3,21 +3,25 @@ services:
         autowire: true
         autoconfigure: true
         public: false
-        bind:
+
+    Botilka\EventStore\EventStore: '@Botilka\Infrastructure\Doctrine\EventStoreDoctrine'
+    Botilka\Infrastructure\Doctrine\EventStoreDoctrine:
+        arguments:
             $tableName: '%botilka.event_store.collection%'
 
-    Botilka\Infrastructure\Doctrine\EventStoreDoctrine: ~
-    Botilka\EventStore\EventStore: '@Botilka\Infrastructure\Doctrine\EventStoreDoctrine'
-
+    Botilka\Snapshot\SnapshotStore: '@Botilka\Infrastructure\Doctrine\SnapshotStoreDoctrine'
     Botilka\Infrastructure\Doctrine\SnapshotStoreDoctrine:
         arguments:
             $tableName: '%botilka.snapshot_store.collection%'
-    Botilka\Snapshot\SnapshotStore: '@Botilka\Infrastructure\Doctrine\SnapshotStoreDoctrine'
 
-    Botilka\Infrastructure\Doctrine\EventStoreManagerDoctrine: ~
     Botilka\EventStore\EventStoreManager: '@Botilka\Infrastructure\Doctrine\EventStoreManagerDoctrine'
+    Botilka\Infrastructure\Doctrine\EventStoreManagerDoctrine:
+        arguments:
+            $tableName: '%botilka.event_store.collection%'
 
-    Botilka\Infrastructure\Doctrine\Initializer\EventStoreDoctrineInitializer: ~
+    Botilka\Infrastructure\Doctrine\Initializer\EventStoreDoctrineInitializer:
+        arguments:
+            $tableName: '%botilka.event_store.collection%'
 
     Botilka\Infrastructure\Doctrine\Initializer\SnapshotStoreDoctrineInitializer:
         arguments:

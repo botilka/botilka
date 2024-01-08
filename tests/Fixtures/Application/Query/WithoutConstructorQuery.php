@@ -8,10 +8,8 @@ use Botilka\Application\Query\Query;
 
 final class WithoutConstructorQuery implements Query
 {
-    /** @var string */
-    private $foo;
-    /** @var ?int */
-    private $bar;
+    private ?string $foo = null;
+    private ?int $bar = null;
 
     public function setFoo(string $foo): self
     {

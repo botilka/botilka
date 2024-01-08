@@ -13,27 +13,19 @@ use Botilka\Event\Event;
  *
  * @internal
  */
-final class ManagedEvent
+final readonly class ManagedEvent
 {
-    private $id;
-    private $domainEvent;
-    private $playhead;
-    private $metadata;
-    private $recordedOn;
-    private $domain;
-
     /**
      * @param array<string, mixed>|null $metadata
      */
-    public function __construct(string $id, Event $domainEvent, int $playhead, ?array $metadata, \DateTimeImmutable $recordedOn, string $domain)
-    {
-        $this->id = $id;
-        $this->domainEvent = $domainEvent;
-        $this->playhead = $playhead;
-        $this->metadata = $metadata;
-        $this->recordedOn = $recordedOn;
-        $this->domain = $domain;
-    }
+    public function __construct(
+        private string $id,
+        private Event $domainEvent,
+        private int $playhead,
+        private ?array $metadata,
+        private \DateTimeImmutable $recordedOn,
+        private string $domain,
+    ) {}
 
     public function getId(): string
     {

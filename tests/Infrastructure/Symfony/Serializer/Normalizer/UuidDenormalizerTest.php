@@ -5,21 +5,26 @@ declare(strict_types=1);
 namespace Botilka\Tests\Infrastructure\Symfony\Serializer\Normalizer;
 
 use Botilka\Infrastructure\Symfony\Serializer\Normalizer\UuidDenormalizer;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 
+/**
+ * @internal
+ */
+#[CoversClass(UuidDenormalizer::class)]
 final class UuidDenormalizerTest extends TestCase
 {
-    /** @var UuidDenormalizer */
-    private $denormalizer;
+    private UuidDenormalizer $denormalizer;
 
     protected function setUp(): void
     {
         $this->denormalizer = new UuidDenormalizer();
     }
 
-    /** @dataProvider supportsDenormalizationProvider */
+    #[DataProvider('provideSupportsDenormalizationCases')]
     public function testSupportsDenormalization(bool $expected, string $type): void
     {
         self::assertSame($expected, $this->denormalizer->supportsDenormalization('foo', $type));
@@ -28,9 +33,9 @@ final class UuidDenormalizerTest extends TestCase
     /**
      * @return array<int, array<int, bool|class-string>>
      */
-    public function supportsDenormalizationProvider(): array
+    public static function provideSupportsDenormalizationCases(): iterable
     {
-        return  [
+        return [
             [true, UuidInterface::class],
             [false, \stdClass::class],
         ];

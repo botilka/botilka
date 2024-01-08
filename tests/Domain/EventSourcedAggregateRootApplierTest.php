@@ -4,14 +4,19 @@ declare(strict_types=1);
 
 namespace Botilka\Tests\Domain;
 
+use Botilka\Domain\EventSourcedAggregateRoot;
 use Botilka\Tests\Fixtures\Domain\StubEvent;
 use Botilka\Tests\Fixtures\Domain\StubEventSourcedAggregateRoot;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ */
+#[CoversClass(EventSourcedAggregateRoot::class)]
 final class EventSourcedAggregateRootApplierTest extends TestCase
 {
-    /** @var StubEventSourcedAggregateRoot */
-    private $eventSourcedAggregateRoot;
+    private StubEventSourcedAggregateRoot $eventSourcedAggregateRoot;
 
     protected function setUp(): void
     {

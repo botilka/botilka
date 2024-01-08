@@ -21,7 +21,7 @@ When retrieving an aggregate, the repository will try to load from the snapshot 
 ## Setup
 
 As for event store, Botilka provide a command to create & configure the snapshot store:
-                    
+
 ```sh
 bin/console botilka:store:initialize snapshot doctrine # or mongodb
 ```
@@ -48,7 +48,7 @@ services:
         class: 'Botilka\Snapshot\SnapshotedEventSourcedRepository'
 
     # registry configuration
-    Botilka\Repository\EventSourcedRepositoryRegistry:
+    Botilka\Repository\DefaultEventSourcedRepositoryRegistry:
         arguments:
             $repositories:
                 App\BankAccount\Domain\BankAccount: '@app.repository.bank_account'
@@ -84,7 +84,7 @@ Inject it to the repository managing your aggregate:
 services:
 
     App\EventSourcing\Snapshot\Strategist\RandomSnapshotStrategist: ~
-    
+
     app.repository.bank_account.snapshot:
         decorates: 'app.repository.bank_account'
         class: 'Botilka\Snapshot\SnapshotedEventSourcedRepository'

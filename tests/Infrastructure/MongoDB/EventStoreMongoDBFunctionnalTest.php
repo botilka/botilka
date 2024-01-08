@@ -10,15 +10,18 @@ use Botilka\EventStore\EventStoreConcurrencyException;
 use Botilka\Tests\AbstractKernelTestCase;
 use Botilka\Tests\Fixtures\Application\EventStore\EventStoreMongoDBSetup;
 use Botilka\Tests\Fixtures\Domain\StubEvent;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 
+/**
+ * @internal
+ */
 final class EventStoreMongoDBFunctionnalTest extends AbstractKernelTestCase
 {
     use EventStoreMongoDBSetup;
 
-    /**
-     * @dataProvider loadFunctionalProvider
-     * @group functional
-     */
+    #[DataProvider('provideLoadFunctionalCases')]
+    #[Group('functional')]
     public function testLoadFunctional(int $expectedCount, string $id): void
     {
         /** @var EventStore $eventStore */
@@ -26,7 +29,7 @@ final class EventStoreMongoDBFunctionnalTest extends AbstractKernelTestCase
         self::assertCount($expectedCount, $eventStore->load($id));
     }
 
-    public function loadFunctionalProvider(): array
+    public static function provideLoadFunctionalCases(): iterable
     {
         return [
             [10, 'foo'],
@@ -34,9 +37,7 @@ final class EventStoreMongoDBFunctionnalTest extends AbstractKernelTestCase
         ];
     }
 
-    /**
-     * @group functional
-     */
+    #[Group('functional')]
     public function testLoadNotFoundFunctional(): void
     {
         /** @var EventStore $eventStore */
@@ -48,10 +49,8 @@ final class EventStoreMongoDBFunctionnalTest extends AbstractKernelTestCase
         $eventStore->load('non_existent');
     }
 
-    /**
-     * @dataProvider loadFromPlayheadFunctionalProvider
-     * @group functional
-     */
+    #[DataProvider('provideLoadFromPlayheadFunctionalCases')]
+    #[Group('functional')]
     public function testLoadFromPlayheadFunctional(int $expectedCount, string $id, int $fromPlayhead): void
     {
         /** @var EventStore $eventStore */
@@ -59,7 +58,7 @@ final class EventStoreMongoDBFunctionnalTest extends AbstractKernelTestCase
         self::assertCount($expectedCount, $eventStore->loadFromPlayhead($id, $fromPlayhead));
     }
 
-    public function loadFromPlayheadFunctionalProvider(): array
+    public static function provideLoadFromPlayheadFunctionalCases(): iterable
     {
         return [
             [8, 'foo', 2],
@@ -70,10 +69,8 @@ final class EventStoreMongoDBFunctionnalTest extends AbstractKernelTestCase
         ];
     }
 
-    /**
-     * @dataProvider loadFromPlayheadToPlayheadFunctionalProvider
-     * @group functional
-     */
+    #[DataProvider('provideLoadFromPlayheadToPlayheadFunctionalCases')]
+    #[Group('functional')]
     public function testLoadFromPlayheadToPlayheadFunctional(int $expectedCount, string $id, int $fromPlayhead, int $toPlayhead): void
     {
         /** @var EventStore $eventStore */
@@ -81,7 +78,7 @@ final class EventStoreMongoDBFunctionnalTest extends AbstractKernelTestCase
         self::assertCount($expectedCount, $eventStore->loadFromPlayheadToPlayhead($id, $fromPlayhead, $toPlayhead));
     }
 
-    public function loadFromPlayheadToPlayheadFunctionalProvider(): array
+    public static function provideLoadFromPlayheadToPlayheadFunctionalCases(): iterable
     {
         return [
             [2, 'foo', 2, 3],
@@ -92,9 +89,7 @@ final class EventStoreMongoDBFunctionnalTest extends AbstractKernelTestCase
         ];
     }
 
-    /**
-     * @group functional
-     */
+    #[Group('functional')]
     public function testAppendBulkWriteExceptionFunctional(): void
     {
         /** @var EventStore $eventStore */

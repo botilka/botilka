@@ -6,6 +6,7 @@ namespace Botilka\Tests\Fixtures\Domain;
 
 use Botilka\Domain\EventSourcedAggregateRoot;
 use Botilka\Domain\EventSourcedAggregateRootApplier;
+use Botilka\Event\Event;
 
 final class StubEventSourcedAggregateRoot implements EventSourcedAggregateRoot
 {
@@ -18,8 +19,7 @@ final class StubEventSourcedAggregateRoot implements EventSourcedAggregateRoot
         StubEvent::class => 'stubbed',
     ];
 
-    /** @var int */
-    private $foo = 123;
+    private int $foo = 123;
 
     public function getAggregateRootId(): string
     {
@@ -34,6 +34,9 @@ final class StubEventSourcedAggregateRoot implements EventSourcedAggregateRoot
         return $this->foo;
     }
 
+    /**
+     * @return array{0: self, 1: Event}
+     */
     public function stub(int $foo): array
     {
         $event = new StubEvent($foo);

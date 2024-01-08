@@ -12,7 +12,7 @@ use Botilka\EventStore\EventStore;
 use Botilka\EventStore\EventStoreConcurrencyException;
 use Botilka\Projector\Projection;
 use Botilka\Projector\Projectionist;
-use Psr\Container\ContainerInterface;
+use Botilka\Repository\EventSourcedRepositoryRegistry;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Exception\NoHandlerForMessageException;
@@ -20,22 +20,15 @@ use Symfony\Component\Messenger\Middleware\MiddlewareInterface;
 use Symfony\Component\Messenger\Middleware\StackInterface;
 use Symfony\Component\Messenger\Stamp\HandledStamp;
 
-final class EventDispatcherMiddleware implements MiddlewareInterface
+final readonly class EventDispatcherMiddleware implements MiddlewareInterface
 {
-    private $eventStore;
-    private $repositoryRegistry;
-    private $eventBus;
-    private $logger;
-    private $projectionist;
-
-    public function __construct(EventStore $eventStore, ContainerInterface $repositoryRegistry, EventBus $eventBus, LoggerInterface $logger, Projectionist $projectionist)
-    {
-        $this->eventStore = $eventStore;
-        $this->repositoryRegistry = $repositoryRegistry;
-        $this->eventBus = $eventBus;
-        $this->logger = $logger;
-        $this->projectionist = $projectionist;
-    }
+    public function __construct(
+        private EventStore $eventStore,
+        private EventSourcedRepositoryRegistry $repositoryRegistry,
+        private EventBus $eventBus,
+        private LoggerInterface $logger,
+        private Projectionist $projectionist,
+    ) {}
 
     /**
      * Save event as soon as the command has been handled so if it fails, we won't dispatch non saved events.
@@ -53,7 +46,7 @@ final class EventDispatcherMiddleware implements MiddlewareInterface
         $commandResponse = $handledStamps[0]->getResult();
 
         if (!$commandResponse instanceof CommandResponse) {
-            throw new \InvalidArgumentException(\sprintf('Result must be an instance of %s, %s given.', CommandResponse::class, \is_object($commandResponse) ? \get_class($commandResponse) : \gettype($commandResponse)));
+            throw new \InvalidArgumentException(sprintf('Result must be an instance of %s, %s given.', CommandResponse::class, get_debug_type($commandResponse)));
         }
 
         $event = $commandResponse->getEvent();
@@ -65,8 +58,8 @@ final class EventDispatcherMiddleware implements MiddlewareInterface
 
         try {
             $this->eventBus->dispatch($event);
-        } catch (NoHandlerForMessageException $e) {
-            $this->logger->notice(\sprintf('No event handler for %s.', \get_class($event)));
+        } catch (NoHandlerForMessageException) {
+            $this->logger->notice(sprintf('No event handler for %s.', $event::class));
         }
 
         $projection = new Projection($event);
@@ -80,11 +73,11 @@ final class EventDispatcherMiddleware implements MiddlewareInterface
         $event = $commandResponse->getEvent();
 
         try {
-            $aggregateRootClassName = \get_class($commandResponse->getAggregateRoot());
+            $aggregateRootClassName = $commandResponse->getAggregateRoot()::class;
             if ($this->repositoryRegistry->has($aggregateRootClassName)) {
                 $this->repositoryRegistry->get($aggregateRootClassName)->save($commandResponse);
             } else {
-                $this->eventStore->append($commandResponse->getId(), $commandResponse->getPlayhead(), \get_class($event), $event, null, new \DateTimeImmutable(), $commandResponse->getDomain());
+                $this->eventStore->append($commandResponse->getId(), $commandResponse->getPlayhead(), $event::class, $event, null, new \DateTimeImmutable(), $commandResponse->getDomain());
             }
         } catch (EventStoreConcurrencyException $e) {
             $this->logger->error($e->getMessage());

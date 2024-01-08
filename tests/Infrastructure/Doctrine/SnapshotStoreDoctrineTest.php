@@ -8,20 +8,23 @@ use Botilka\Infrastructure\Doctrine\SnapshotStoreDoctrine;
 use Botilka\Snapshot\SnapshotNotFoundException;
 use Botilka\Snapshot\SnapshotStore;
 use Botilka\Tests\Fixtures\Domain\StubEventSourcedAggregateRoot;
-use Doctrine\DBAL\Driver\Connection;
-use Doctrine\DBAL\Driver\Statement;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Result;
+use Doctrine\DBAL\Statement;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Serializer\SerializerInterface;
 
-class SnapshotStoreDoctrineTest extends TestCase
+/**
+ * @internal
+ */
+#[CoversClass(SnapshotStoreDoctrine::class)]
+final class SnapshotStoreDoctrineTest extends TestCase
 {
-    /** @var Connection|MockObject */
-    private $connection;
-    /** @var SerializerInterface|MockObject */
-    private $serializer;
-    /** @var SnapshotStoreDoctrine */
-    private $snapshotStore;
+    private Connection&MockObject $connection;
+    private MockObject&SerializerInterface $serializer;
+    private SnapshotStoreDoctrine $snapshotStore;
 
     protected function setUp(): void
     {
@@ -38,15 +41,30 @@ class SnapshotStoreDoctrineTest extends TestCase
         $stmtDelete = $this->createMock(Statement::class);
         $stmtInsert = $this->createMock(Statement::class);
 
-        $this->connection->expects(self::exactly(2))
+        $matcher = self::exactly(2);
+        $this->connection
+            ->expects($matcher)
             ->method('prepare')
-            ->withConsecutive(['DELETE FROM snapshot_store WHERE id = :id'], ['INSERT INTO snapshot_store VALUES (:id, :playhead, :type, :payload)'])
-            ->willReturnOnConsecutiveCalls($stmtDelete, $stmtInsert)
+            ->willReturnCallback(function (string $query) use ($matcher, $stmtDelete, $stmtInsert) {
+                $invocationCount = $matcher->numberOfInvocations();
+                match ($invocationCount) {
+                    1 => $this->assertSame('DELETE FROM snapshot_store WHERE id = :id', $query),
+                    2 => $this->assertSame('INSERT INTO snapshot_store VALUES (:id, :playhead, :type, :payload)', $query),
+                };
+
+                return match ($invocationCount) {
+                    1 => $stmtDelete,
+                    2 => $stmtInsert,
+                };
+            })
         ;
 
         $stmtDelete->expects(self::once())
-            ->method('execute')
-            ->with(['id' => $aggregateRoot->getAggregateRootId()])
+            ->method('bindValue')
+            ->with('id', $aggregateRoot->getAggregateRootId())
+        ;
+        $stmtDelete->expects(self::once())
+            ->method('executeStatement')
         ;
 
         $this->serializer->expects(self::once())
@@ -56,13 +74,33 @@ class SnapshotStoreDoctrineTest extends TestCase
         ;
 
         $stmtInsert->expects(self::once())
-            ->method('execute')
-            ->with([
-                'id' => $aggregateRoot->getAggregateRootId(),
-                'type' => \get_class($aggregateRoot),
-                'playhead' => $aggregateRoot->getPlayhead(),
-                'payload' => 'foobarbaz',
-            ])
+            ->method('executeStatement')
+            ->with()
+        ;
+
+        $matcher = self::exactly(4);
+        $stmtInsert->expects($matcher)
+            ->method('bindValue')
+            ->willReturnCallback(function (string $param, int|string $value) use ($matcher, $aggregateRoot): void {
+                switch ($matcher->numberOfInvocations()) {
+                    case 1:
+                        $this->assertSame('id', $param);
+                        $this->assertSame($aggregateRoot->getAggregateRootId(), $value);
+                        break;
+                    case 2:
+                        $this->assertSame('type', $param);
+                        $this->assertSame($aggregateRoot::class, $value);
+                        break;
+                    case 3:
+                        $this->assertSame('playhead', $param);
+                        $this->assertSame($aggregateRoot->getPlayhead(), $value);
+                        break;
+                    case 4:
+                        $this->assertSame('payload', $param);
+                        $this->assertSame('foobarbaz', $value);
+                        break;
+                }
+            })
         ;
 
         $this->snapshotStore->snapshot($aggregateRoot);
@@ -70,14 +108,15 @@ class SnapshotStoreDoctrineTest extends TestCase
 
     public function testLoadSuccess(): void
     {
+        $stmt = $this->getStatement(true);
         $this->connection->expects(self::once())
             ->method('prepare')
             ->with('SELECT type, payload FROM snapshot_store WHERE id = :id')
-            ->willReturn($stmt = $this->getStatement(true))
+            ->willReturn($stmt)
         ;
 
         $stmt->expects(self::once())
-            ->method('execute')
+            ->method('executeQuery')
             ->with(['id' => 'foo'])
         ;
 
@@ -85,7 +124,7 @@ class SnapshotStoreDoctrineTest extends TestCase
 
         $this->serializer->expects(self::once())
             ->method('deserialize')
-            ->with(\json_encode(['foo' => 'bar']), 'Foo\\Bar', 'json')
+            ->with(json_encode(['foo' => 'bar']), 'Foo\\Bar', 'json')
             ->willReturn($aggregateRoot)
         ;
 
@@ -94,18 +133,19 @@ class SnapshotStoreDoctrineTest extends TestCase
 
     public function testLoadFail(): void
     {
+        $stmt = $this->getStatement(false);
         $this->connection->expects(self::once())
             ->method('prepare')
             ->with('SELECT type, payload FROM snapshot_store WHERE id = :id')
-            ->willReturn($stmt = $this->getStatement(false))
+            ->willReturn($stmt)
         ;
 
         $stmt->expects(self::once())
-            ->method('execute')
+            ->method('executeQuery')
             ->with(['id' => 'foo'])
         ;
 
-        $aggregateRoot = new StubEventSourcedAggregateRoot();
+        new StubEventSourcedAggregateRoot();
 
         $this->serializer->expects(self::never())
             ->method('deserialize')
@@ -117,17 +157,21 @@ class SnapshotStoreDoctrineTest extends TestCase
         $this->snapshotStore->load('foo');
     }
 
-    private function getStatement(bool $withResult): MockObject
+    private function getStatement(bool $withResult): MockObject&Statement
     {
         $stmt = $this->createMock(Statement::class);
-
-        $result = $withResult ?
-            ['type' => 'Foo\\Bar', 'payload' => \json_encode(['foo' => 'bar'])]
-        : false;
+        $result = $this->createMock(Result::class);
 
         $stmt->expects(self::once())
-            ->method('fetch')
+            ->method('executeQuery')
             ->willReturn($result)
+        ;
+
+        $result->expects(self::once())->method('fetchAssociative')
+            ->willReturn($withResult ?
+                ['type' => 'Foo\\Bar', 'payload' => json_encode(['foo' => 'bar'])]
+                : false
+            )
         ;
 
         return $stmt;

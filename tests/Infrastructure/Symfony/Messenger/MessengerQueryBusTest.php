@@ -6,11 +6,16 @@ namespace Botilka\Tests\Infrastructure\Symfony\Messenger;
 
 use Botilka\Infrastructure\Symfony\Messenger\MessengerQueryBus;
 use Botilka\Tests\Fixtures\Application\Query\SimpleQuery;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Messenger\Stamp\HandledStamp;
 
+/**
+ * @internal
+ */
+#[CoversClass(MessengerQueryBus::class)]
 final class MessengerQueryBusTest extends TestCase
 {
     public function testDispatch(): void

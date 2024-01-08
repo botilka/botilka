@@ -7,26 +7,15 @@ namespace Botilka\Infrastructure\InMemory;
 use Botilka\EventStore\EventStoreManager;
 use Botilka\EventStore\ManagedEvent;
 
-final class EventStoreManagerInMemory implements EventStoreManager
+final readonly class EventStoreManagerInMemory implements EventStoreManager
 {
-    private $eventStore;
+    public function __construct(private EventStoreInMemory $eventStore) {}
 
-    public function __construct(EventStoreInMemory $eventStore)
-    {
-        $this->eventStore = $eventStore;
-    }
-
-    public function loadByAggregateRootId(string $id, ?int $from = null, ?int $to = null): iterable
+    public function loadByAggregateRootId(string $id, int $from = null, int $to = null): iterable
     {
         $store = $this->eventStore->getStore();
-        $storedEvents = \array_slice($store[$id], null !== $from ? $from : 0, null !== $to ? $to - $from : null);
 
-        $events = [];
-        foreach ($storedEvents as $storedEvent) {
-            $events[] = $storedEvent;
-        }
-
-        return $events;
+        return \array_slice($store[$id], $from ?? 0, null !== $to ? $to - $from : null);
     }
 
     public function loadByDomain(string $domain): iterable
@@ -49,21 +38,18 @@ final class EventStoreManagerInMemory implements EventStoreManager
     {
         $result = [];
 
-        foreach ($this->eventStore->getStore() as $id => $events) {
+        foreach ($this->eventStore->getStore() as $events) {
             /** @var ManagedEvent $event */
             foreach ($events as $event) {
                 $result[] = $event->getDomain();
             }
         }
 
-        return \array_values(\array_unique($result));
+        return array_values(array_unique($result));
     }
 
     public function getAggregateRootIds(): array
     {
-        /** @var string[] $keys */
-        $keys = \array_keys($this->eventStore->getStore());
-
-        return $keys;
+        return array_keys($this->eventStore->getStore());
     }
 }

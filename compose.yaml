@@ -1,0 +1,6 @@
+services:
+    qa:
+        image: jakzal/phpqa:php8.2-alpine
+        working_dir: /app
+        volumes:
+            - .:/app

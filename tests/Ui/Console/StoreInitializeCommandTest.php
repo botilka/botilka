@@ -7,10 +7,16 @@ namespace Botilka\Tests\Ui\Console;
 use Botilka\Infrastructure\StoreInitializer;
 use Botilka\Tests\Fixtures\Application\EventStore\DummyEventStore;
 use Botilka\Ui\Console\StoreInitializeCommand;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 
+/**
+ * @internal
+ */
+#[CoversClass(StoreInitializeCommand::class)]
 final class StoreInitializeCommandTest extends TestCase
 {
     public function testName(): void
@@ -33,7 +39,7 @@ final class StoreInitializeCommandTest extends TestCase
         self::assertStringContainsStringIgnoringCase('[WARNING] No initializer found.', $stdout);
     }
 
-    /** @dataProvider executeProvider */
+    #[DataProvider('executeProvider')]
     public function testExecuteSuccess(bool $force): void
     {
         $initializer = $this->createMock(StoreInitializer::class);
@@ -55,7 +61,7 @@ final class StoreInitializeCommandTest extends TestCase
     /**
      * @return array<bool[]>
      */
-    public function executeProvider(): array
+    public static function executeProvider(): iterable
     {
         return [
             [true],
@@ -63,7 +69,7 @@ final class StoreInitializeCommandTest extends TestCase
         ];
     }
 
-    /** @dataProvider executeProvider */
+    #[DataProvider('executeProvider')]
     public function testExecuteRuntimeException(bool $force): void
     {
         $initializer = $this->createMock(StoreInitializer::class);

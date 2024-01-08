@@ -6,8 +6,14 @@ namespace Botilka\Tests\Snapshot\Strategist;
 
 use Botilka\Domain\EventSourcedAggregateRoot;
 use Botilka\Snapshot\Strategist\PlayheadValueSnapshotStrategist;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ */
+#[CoversClass(PlayheadValueSnapshotStrategist::class)]
 final class PlayheadValueSnapshotStrategistTest extends TestCase
 {
     public function testGetEachPlayheadDefault(): void
@@ -16,7 +22,7 @@ final class PlayheadValueSnapshotStrategistTest extends TestCase
         self::assertSame(5, $strategist->getEachPlayhead());
     }
 
-    /** @dataProvider mustSnapshotProvider */
+    #[DataProvider('provideMustSnapshotCases')]
     public function testMustSnapshot(bool $expected, int $playhead, int $eachPlayhead): void
     {
         $strategist = new PlayheadValueSnapshotStrategist($eachPlayhead);
@@ -33,7 +39,7 @@ final class PlayheadValueSnapshotStrategistTest extends TestCase
     /**
      * @return array<int, array<int, bool|int>>
      */
-    public function mustSnapshotProvider(): array
+    public static function provideMustSnapshotCases(): iterable
     {
         return [
             [false, 0, 20],

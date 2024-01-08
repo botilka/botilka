@@ -11,19 +11,20 @@ services:
         public: false
 
     # Event store
-    Botilka\Infrastructure\InMemory\EventStoreInMemory: ~
     Botilka\EventStore\EventStore: '@Botilka\Infrastructure\InMemory\EventStoreInMemory'
+    Botilka\Infrastructure\InMemory\EventStoreInMemory: ~
 
     # Event store repository
-    Botilka\Repository\EventSourcedRepositoryRegistry: ~
+    Botilka\Repository\EventSourcedRepositoryRegistry: '@Botilka\Repository\DefaultEventSourcedRepositoryRegistry'
+    Botilka\Repository\DefaultEventSourcedRepositoryRegistry: ~
 
     # Event replayer
     Botilka\Event\EventReplayer:
         class: Botilka\Event\DefaultEventReplayer
 
     # Event store manager
-    Botilka\Infrastructure\InMemory\EventStoreManagerInMemory: ~
     Botilka\EventStore\EventStoreManager: '@Botilka\Infrastructure\InMemory\EventStoreManagerInMemory'
+    Botilka\Infrastructure\InMemory\EventStoreManagerInMemory: ~
 
     # Commands
     Botilka\Ui\Console\EventReplayCommand: ~
@@ -47,3 +48,5 @@ services:
 
     Botilka\Snapshot\Strategist\PlayheadValueSnapshotStrategist: ~
     Botilka\Snapshot\Strategist\SnapshotStrategist: '@Botilka\Snapshot\Strategist\PlayheadValueSnapshotStrategist'
+
+    Botilka\Bridge\ApiPlatform\Action\CommandEntrypointAction: ~

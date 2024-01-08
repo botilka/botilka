@@ -1,20 +1,15 @@
 # BOTILKA
 
-[![Build Status](https://travis-ci.org/botilka/botilka.svg?branch=master)](https://travis-ci.org/botilka/botilka)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/botilka/botilka/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/botilka/botilka/?branch=master)
 [![Code Coverage](https://scrutinizer-ci.com/g/botilka/botilka/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/botilka/botilka/?branch=master)
 [![PHPStan](https://img.shields.io/badge/PHPStan-enabled-brightgreen.svg?style=flat)](https://github.com/phpstan/phpstan)
-[![Infection MSI](https://badge.stryker-mutator.io/github.com/botilka/botilka/master)](https://infection.github.io)
 
 An modern & easy-to-use Event Sourcing & CQRS library. It's shipped with implementations built on top of Symfony components.
-
-It can leverage [API Platform](https://api-platform.com) to expose yours `Commands` and `Queries` via REST.
 
 ## Features
 
 - EventStore implementation with [Doctrine](https://www.doctrine-project.org/) or [MongoDB](https://www.mongodb.com).
 - Snapshot store for performance (Doctrine & MongoDB).
-- Swagger commands & queries description (via API Platform UI).
 - REST API access to commands & queries.
 - Sync or async event handling is a matter of configuration.
 - Event replaying (allow to test domain changes).
@@ -27,7 +22,7 @@ It can leverage [API Platform](https://api-platform.com) to expose yours `Comman
 An event store should (must) be persisted and the default implementation is not! Choose between:
  - `Botilka\Infrastructure\Doctrine\EventStoreDoctrine`
  - `Botilka\Infrastructure\MongoDB\EventStoreMongoDB`
- 
+
 ```yaml
 # config/packages/botilka.yaml
 botilka:
@@ -46,6 +41,31 @@ bin/console botilka:store:initialize event doctrine -f
 ```
 
 ## Usage
+
+### API Platform bridge
+
+You just have to use the [dedicated controller](src/Bridge/ApiPlatform/Action/CommandEntrypointAction.php):
+
+```php
+namespace App\Foo\Application\Command;
+
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Post;
+use Botilka\Application\Command\Command;
+use Botilka\Bridge\ApiPlatform\Action\CommandEntrypointAction;
+
+#[ApiResource(
+    operations: [
+        new Post(
+            uriTemplate: '/commands/foo/bar',
+            controller: CommandEntrypointAction::class,
+            output: null
+        ),
+
+    ]
+)]
+final class BarCommand implements Command { ... }
+```
 
 ### CQRS & EventSourcing
 
@@ -99,7 +119,7 @@ final class SendSMSOnWithdrawalPerformed implements EventHandler
 ```
 
 Replay:
-```bash
+```shell
 # by domain
 bin/console botilka:event_store:replay --domain [domain name]
 # or by id
@@ -118,7 +138,7 @@ The projection
 ```php
 namespace App\BankAccount\Projection\Doctrine;
 
-final class BankAccountProjector implements Projector
+final readonly class BankAccountProjector implements Projector
 {
     public function sumOfDeposit(DepositPerformed $event): void
     {
@@ -127,7 +147,7 @@ final class BankAccountProjector implements Projector
         $stmt->execute();
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
             DepositPerformed::class => 'sumOfDeposit',
@@ -137,22 +157,18 @@ final class BankAccountProjector implements Projector
 ```
 
 Replay projection:
-```bash
+```shell
 # by domain
 bin/console botilka:projector:build domain [domain name]
 # or by id
 bin/console botilka:projector:build id [aggregate root id]  --matching sumOfDeposit # you can limit the scope with --from/-f & --to/-t
 ```
 
-
-### API Platform bridge
-See the [API Platform bridge](/documentation/api_platform_bridge.md) documentation.
-
 ## Testing
 
 This project uses PHP Unit: `vendor/bin/phpunit`.
 
-Functionals tests are grouped under the tag `functional`: `vendor/bin/phpunit --group functional`. 
+Functionals tests are grouped under the tag `functional`: `vendor/bin/phpunit --group functional`.
 
 ## How it works
 

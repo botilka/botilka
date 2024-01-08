@@ -4,85 +4,71 @@ declare(strict_types=1);
 
 namespace Botilka\Infrastructure\Doctrine;
 
-use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 
 /**
  * @ORM\Entity(readOnly=true)
+ *
  * @ORM\Table(
  *     name="event_store",
  *     indexes={
+ *
  *         @ORM\Index(columns={"domain"})
  *     }
  * )
- * @ApiResource(
- *     routePrefix="/event_store",
- *     collectionOperations={"get"},
- *     itemOperations={"get"}
- * )
  */
+#[ApiResource(operations: [new Get(), new GetCollection()], routePrefix: '/event_store')]
 class Event
 {
     /**
      * @var UuidInterface
+     *
      * @ORM\Id
+     *
      * @ORM\Column(type="uuid")
      */
     private $id;
 
     /**
-     * @var int
-     * @ORM\Id
-     * @ORM\Column(type="integer", options={"unsigned"=true})
-     */
-    private $playhead;
-
-    /**
-     * @var string
-     * @ORM\Column(type="string", length=255)
-     */
-    private $type;
-
-    /**
-     * @var array<string, mixed>
-     * @ORM\Column(type="json")
-     */
-    private $payload;
-
-    /**
-     * @var ?array<string, mixed>
-     * @ORM\Column(type="json")
-     */
-    private $metadata;
-
-    /**
-     * @var \DateTimeImmutable
      * @ORM\Column(type="datetime_immutable")
      */
-    private $recordedOn;
-
-    /**
-     * @var string
-     * @ORM\Column(type="string", length=255)
-     */
-    private $domain;
+    private \DateTimeImmutable $recordedOn;
 
     /**
      * @param class-string              $type
      * @param array<string, mixed>      $payload
      * @param array<string, mixed>|null $metadata
      */
-    public function __construct(string $id, int $playhead, string $type, array $payload, ?array $metadata, string $domain)
+    public function __construct(string $id, /**
+     * @ORM\Id
+     *
+     * @ORM\Column(type="integer", options={"unsigned"=true})
+     */
+        private int $playhead,
+        /**
+         * @ORM\Column(type="string", length=255)
+         */
+        private string $type,
+        /**
+         * @ORM\Column(type="json")
+         */
+        private array $payload,
+        /**
+         * @ORM\Column(type="json")
+         */
+        private ?array $metadata,
+        /**
+         * @ORM\Column(type="string", length=255)
+         */
+        private string $domain)
     {
         $this->id = Uuid::fromString($id);
-        $this->playhead = $playhead;
-        $this->type = $type;
-        $this->payload = $payload;
-        $this->metadata = $metadata;
         $this->recordedOn = new \DateTimeImmutable();
-        $this->domain = $domain;
     }
 
     public function getId(): string

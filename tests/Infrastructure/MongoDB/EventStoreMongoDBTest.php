@@ -12,19 +12,21 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
+/**
+ * @internal
+ */
 final class EventStoreMongoDBTest extends TestCase
 {
-    /** @var EventStoreMongoDB */
-    private $eventStore;
+    private EventStoreMongoDB $eventStore;
 
     /** @var Collection|MockObject */
-    private $collection;
+    private \PHPUnit\Framework\MockObject\MockObject $collection;
 
     /** @var NormalizerInterface|MockObject */
-    private $normalizer;
+    private \PHPUnit\Framework\MockObject\MockObject $normalizer;
 
     /** @var DenormalizerInterface|MockObject */
-    private $denormalizer;
+    private \PHPUnit\Framework\MockObject\MockObject $denormalizer;
 
     protected function setUp(): void
     {

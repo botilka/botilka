@@ -9,20 +9,15 @@ use Botilka\EventStore\ManagedEvent;
 use Doctrine\DBAL\Connection;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
-final class EventStoreManagerDoctrine implements EventStoreManager
+final readonly class EventStoreManagerDoctrine implements EventStoreManager
 {
-    private $connection;
-    private $denormalizer;
-    private $tableName;
+    public function __construct(
+        private Connection $connection,
+        private DenormalizerInterface $denormalizer,
+        private string $tableName,
+    ) {}
 
-    public function __construct(Connection $connection, DenormalizerInterface $denormalizer, string $tableName)
-    {
-        $this->connection = $connection;
-        $this->denormalizer = $denormalizer;
-        $this->tableName = $tableName;
-    }
-
-    public function loadByAggregateRootId(string $id, ?int $from = null, ?int $to = null): iterable
+    public function loadByAggregateRootId(string $id, int $from = null, int $to = null): iterable
     {
         $parameters = ['id' => $id];
 
@@ -39,9 +34,12 @@ final class EventStoreManagerDoctrine implements EventStoreManager
         }
 
         $stmt = $this->connection->prepare("{$query} ORDER BY playhead");
-        $stmt->execute($parameters);
+        $result = $stmt->execute($parameters);
 
-        return $this->deserialize($stmt->fetchAll());
+        /** @var array<int, array{id: string, playhead: int, payload: string, metadata: ?string, type: class-string, recorded_on: string, domain: string}> $events */
+        $events = $result->fetchAllAssociative();
+
+        return $this->deserialize($events);
     }
 
     public function loadByDomain(string $domain): iterable
@@ -49,9 +47,12 @@ final class EventStoreManagerDoctrine implements EventStoreManager
         $query = "SELECT * FROM {$this->tableName} WHERE domain = :domain ORDER BY playhead";
 
         $stmt = $this->connection->prepare($query);
-        $stmt->execute(['domain' => $domain]);
+        $result = $stmt->execute(['domain' => $domain]);
 
-        return $this->deserialize($stmt->fetchAll());
+        /** @var array<int, array{id: string, playhead: int, payload: string, metadata: ?string, type: class-string, recorded_on: string, domain: string}> $events */
+        $events = $result->fetchAllAssociative();
+
+        return $this->deserialize($events);
     }
 
     public function getAggregateRootIds(): array
@@ -71,15 +72,17 @@ final class EventStoreManagerDoctrine implements EventStoreManager
     {
         $query = "SELECT DISTINCT {$column} FROM {$this->tableName}";
         $stmt = $this->connection->prepare($query);
-        $stmt->execute();
+        $result = $stmt->execute();
 
-        return \array_map(static function ($row) use ($column) {
-            return $row[$column];
-        }, $stmt->fetchAll());
+        /** @var string[][] $values */
+        $values = $result->fetchAllAssociative();
+
+        /** @var string[] */
+        return array_map(static fn ($row) => $row[$column], $values);
     }
 
     /**
-     * @param array<int, array<string, mixed>> $storedEvents
+     * @param array<int, array{id: string, playhead: int, payload: string, metadata: ?string, type: class-string, recorded_on: string, domain: string}> $storedEvents
      *
      * @return ManagedEvent[]
      */
@@ -89,12 +92,14 @@ final class EventStoreManagerDoctrine implements EventStoreManager
 
         foreach ($storedEvents as $storedEvent) {
             /** @var \Botilka\Event\Event $domainEvent */
-            $domainEvent = $this->denormalizer->denormalize(\json_decode($storedEvent['payload'], true), $storedEvent['type']);
+            $domainEvent = $this->denormalizer->denormalize(json_decode($storedEvent['payload'], true, 512, \JSON_THROW_ON_ERROR), $storedEvent['type']);
+            /** @var array<string, mixed>|null $metadata */
+            $metadata = null !== $storedEvent['metadata'] ? json_decode($storedEvent['metadata'], true, 512, \JSON_THROW_ON_ERROR) : null;
             $events[] = new ManagedEvent(
                 $storedEvent['id'],
                 $domainEvent,
                 $storedEvent['playhead'],
-                \json_decode($storedEvent['metadata'], true),
+                $metadata,
                 new \DateTimeImmutable($storedEvent['recorded_on']),
                 $storedEvent['domain']
             );

@@ -5,16 +5,18 @@ declare(strict_types=1);
 namespace Botilka\Tests\Application\Command;
 
 use Botilka\Application\Command\CommandResponse;
-use Botilka\Event\Event;
 use Botilka\Tests\Fixtures\Domain\StubEvent;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ */
+#[CoversClass(CommandResponse::class)]
 final class CommandResponseTest extends TestCase
 {
-    /** @var CommandResponse */
-    private $commandResponse;
-    /** @var Event */
-    private $event;
+    private CommandResponse $commandResponse;
+    private StubEvent $event;
 
     protected function setUp(): void
     {

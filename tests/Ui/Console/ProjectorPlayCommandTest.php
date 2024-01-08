@@ -10,21 +10,24 @@ use Botilka\Projector\Projection;
 use Botilka\Projector\Projectionist;
 use Botilka\Tests\Fixtures\Domain\StubEvent;
 use Botilka\Ui\Console\ProjectorPlayCommand;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 
+/**
+ * @internal
+ */
+#[CoversClass(ProjectorPlayCommand::class)]
 final class ProjectorPlayCommandTest extends TestCase
 {
-    /** @var EventStoreManager|MockObject */
-    private $eventStoreManager;
-    /** @var Projectionist|MockObject */
-    private $projectionist;
+    private EventStoreManager&MockObject $eventStoreManager;
+    private MockObject&Projectionist $projectionist;
     /** @var ManagedEvent[] */
-    private $events;
-    /** @var ProjectorPlayCommand */
-    private $command;
+    private array $events;
+    private ProjectorPlayCommand $command;
 
     protected function setUp(): void
     {
@@ -43,7 +46,7 @@ final class ProjectorPlayCommandTest extends TestCase
         self::assertSame('botilka:projectors:play', $this->command->getName());
     }
 
-    /** @dataProvider executeIdProvider */
+    #[DataProvider('provideExecuteIdCases')]
     public function testExecuteId(string $value, ?int $from, ?int $to): void
     {
         $this->eventStoreManager->expects(self::once())
@@ -68,7 +71,7 @@ final class ProjectorPlayCommandTest extends TestCase
     /**
      * @return array<int, array<int, int|string|null>>
      */
-    public function executeIdProvider(): array
+    public static function provideExecuteIdCases(): iterable
     {
         return [
             ['foo', null, null],
@@ -95,10 +98,9 @@ final class ProjectorPlayCommandTest extends TestCase
     }
 
     /**
-     * @dataProvider executeFailProvider
-     *
      * @param array<int, array<string, string|true>> $parameters
      */
+    #[DataProvider('provideExecuteFailCases')]
     public function testExecuteFail(array $parameters): void
     {
         $this->expectException(\InvalidArgumentException::class);
@@ -111,7 +113,7 @@ final class ProjectorPlayCommandTest extends TestCase
     /**
      * @return array<int, array<int, array<string, string|true>>>
      */
-    public function executeFailProvider(): array
+    public static function provideExecuteFailCases(): iterable
     {
         return [
             [['--id' => true, '--domain' => true, 'value' => 'foo']],

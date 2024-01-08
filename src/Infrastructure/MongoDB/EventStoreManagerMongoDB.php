@@ -12,23 +12,19 @@ use MongoDB\Driver\Cursor;
 use MongoDB\Model\BSONDocument;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
-final class EventStoreManagerMongoDB implements EventStoreManager
+final readonly class EventStoreManagerMongoDB implements EventStoreManager
 {
-    private $collection;
-    private $denormalizer;
-
-    public function __construct(Collection $collection, DenormalizerInterface $denormalizer)
-    {
-        $this->collection = $collection;
-        $this->denormalizer = $denormalizer;
-    }
+    public function __construct(
+        private Collection $collection,
+        private DenormalizerInterface $denormalizer,
+    ) {}
 
     public function loadByDomain(string $domain): iterable
     {
         return $this->deserialize($this->collection->find(['domain' => $domain], ['sort' => ['playhead' => 1]]));
     }
 
-    public function loadByAggregateRootId(string $id, ?int $from = null, ?int $to = null): iterable
+    public function loadByAggregateRootId(string $id, int $from = null, int $to = null): iterable
     {
         $filter = [
             'id' => $id,

@@ -3,13 +3,11 @@ services:
         autowire: true
         public: false
 
-    Botilka\Infrastructure\Symfony\Messenger\Middleware\EventDispatcherMiddleware:
-        arguments:
-            $repositoryRegistry: '@Botilka\Repository\EventSourcedRepositoryRegistry'
-
     Botilka\Event\EventBus: '@Botilka\Infrastructure\Symfony\Messenger\MessengerEventBus'
     Botilka\Application\Command\CommandBus: '@Botilka\Infrastructure\Symfony\Messenger\MessengerCommandBus'
     Botilka\Application\Query\QueryBus: '@Botilka\Infrastructure\Symfony\Messenger\MessengerQueryBus'
+
+    Botilka\Infrastructure\Symfony\Messenger\Middleware\EventDispatcherMiddleware: ~
 
     Botilka\Infrastructure\Symfony\Messenger\MessengerCommandBus:
         arguments:

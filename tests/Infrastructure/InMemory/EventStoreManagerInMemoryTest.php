@@ -6,12 +6,18 @@ namespace Botilka\Tests\Infrastructure\InMemory;
 
 use Botilka\Infrastructure\InMemory\EventStoreManagerInMemory;
 use Botilka\Tests\Fixtures\Domain\EventStoreInMemoryFactory;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ */
+#[CoversClass(EventStoreManagerInMemory::class)]
 final class EventStoreManagerInMemoryTest extends TestCase
 {
-    /** @dataProvider loadByAggregateRootIdProvider */
-    public function testLoadByAggregateRootIdProvider(int $expectedCount, string $id, ?int $from = null, ?int $to = null): void
+    #[DataProvider('provideLoadByAggregateRootIdProviderCases')]
+    public function testLoadByAggregateRootIdProvider(int $expectedCount, string $id, int $from = null, int $to = null): void
     {
         $eventStore = EventStoreInMemoryFactory::create();
         $manager = new EventStoreManagerInMemory($eventStore);
@@ -19,7 +25,7 @@ final class EventStoreManagerInMemoryTest extends TestCase
         self::assertCount($expectedCount, $manager->loadByAggregateRootId($id, $from, $to));
     }
 
-    public function loadByAggregateRootIdProvider(): array
+    public static function provideLoadByAggregateRootIdProviderCases(): iterable
     {
         return [
             [10, 'foo', null, null],
@@ -31,7 +37,7 @@ final class EventStoreManagerInMemoryTest extends TestCase
         ];
     }
 
-    /** @dataProvider loadByDomainProvider */
+    #[DataProvider('provideLoadByDomainCases')]
     public function testLoadByDomain(int $shouldBeCount, string $domain): void
     {
         $eventStore = EventStoreInMemoryFactory::create();
@@ -40,7 +46,7 @@ final class EventStoreManagerInMemoryTest extends TestCase
         self::assertCount($shouldBeCount, $manager->loadByDomain($domain));
     }
 
-    public function loadByDomainProvider(): array
+    public static function provideLoadByDomainCases(): iterable
     {
         return [
             [15, 'FooBar\\Domain'],

@@ -13,21 +13,10 @@ final class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder('botilka');
-        $rootNode = $treeBuilder->getRootNode();
-
-        $rootNode
+        $treeBuilder->getRootNode()
             ->children()
-                ->scalarNode('event_store')->defaultValue(EventStoreInMemory::class)->info('Event store implementation. Default: '.EventStoreInMemory::class)->end()
-                ->booleanNode('default_messenger_config')->defaultTrue()->info('Auto-configure Messenger buses')->end()
-                ->booleanNode('doctrine_transaction_middleware')->defaultTrue()->info('Add Doctrine transaction middleware')->end()
-                ->arrayNode('api_platform')
-                    ->info('API Platform bridge')
-                    ->addDefaultsIfNotSet()
-                    ->children()
-                        ->booleanNode('expose_cq')->defaultTrue()->info('Expose commands & queries')->end()
-                        ->booleanNode('expose_event_store')->defaultTrue()->info('Expose event store (Doctrine only)')->end()
-                        ->scalarNode('endpoint_prefix')->defaultValue('cqrs')->info('Route prefix for endpoints')->end()
-                    ->end()
+            ->scalarNode('event_store')->defaultValue(EventStoreInMemory::class)->info('Event store implementation. Default: '.EventStoreInMemory::class)->end()
+            ->booleanNode('default_messenger_config')->defaultTrue()->info('Auto-configure Symfony Messenger buses')->end()
             ->end()
         ;
 

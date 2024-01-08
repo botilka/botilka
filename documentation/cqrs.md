@@ -62,15 +62,11 @@ final class BankAccount implements EventSourcedAggregateRoot
 {
     use EventSourcedAggregateRootApplier;
 
-    /** @var string */
-    private $id;
-    /** @var string */
-    private $name;
-    /** @var string */
-    private $currency;
-    /** @var int */
-    private $balance;
-    private $playhead = -1;
+    private string $id;
+    private string $name;
+    private string $currency;
+    private int $balance;
+    private int $playhead = -1;
 
     protected $eventMap = [
         BankAccountCreated::class => 'bankAccountCreated',
@@ -103,9 +99,9 @@ use Botilka\Event\Event;
 
 final class BankAccountCreated implements Event
 {
-    private $id;
-    private $name;
-    private $currency;
+    private string $id;
+    private string $name;
+    private string $currency;
 
     public function __construct(string $id, string $name, string $currency)
     {
@@ -116,7 +112,7 @@ final class BankAccountCreated implements Event
     // add getters
 }
 
-``` 
+```
 
 3. Then dispatch the command:
 ```php

@@ -7,16 +7,19 @@ namespace Botilka\Tests\Infrastructure\MongoDB\Initializer;
 use Botilka\Infrastructure\MongoDB\Initializer\EventStoreMongoDBInitializer;
 use Botilka\Infrastructure\StoreInitializer;
 use MongoDB\Client;
-use MongoDB\Database;
+use PHPUnit\Framework\Attributes\DataProvider;
 
+/**
+ * @internal
+ */
 final class EventStoreMongoDBInitializerTest extends AbstractMongoDBStoreInitializerTest
 {
     protected $type = 'event';
 
     protected function setUp(): void
     {
-        $kernel = static::bootKernel();
-        $container = static::$container;
+        self::bootKernel();
+        $container = self::$container;
 
         /** @var string $database */
         $database = $container->getParameter('botilka.mongodb.db').'_test';
@@ -26,7 +29,7 @@ final class EventStoreMongoDBInitializerTest extends AbstractMongoDBStoreInitial
         $this->collectionName = $collectionName;
     }
 
-    /** @dataProvider initializeProvider */
+    #[DataProvider('initializeProvider')]
     public function testInitialize(bool $force): void
     {
         $this->assertInitialize($force, ['id' => 1, 'playhead' => 1]);

@@ -1,11 +1,10 @@
 /composer.lock
 /vendor/
-/*.phar
 
 /phpunit.xml
-/.phpunit.result.cache
+/.phpunit.cache
 /coverage/
 
-/.php_cs.cache
+/.php-cs-fixer.cache
 
 /infection.log

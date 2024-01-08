@@ -10,24 +10,20 @@ use Psr\Log\LoggerInterface;
 /**
  * @internal
  */
-final class DefaultProjectionist implements Projectionist
+final readonly class DefaultProjectionist implements Projectionist
 {
-    private $logger;
-    private $projectors;
-
     /**
      * @param iterable<Projector> $projectors
      */
-    public function __construct(LoggerInterface $logger, iterable $projectors = [])
-    {
-        $this->logger = $logger;
-        $this->projectors = $projectors;
-    }
+    public function __construct(
+        private LoggerInterface $logger,
+        private iterable $projectors = [],
+    ) {}
 
     public function play(Projection $projection): void
     {
         $event = $projection->getEvent();
-        $eventClass = \get_class($event);
+        $eventClass = $event::class;
 
         $context = $projection->getContext();
         $matching = $context['matching'] ?? null;
@@ -41,9 +37,9 @@ final class DefaultProjectionist implements Projectionist
                 continue;
             }
 
-            if (null !== $matching && 0 === \preg_match(\chr(1).$matching.\chr(1).'i', ($projectorClass = \get_class($projector)).'::'.$method)) {
+            if (null !== $matching && 0 === preg_match(\chr(1).$matching.\chr(1).'i', ($projectorClass = $projector::class).'::'.$method)) {
                 $found = true;
-                $this->logger->notice(\sprintf('Projection %s::%s skipped.', $projectorClass, $method));
+                $this->logger->notice(sprintf('Projection %s::%s skipped.', $projectorClass, $method));
                 continue;
             }
 
@@ -52,7 +48,7 @@ final class DefaultProjectionist implements Projectionist
         }
 
         if (false === $found) {
-            $this->logger->notice(\sprintf('No projector handler for %s.', $eventClass));
+            $this->logger->notice(sprintf('No projector handler for %s.', $eventClass));
         }
     }
 

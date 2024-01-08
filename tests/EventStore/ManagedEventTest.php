@@ -6,16 +6,18 @@ namespace Botilka\Tests\EventStore;
 
 use Botilka\EventStore\ManagedEvent;
 use Botilka\Tests\Fixtures\Domain\StubEvent;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ */
+#[CoversClass(ManagedEvent::class)]
 final class ManagedEventTest extends TestCase
 {
-    /** @var ManagedEvent */
-    private $managedEvent;
-    /** @var StubEvent */
-    private $domainEvent;
-    /** @var \DateTimeImmutable */
-    private $recordedOn;
+    private ManagedEvent $managedEvent;
+    private StubEvent $domainEvent;
+    private \DateTimeImmutable $recordedOn;
 
     protected function setUp(): void
     {

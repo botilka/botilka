@@ -6,14 +6,9 @@ namespace Botilka\Tests\Fixtures\Domain;
 
 use Botilka\Event\Event;
 
-final class StubEvent implements Event
+final readonly class StubEvent implements Event
 {
-    private $foo;
-
-    public function __construct(int $foo)
-    {
-        $this->foo = $foo;
-    }
+    public function __construct(private int $foo) {}
 
     public function getFoo(): int
     {

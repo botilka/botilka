@@ -9,11 +9,11 @@ use Botilka\Tests\AbstractKernelTestCase;
 use Doctrine\Bundle\DoctrineBundle\Command\CreateDatabaseDoctrineCommand;
 use Doctrine\Bundle\DoctrineBundle\Command\DropDatabaseDoctrineCommand;
 use Doctrine\DBAL\Connection;
+use PHPUnit\Framework\Attributes\Group;
 use Symfony\Bridge\Doctrine\ManagerRegistry;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
-use Symfony\Component\HttpKernel\KernelInterface;
 
 abstract class AbstractDoctrineInitializerTest extends AbstractKernelTestCase
 {
@@ -29,26 +29,22 @@ abstract class AbstractDoctrineInitializerTest extends AbstractKernelTestCase
     /** @var string */
     protected $type;
 
-    /** @var bool */
-    private $needDropTable = false;
+    private bool $needDropTable = false;
 
     protected function tearDown(): void
     {
         if ($this->needDropTable) {
             $container = self::$container;
 
-            /** @var RegistryInterface $registry */
+            /** @var ManagerRegistry $registry */
             $registry = self::$container->get('doctrine');
 
-            /** @var Connection $connection */
             $connection = $registry->getConnection();
             $connection->exec("DROP TABLE IF EXISTS {$this->tableName};");
         }
     }
 
-    /**
-     * @group functional
-     */
+    #[Group('functional')]
     public function testInitialize(): void
     {
         $this->initializer->initialize();
@@ -59,7 +55,7 @@ abstract class AbstractDoctrineInitializerTest extends AbstractKernelTestCase
         $this->initializer->initialize();
     }
 
-    /** @group functional */
+    #[Group('functional')]
     public function testInitializeForce(): void
     {
         $this->initializer->initialize();
@@ -68,9 +64,7 @@ abstract class AbstractDoctrineInitializerTest extends AbstractKernelTestCase
         self::assertTrue(true);
     }
 
-    /**
-     * @group functional
-     */
+    #[Group('functional')]
     public function testGetType(): void
     {
         self::assertSame($this->type, $this->initializer->getType());
@@ -78,8 +72,7 @@ abstract class AbstractDoctrineInitializerTest extends AbstractKernelTestCase
 
     protected function resetStore(): void
     {
-        $this->setUpDatabase(static::$kernel);
-        $container = self::$container;
+        $this->setUpDatabase();
 
         /** @var RegistryInterface $registry */
         $registry = self::$container->get('doctrine');
@@ -91,17 +84,15 @@ abstract class AbstractDoctrineInitializerTest extends AbstractKernelTestCase
         $this->needDropTable = true;
     }
 
-    private function setUpDatabase(KernelInterface $kernel): void
+    private function setUpDatabase(): void
     {
-        if ('true' !== \getenv('BOTILKA_TEST_FORCE_RECREATE_DB')) {
+        if ('true' !== getenv('BOTILKA_TEST_FORCE_RECREATE_DB')) {
             return;
         }
-
         /** @var ManagerRegistry $doctrine */
         $doctrine = self::$container->get('doctrine');
         $application = new DropDatabaseDoctrineCommand($doctrine);
         $application->run(new ArrayInput(['--force' => true]), new NullOutput());
-
         $application = new CreateDatabaseDoctrineCommand($doctrine);
         $application->run(new ArrayInput([]), new NullOutput());
     }

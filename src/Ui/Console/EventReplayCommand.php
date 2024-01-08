@@ -7,20 +7,19 @@ namespace Botilka\Ui\Console;
 use Botilka\Event\EventBus;
 use Botilka\EventStore\EventStoreManager;
 use Botilka\EventStore\ManagedEvent;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+#[AsCommand('botilka:event_store:replay')]
 final class EventReplayCommand extends Command
 {
     use GetManagedEventsFromEventStoreTrait;
 
-    private $eventBus;
-
-    public function __construct(EventStoreManager $eventStoreManager, EventBus $eventBus)
+    public function __construct(EventStoreManager $eventStoreManager, private readonly EventBus $eventBus)
     {
-        parent::__construct('botilka:event_store:replay');
-        $this->eventBus = $eventBus;
+        parent::__construct();
         $this->eventStoreManager = $eventStoreManager;
     }
 

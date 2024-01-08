@@ -9,17 +9,19 @@ use Botilka\EventStore\EventStore;
 use Botilka\Repository\DefaultEventSourcedRepository;
 use Botilka\Tests\Fixtures\Domain\StubEvent;
 use Botilka\Tests\Fixtures\Domain\StubEventSourcedAggregateRoot;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ */
+#[CoversClass(DefaultEventSourcedRepository::class)]
 final class DefaultEventSourcedRepositoryTest extends TestCase
 {
-    /** @var EventStore|MockObject */
-    private $eventStore;
-    /** @var string */
-    private $aggregateRootClass;
-    /** @var DefaultEventSourcedRepository */
-    private $repository;
+    private EventStore&MockObject $eventStore;
+    private string $aggregateRootClass;
+    private DefaultEventSourcedRepository $repository;
 
     protected function setUp(): void
     {
@@ -50,7 +52,7 @@ final class DefaultEventSourcedRepositoryTest extends TestCase
 
         $this->eventStore->expects(self::once())
             ->method('append')
-            ->with('foo', 0, \get_class($event), $event, null, self::isInstanceOf(\DateTimeImmutable::class), 'foomain')
+            ->with('foo', 0, $event::class, $event, null, self::isInstanceOf(\DateTimeImmutable::class), 'foomain')
         ;
 
         $this->repository->save($commandResponse);

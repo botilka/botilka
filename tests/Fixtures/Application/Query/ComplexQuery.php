@@ -7,22 +7,9 @@ namespace Botilka\Tests\Fixtures\Application\Query;
 use Botilka\Application\Query\Query;
 use Botilka\Tests\Fixtures\Domain\SimpleValueObject;
 
-final class ComplexQuery implements Query
+final readonly class ComplexQuery implements Query
 {
-    private $foo;
-    private $bar;
-    private $biz;
-    private $lup;
-    private $ool;
-
-    public function __construct(string $foo, ?int $bar, SimpleValueObject $biz, \DateTimeImmutable $lup, ?\DateInterval $ool)
-    {
-        $this->foo = $foo;
-        $this->bar = $bar;
-        $this->biz = $biz;
-        $this->lup = $lup;
-        $this->ool = $ool;
-    }
+    public function __construct(private string $foo, private ?int $bar, private SimpleValueObject $biz, private \DateTimeImmutable $lup, private ?\DateInterval $ool) {}
 
     public function getFoo(): string
     {

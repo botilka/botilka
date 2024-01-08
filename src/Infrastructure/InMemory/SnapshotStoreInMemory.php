@@ -13,7 +13,7 @@ final class SnapshotStoreInMemory implements SnapshotStore
     /**
      * @var array<string, EventSourcedAggregateRoot>
      */
-    private $store = [];
+    private array $store = [];
 
     public function load(string $id): EventSourcedAggregateRoot
     {

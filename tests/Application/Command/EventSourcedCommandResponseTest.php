@@ -5,20 +5,21 @@ declare(strict_types=1);
 namespace Botilka\Tests\Application\Command;
 
 use Botilka\Application\Command\EventSourcedCommandResponse;
-use Botilka\Domain\EventSourcedAggregateRoot;
-use Botilka\Event\Event;
 use Botilka\Tests\Fixtures\Domain\StubEvent;
 use Botilka\Tests\Fixtures\Domain\StubEventSourcedAggregateRoot;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ */
+#[CoversClass(EventSourcedCommandResponse::class)]
 final class EventSourcedCommandResponseTest extends TestCase
 {
-    /** @var EventSourcedCommandResponse */
-    private $commandResponse;
-    /** @var Event */
-    private $event;
-    /** @var EventSourcedAggregateRoot */
-    private $aggregateRoot;
+    private EventSourcedCommandResponse $commandResponse;
+    private StubEvent $event;
+    private StubEventSourcedAggregateRoot $aggregateRoot;
 
     protected function setUp(): void
     {
@@ -52,7 +53,7 @@ final class EventSourcedCommandResponseTest extends TestCase
         self::assertSame($this->aggregateRoot, $this->commandResponse->getAggregateRoot());
     }
 
-    /** @dataProvider fromEventSourcedAggregateRootProvider */
+    #[DataProvider('provideFromEventSourcedAggregateRootCases')]
     public function testFromEventSourcedAggregateRoot(?string $domain): void
     {
         $aggregateRoot = new StubEventSourcedAggregateRoot();
@@ -61,11 +62,14 @@ final class EventSourcedCommandResponseTest extends TestCase
         self::assertSame($aggregateRoot->getAggregateRootId(), $commandResponse->getId());
         self::assertSame($aggregateRoot->getPlayhead(), $commandResponse->getPlayhead());
         self::assertSame($this->event, $commandResponse->getEvent());
-        self::assertSame($domain ?? \get_class($aggregateRoot), $commandResponse->getDomain());
+        self::assertSame($domain ?? $aggregateRoot::class, $commandResponse->getDomain());
         self::assertSame($aggregateRoot, $commandResponse->getAggregateRoot());
     }
 
-    public function fromEventSourcedAggregateRootProvider(): array
+    /**
+     * @return iterable<class-string|null>
+     */
+    public static function provideFromEventSourcedAggregateRootCases(): iterable
     {
         return [
             [null],

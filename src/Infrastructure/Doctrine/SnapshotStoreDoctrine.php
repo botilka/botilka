@@ -10,32 +10,26 @@ use Botilka\Snapshot\SnapshotStore;
 use Doctrine\DBAL\Connection;
 use Symfony\Component\Serializer\SerializerInterface;
 
-final class SnapshotStoreDoctrine implements SnapshotStore
+final readonly class SnapshotStoreDoctrine implements SnapshotStore
 {
-    private const FORMAT = 'json';
-    private $connection;
-    private $tableName;
-    private $serializer;
-
-    public function __construct(Connection $connection, string $tableName, SerializerInterface $serializer)
-    {
-        $this->connection = $connection;
-        $this->tableName = $tableName;
-        $this->serializer = $serializer;
-    }
+    public function __construct(
+        private Connection $connection,
+        private string $tableName,
+        private SerializerInterface $serializer,
+    ) {}
 
     public function load(string $id): EventSourcedAggregateRoot
     {
         $stmt = $this->connection->prepare("SELECT type, payload FROM {$this->tableName} WHERE id = :id");
-        $stmt->execute(['id' => $id]);
+        /** @var array{payload: string, type: string}|false $result */
+        $result = $stmt->executeQuery(['id' => $id])->fetchAssociative();
 
-        if (false === ($result = $stmt->fetch())) {
+        if (false === $result) {
             throw new SnapshotNotFoundException("No snapshot found for {$id}.");
         }
-        /** @var EventSourcedAggregateRoot $result */
-        $result = $this->serializer->deserialize($result['payload'], $result['type'], self::FORMAT);
 
-        return $result;
+        /** @var EventSourcedAggregateRoot */
+        return $this->serializer->deserialize($result['payload'], $result['type'], 'json');
     }
 
     public function snapshot(EventSourcedAggregateRoot $aggregateRoot): void
@@ -43,14 +37,14 @@ final class SnapshotStoreDoctrine implements SnapshotStore
         $id = $aggregateRoot->getAggregateRootId();
 
         $stmt = $this->connection->prepare("DELETE FROM {$this->tableName} WHERE id = :id");
-        $stmt->execute(['id' => $id]);
+        $stmt->bindValue('id', $id);
+        $stmt->executeStatement();
 
         $stmt = $this->connection->prepare("INSERT INTO {$this->tableName} VALUES (:id, :playhead, :type, :payload)");
-        $stmt->execute([
-            'id' => $id,
-            'type' => \get_class($aggregateRoot),
-            'playhead' => $aggregateRoot->getPlayhead(),
-            'payload' => $this->serializer->serialize($aggregateRoot, self::FORMAT),
-        ]);
+        $stmt->bindValue('id', $id);
+        $stmt->bindValue('type', $aggregateRoot::class);
+        $stmt->bindValue('playhead', $aggregateRoot->getPlayhead());
+        $stmt->bindValue('payload', $this->serializer->serialize($aggregateRoot, 'json'));
+        $stmt->executeStatement();
     }
 }

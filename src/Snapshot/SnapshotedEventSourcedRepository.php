@@ -11,28 +11,22 @@ use Botilka\EventStore\EventStore;
 use Botilka\Repository\EventSourcedRepository;
 use Botilka\Snapshot\Strategist\SnapshotStrategist;
 
-final class SnapshotedEventSourcedRepository implements EventSourcedRepository
+final readonly class SnapshotedEventSourcedRepository implements EventSourcedRepository
 {
     use AggregateRootEventApplierTrait;
 
-    private $snapshotStore;
-    private $strategist;
-    private $eventSourcedRepository; // default event sourced repository
-    private $eventStore;
-
-    public function __construct(SnapshotStore $snapshotStore, SnapshotStrategist $strategist, EventSourcedRepository $eventSourcedRepository, EventStore $eventStore)
-    {
-        $this->snapshotStore = $snapshotStore;
-        $this->strategist = $strategist;
-        $this->eventSourcedRepository = $eventSourcedRepository;
-        $this->eventStore = $eventStore;
-    }
+    public function __construct(
+        private SnapshotStore $snapshotStore,
+        private SnapshotStrategist $strategist,
+        private EventSourcedRepository $eventSourcedRepository,
+        private EventStore $eventStore,
+    ) {}
 
     public function load(string $id): EventSourcedAggregateRoot
     {
         try {
             $instance = $this->snapshotStore->load($id);
-        } catch (SnapshotNotFoundException $e) {
+        } catch (SnapshotNotFoundException) {
             return $this->eventSourcedRepository->load($id);
         }
 

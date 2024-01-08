@@ -14,18 +14,14 @@ use Botilka\EventStore\EventStore;
  * The EventSourcedAggregateRoot is instanciated without any parameters.
  * Feel free to decorate/override it.
  */
-final class DefaultEventSourcedRepository implements EventSourcedRepository
+final readonly class DefaultEventSourcedRepository implements EventSourcedRepository
 {
     use AggregateRootEventApplierTrait;
 
-    private $eventStore;
-    private $aggregateRootClassName;
-
-    public function __construct(EventStore $eventStore, string $aggregateRootClassName)
-    {
-        $this->eventStore = $eventStore;
-        $this->aggregateRootClassName = $aggregateRootClassName;
-    }
+    public function __construct(
+        private EventStore $eventStore,
+        private string $aggregateRootClassName
+    ) {}
 
     public function load(string $id): EventSourcedAggregateRoot
     {
@@ -39,6 +35,6 @@ final class DefaultEventSourcedRepository implements EventSourcedRepository
     public function save(EventSourcedCommandResponse $commandResponse): void
     {
         $event = $commandResponse->getEvent();
-        $this->eventStore->append($commandResponse->getId(), $commandResponse->getPlayhead(), \get_class($event), $event, null, new \DateTimeImmutable(), $commandResponse->getDomain());
+        $this->eventStore->append($commandResponse->getId(), $commandResponse->getPlayhead(), $event::class, $event, null, new \DateTimeImmutable(), $commandResponse->getDomain());
     }
 }

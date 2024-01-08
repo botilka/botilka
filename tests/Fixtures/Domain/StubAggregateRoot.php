@@ -6,14 +6,9 @@ namespace Botilka\Tests\Fixtures\Domain;
 
 use Botilka\Domain\AggregateRoot;
 
-final class StubAggregateRoot implements AggregateRoot
+final readonly class StubAggregateRoot implements AggregateRoot
 {
-    private $rootId;
-
-    public function __construct(string $rootId)
-    {
-        $this->rootId = $rootId;
-    }
+    public function __construct(private string $rootId) {}
 
     public function getAggregateRootId(): string
     {

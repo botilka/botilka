@@ -5,12 +5,16 @@ declare(strict_types=1);
 namespace Botilka\Tests\Infrastructure\Doctrine;
 
 use Botilka\Infrastructure\Doctrine\Event;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ */
+#[CoversClass(Event::class)]
 final class EventTest extends TestCase
 {
-    /** @var Event */
-    private $event;
+    private Event $event;
 
     protected function setUp(): void
     {

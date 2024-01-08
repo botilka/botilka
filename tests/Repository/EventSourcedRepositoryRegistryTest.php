@@ -4,37 +4,43 @@ declare(strict_types=1);
 
 namespace Botilka\Tests\Repository;
 
+use Botilka\Repository\DefaultEventSourcedRepositoryRegistry;
 use Botilka\Repository\EventSourcedRepository;
 use Botilka\Repository\EventSourcedRepositoryRegistry;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 
+/**
+ * @internal
+ */
+#[CoversClass(EventSourcedRepositoryRegistry::class)]
 final class EventSourcedRepositoryRegistryTest extends TestCase
 {
-    /** @var EventSourcedRepositoryRegistry */
-    private $registry;
-    /** @var array<string, EventSourcedRepository|MockObject> */
-    private $repositories;
+    private EventSourcedRepositoryRegistry $registry;
+    /** @var array<class-string, MockObject&EventSourcedRepository> */
+    private array $repositories;
 
     protected function setUp(): void
     {
         $this->repositories = [
             'Foo\\Bar' => $this->createMock(EventSourcedRepository::class),
         ];
-        $this->registry = new EventSourcedRepositoryRegistry($this->repositories);
+        $this->registry = new DefaultEventSourcedRepositoryRegistry($this->repositories);
     }
 
-    /** @dataProvider hasProvider */
+    #[DataProvider('provideHasCases')]
     public function testHas(string $className, bool $expected): void
     {
         self::assertSame($expected, $this->registry->has($className));
     }
 
     /**
-     * @return array<int, array<string|bool>>
+     * @return array<int, array{class-string, bool}>
      */
-    public function hasProvider(): array
+    public static function provideHasCases(): iterable
     {
         return [
             ['Foo\\Bar', true],

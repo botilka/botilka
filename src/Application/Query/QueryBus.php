@@ -6,8 +6,5 @@ namespace Botilka\Application\Query;
 
 interface QueryBus
 {
-    /**
-     * @return mixed
-     */
-    public function dispatch(Query $query);
+    public function dispatch(Query $query): mixed;
 }

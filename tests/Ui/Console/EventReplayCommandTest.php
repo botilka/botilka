@@ -10,21 +10,24 @@ use Botilka\EventStore\EventStoreManager;
 use Botilka\EventStore\ManagedEvent;
 use Botilka\Tests\Fixtures\Domain\StubEvent;
 use Botilka\Ui\Console\EventReplayCommand;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 
+/**
+ * @internal
+ */
+#[CoversClass(EventReplayCommand::class)]
 final class EventReplayCommandTest extends KernelTestCase
 {
-    /** @var EventStoreManager|MockObject */
-    private $eventStoreManager;
-    /** @var EventBus|MockObject */
-    private $eventBus;
+    private EventStoreManager&MockObject $eventStoreManager;
+    private EventBus&MockObject $eventBus;
     /** @var ManagedEvent[] */
-    private $events;
-    /** @var EventReplayCommand */
-    private $command;
+    private array $events;
+    private EventReplayCommand $command;
 
     protected function setUp(): void
     {
@@ -43,7 +46,7 @@ final class EventReplayCommandTest extends KernelTestCase
         self::assertSame('botilka:event_store:replay', $this->command->getName());
     }
 
-    /** @dataProvider executeIdProvider */
+    #[DataProvider('provideExecuteIdCases')]
     public function testExecuteId(string $value, ?int $from, ?int $to): void
     {
         $this->eventStoreManager->expects(self::once())
@@ -64,7 +67,7 @@ final class EventReplayCommandTest extends KernelTestCase
     /**
      * @return array<int, array<int, int|string|null>>
      */
-    public function executeIdProvider(): array
+    public static function provideExecuteIdCases(): iterable
     {
         return [
             ['foo', null, null],
@@ -91,10 +94,9 @@ final class EventReplayCommandTest extends KernelTestCase
     }
 
     /**
-     * @dataProvider executeFailProvider
-     *
      * @param array<int, array<string, string|true>> $parameters
      */
+    #[DataProvider('provideExecuteFailCases')]
     public function testExecuteFail(array $parameters): void
     {
         $this->expectException(\InvalidArgumentException::class);
@@ -107,7 +109,7 @@ final class EventReplayCommandTest extends KernelTestCase
     /**
      * @return array<int, array<int, array<string, string|true>>>
      */
-    public function executeFailProvider(): array
+    public static function provideExecuteFailCases(): iterable
     {
         return [
             [['--id' => true, '--domain' => true, 'value' => 'foo']],

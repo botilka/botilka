@@ -13,27 +13,21 @@ final class EventStoreInMemory implements EventStore
     /**
      * @var array<string, array<int, ManagedEvent>>
      */
-    private $store = [];
+    private array $store = [];
 
     public function load(string $id): array
     {
-        return \array_map(static function (ManagedEvent $event): Event {
-            return $event->getDomainEvent();
-        }, $this->store[$id]);
+        return array_map(static fn (ManagedEvent $event): Event => $event->getDomainEvent(), $this->store[$id]);
     }
 
     public function loadFromPlayhead(string $id, int $fromPlayhead): array
     {
-        return \array_map(static function (ManagedEvent $event): Event {
-            return $event->getDomainEvent();
-        }, \array_slice($this->store[$id], $fromPlayhead, null, true));
+        return array_map(static fn (ManagedEvent $event): Event => $event->getDomainEvent(), \array_slice($this->store[$id], $fromPlayhead, null, true));
     }
 
     public function loadFromPlayheadToPlayhead(string $id, int $fromPlayhead, int $toPlayhead): array
     {
-        return \array_map(static function (ManagedEvent $event): Event {
-            return $event->getDomainEvent();
-        }, \array_slice($this->store[$id], $fromPlayhead, $toPlayhead - $fromPlayhead, true));
+        return array_map(static fn (ManagedEvent $event): Event => $event->getDomainEvent(), \array_slice($this->store[$id], $fromPlayhead, $toPlayhead - $fromPlayhead, true));
     }
 
     /**

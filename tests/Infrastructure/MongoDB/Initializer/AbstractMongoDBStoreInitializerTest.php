@@ -9,6 +9,7 @@ use Botilka\Tests\AbstractKernelTestCase;
 use MongoDB\Client;
 use MongoDB\Collection;
 use MongoDB\Database;
+use PHPUnit\Framework\Attributes\Group;
 
 abstract class AbstractMongoDBStoreInitializerTest extends AbstractKernelTestCase
 {
@@ -32,9 +33,7 @@ abstract class AbstractMongoDBStoreInitializerTest extends AbstractKernelTestCas
         ];
     }
 
-    /**
-     * @group functional
-     */
+    #[Group('functional')]
     public function testInitializeFunctional(): void
     {
         /** @var Client $client */
@@ -50,7 +49,7 @@ abstract class AbstractMongoDBStoreInitializerTest extends AbstractKernelTestCas
         $initializer->initialize();
     }
 
-    /** @group functional */
+    #[Group('functional')]
     public function testInitializeForceFunctional(): void
     {
         /** @var Client $client */
@@ -102,9 +101,11 @@ abstract class AbstractMongoDBStoreInitializerTest extends AbstractKernelTestCas
 
         $database = $this->createMock(Database::class);
         $database->expects(self::once())->method('selectCollection')
-            ->with($this->collectionName)->willReturn($collection);
+            ->with($this->collectionName)->willReturn($collection)
+        ;
         $database->expects($force ? self::once() : self::never())->method('dropCollection')
-            ->with($this->collectionName)->willReturn($collection);
+            ->with($this->collectionName)->willReturn($collection)
+        ;
 
         $client = $this->createMock(Client::class);
         $client->expects(self::once())->method('selectDatabase')

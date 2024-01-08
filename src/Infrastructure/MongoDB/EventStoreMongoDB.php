@@ -15,18 +15,13 @@ use MongoDB\Model\BSONDocument;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
-final class EventStoreMongoDB implements EventStore
+final readonly class EventStoreMongoDB implements EventStore
 {
-    private $collection;
-    private $normalizer;
-    private $denormalizer;
-
-    public function __construct(Collection $collection, NormalizerInterface $normalizer, DenormalizerInterface $denormalizer)
-    {
-        $this->collection = $collection;
-        $this->normalizer = $normalizer;
-        $this->denormalizer = $denormalizer;
-    }
+    public function __construct(
+        private Collection $collection,
+        private NormalizerInterface $normalizer,
+        private DenormalizerInterface $denormalizer,
+    ) {}
 
     public function load(string $id): array
     {
@@ -81,8 +76,8 @@ final class EventStoreMongoDB implements EventStore
 
         try {
             $this->collection->insertOne($values);
-        } catch (BulkWriteException $e) {
-            throw new EventStoreConcurrencyException(\sprintf('Duplicate storage of event "%s" on aggregate "%s" with playhead %d.', $values['type'], $values['id'], $values['playhead']));
+        } catch (BulkWriteException) {
+            throw new EventStoreConcurrencyException(sprintf('Duplicate storage of event "%s" on aggregate "%s" with playhead %d.', $values['type'], $values['id'], $values['playhead']));
         }
     }
 

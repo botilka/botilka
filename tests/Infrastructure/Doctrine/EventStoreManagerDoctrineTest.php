@@ -7,23 +7,26 @@ namespace Botilka\Tests\Infrastructure\Doctrine;
 use Botilka\Event\Event;
 use Botilka\Infrastructure\Doctrine\EventStoreManagerDoctrine;
 use Botilka\Tests\Fixtures\Domain\StubEvent;
-use Doctrine\DBAL\Driver\Connection;
-use Doctrine\DBAL\Driver\Statement;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Result;
+use Doctrine\DBAL\Statement;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
+/**
+ * @internal
+ */
+#[CoversClass(EventStoreManagerDoctrine::class)]
 final class EventStoreManagerDoctrineTest extends TestCase
 {
-    /** @var DenormalizerInterface|MockObject */
-    private $denormarlizer;
-    /** @var Connection|MockObject */
-    private $connection;
-    /** @var EventStoreManagerDoctrine */
-    private $manager;
+    private DenormalizerInterface&MockObject $denormarlizer;
+    private Connection&MockObject $connection;
+    private EventStoreManagerDoctrine $manager;
 
-    /** @var string */
-    private $table = 'foo';
+    private string $table = 'foo';
 
     protected function setUp(): void
     {
@@ -33,18 +36,22 @@ final class EventStoreManagerDoctrineTest extends TestCase
         $this->manager = new EventStoreManagerDoctrine($this->connection, $this->denormarlizer, $this->table);
     }
 
-    /** @dataProvider loadByAggregateRootIdProvider */
+    #[DataProvider('provideLoadByAggregateRootIdCases')]
     public function testLoadByAggregateRootId(string $id, ?int $from, ?int $to, int $shouldBeCount, string $queryPart, array $parameters): void
     {
         $rows = $this->getRows();
 
-        $expected = \array_slice($rows[$id], null !== $from ? $from : 0, null !== $to ? $to - $from : null);
+        $expected = \array_slice($rows[$id], $from ?? 0, null !== $to ? $to - $from : null);
 
         $stmt = $this->createMock(Statement::class);
+        $result = $this->createMock(Result::class);
+
         $stmt->expects(self::once())->method('execute')
             ->with($parameters)
+            ->willReturn($result)
         ;
-        $stmt->expects(self::once())->method('fetchAll')
+
+        $result->expects(self::once())->method('fetchAllAssociative')
             ->willReturn($expected)
         ;
 
@@ -53,18 +60,18 @@ final class EventStoreManagerDoctrineTest extends TestCase
             ->willReturn($this->createMock(Event::class))
         ;
 
-        $query = \trim("SELECT * FROM {$this->table} WHERE id = :id ".$queryPart).' ORDER BY playhead';
+        $query = trim("SELECT * FROM {$this->table} WHERE id = :id ".$queryPart).' ORDER BY playhead';
         $this->connection->expects(self::once())->method('prepare')
             ->with($query)
             ->willReturn($stmt)
         ;
 
-        $events = $this->manager->loadByAggregateRootId($id, $from, $to);
+        $this->manager->loadByAggregateRootId($id, $from, $to);
 
         self::assertCount($shouldBeCount, $expected);
     }
 
-    public function loadByAggregateRootIdProvider(): array
+    public static function provideLoadByAggregateRootIdCases(): iterable
     {
         return [
             ['foo', null, null, 10, '', ['id' => 'foo']],
@@ -83,18 +90,20 @@ final class EventStoreManagerDoctrineTest extends TestCase
                 'id' => 'foo',
                 'playhead' => 42,
                 'type' => StubEvent::class,
-                'payload' => \json_encode(['foo' => 1337]),
-                'metadata' => \json_encode(null),
+                'payload' => json_encode(['foo' => 1337]),
+                'metadata' => json_encode(null),
                 'recorded_on' => (new \DateTimeImmutable('2018-11-14 19:42:51.1234'))->format('Y-m-d H:i:s.u'),
                 'domain' => 'Foo\\Domain',
             ],
         ];
 
         $stmt = $this->createMock(Statement::class);
+        $result = $this->createMock(Result::class);
         $stmt->expects(self::once())->method('execute')
             ->with(['domain' => 'Foo\\Domain'])
+            ->willReturn($result)
         ;
-        $stmt->expects(self::once())->method('fetchAll')
+        $result->expects(self::once())->method('fetchAllAssociative')
             ->willReturn($rows)
         ;
 
@@ -114,7 +123,7 @@ final class EventStoreManagerDoctrineTest extends TestCase
         self::assertCount(1, $events);
     }
 
-    /** @dataProvider getProvider */
+    #[DataProvider('provideGetCases')]
     public function testGet(string $key, string $method): void
     {
         $rows = [
@@ -124,8 +133,10 @@ final class EventStoreManagerDoctrineTest extends TestCase
         ];
 
         $stmt = $this->createMock(Statement::class);
-        $stmt->expects(self::once())->method('execute');
-        $stmt->expects(self::once())->method('fetchAll')
+        $result = $this->createMock(Result::class);
+
+        $stmt->expects(self::once())->method('execute')->willReturn($result);
+        $result->expects(self::once())->method('fetchAllAssociative')
             ->willReturn($rows)
         ;
 
@@ -137,7 +148,7 @@ final class EventStoreManagerDoctrineTest extends TestCase
         self::assertSame(['foo', 'bar', 'baz'], $this->manager->{$method}());
     }
 
-    public function getProvider(): array
+    public static function provideGetCases(): iterable
     {
         return [
             ['id', 'getAggregateRootIds'],
@@ -148,14 +159,14 @@ final class EventStoreManagerDoctrineTest extends TestCase
     private function getRows(): array
     {
         $rows = ['foo' => [], 'bar' => []];
-        foreach ($rows as $rowId => $subRows) {
+        foreach (array_keys($rows) as $rowId) {
             for ($i = 0; $i < ('foo' === $rowId ? 10 : 5); ++$i) {
                 $rows[$rowId][] = [
                     'id' => 'foo',
                     'playhead' => $i,
                     'type' => StubEvent::class,
-                    'payload' => \json_encode(['foo' => $i]),
-                    'metadata' => \json_encode(null),
+                    'payload' => json_encode(['foo' => $i], \JSON_THROW_ON_ERROR),
+                    'metadata' => json_encode(null),
                     'recorded_on' => (new \DateTimeImmutable('2018-11-14 19:42:'.($i * 2).'.1234'))->format('Y-m-d H:i:s.u'),
                     'domain' => 'Foo\\Domain',
                 ];

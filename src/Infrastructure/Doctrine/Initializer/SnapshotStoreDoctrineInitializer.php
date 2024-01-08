@@ -8,7 +8,7 @@ use Botilka\Infrastructure\StoreInitializer;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\Table;
 
-final class SnapshotStoreDoctrineInitializer extends AbstractDoctrineStoreInitializer implements StoreInitializer
+final readonly class SnapshotStoreDoctrineInitializer extends AbstractDoctrineStoreInitializer implements StoreInitializer
 {
     public function initialize(bool $force = false): void
     {

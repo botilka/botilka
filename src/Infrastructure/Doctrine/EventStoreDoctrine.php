@@ -13,27 +13,18 @@ use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
-final class EventStoreDoctrine implements EventStore
+final readonly class EventStoreDoctrine implements EventStore
 {
-    private $connection;
-    private $normalizer;
-    private $denormalizer;
-    private $tableName;
-
-    public function __construct(Connection $connection, NormalizerInterface $normalizer, DenormalizerInterface $denormalizer, string $tableName)
-    {
-        $this->connection = $connection;
-        $this->normalizer = $normalizer;
-        $this->denormalizer = $denormalizer;
-        $this->tableName = $tableName;
-    }
+    public function __construct(private Connection $connection, private NormalizerInterface $normalizer, private DenormalizerInterface $denormalizer, private string $tableName) {}
 
     public function load(string $id): array
     {
         $stmt = $this->connection->prepare("SELECT type, payload FROM {$this->tableName} WHERE id = :id ORDER BY playhead");
-        $stmt->execute(['id' => $id]);
+        $result = $stmt->execute(['id' => $id]);
 
-        if (0 === \count($events = $stmt->fetchAll())) {
+        /** @var array<int, array<string, string>> $events */
+        $events = $result->fetchAllAssociative();
+        if (0 === \count($events)) {
             throw new AggregateRootNotFoundException("No aggregrate root found for {$id}.");
         }
 
@@ -43,17 +34,23 @@ final class EventStoreDoctrine implements EventStore
     public function loadFromPlayhead(string $id, int $fromPlayhead): array
     {
         $stmt = $this->connection->prepare("SELECT type, payload FROM {$this->tableName} WHERE id = :id AND playhead >= :from ORDER BY playhead");
-        $stmt->execute(['id' => $id, 'from' => $fromPlayhead]);
+        $result = $stmt->execute(['id' => $id, 'from' => $fromPlayhead]);
 
-        return $this->deserialize($stmt->fetchAll());
+        /** @var array<int, array<string, string>> $events */
+        $events = $result->fetchAllAssociative();
+
+        return $this->deserialize($events);
     }
 
     public function loadFromPlayheadToPlayhead(string $id, int $fromPlayhead, int $toPlayhead): array
     {
         $stmt = $this->connection->prepare("SELECT type, payload FROM {$this->tableName} WHERE id = :id AND playhead BETWEEN :from AND :to ORDER BY playhead");
-        $stmt->execute(['id' => $id, 'from' => $fromPlayhead, 'to' => $toPlayhead]);
+        $result = $stmt->execute(['id' => $id, 'from' => $fromPlayhead, 'to' => $toPlayhead]);
 
-        return $this->deserialize($stmt->fetchAll());
+        /** @var array<int, array<string, string>> $events */
+        $events = $result->fetchAllAssociative();
+
+        return $this->deserialize($events);
     }
 
     /**
@@ -62,21 +59,20 @@ final class EventStoreDoctrine implements EventStore
     public function append(string $id, int $playhead, string $type, DomainEvent $payload, ?array $metadata, \DateTimeImmutable $recordedOn, string $domain): void
     {
         $stmt = $this->connection->prepare("INSERT INTO {$this->tableName} VALUES (:id, :playhead, :type, :payload, :metadata, :recordedOn, :domain)");
-
         $values = [
             'id' => $id,
             'playhead' => $playhead,
             'type' => $type,
-            'payload' => \json_encode($this->normalizer->normalize($payload)),
-            'metadata' => \json_encode($metadata),
+            'payload' => json_encode($this->normalizer->normalize($payload), \JSON_THROW_ON_ERROR),
+            'metadata' => json_encode($metadata, \JSON_THROW_ON_ERROR),
             'recordedOn' => $recordedOn->format('Y-m-d H:i:s.u'),
             'domain' => $domain,
         ];
 
         try {
             $stmt->execute($values);
-        } catch (UniqueConstraintViolationException $e) {
-            throw new EventStoreConcurrencyException(\sprintf('Duplicate storage of event "%s" on aggregate "%s" with playhead %d.', $values['type'], $values['id'], $values['playhead']));
+        } catch (UniqueConstraintViolationException) {
+            throw new EventStoreConcurrencyException(sprintf('Duplicate storage of event "%s" on aggregate "%s" with playhead %d.', $values['type'], $values['id'], $values['playhead']));
         }
     }
 
@@ -90,7 +86,7 @@ final class EventStoreDoctrine implements EventStore
         $events = [];
         foreach ($storedEvents as $storedEvent) {
             /** @var DomainEvent $event */
-            $event = $this->denormalizer->denormalize(\json_decode($storedEvent['payload'], true), $storedEvent['type']);
+            $event = $this->denormalizer->denormalize(json_decode($storedEvent['payload'], true, 512, \JSON_THROW_ON_ERROR), $storedEvent['type']);
             $events[] = $event;
         }
 
